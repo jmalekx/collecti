@@ -4,7 +4,19 @@
     "slug": "collecti",
     "version": "1.0.0",
     "plugins": [
-      "expo-share-intent"
+      [
+        "expo-share-intent",
+        {
+          "iosActivationRules": {
+            "NSExtensionActivationSupportsWebURLWithMaxCount": 1,
+            "NSExtensionActivationSupportsWebPageWithMaxCount": 1
+          },
+          "androidIntentFilters": ["text/*", "image/*"],
+          "androidMultiIntentFilters": ["video/*", "audio/*"],
+          "disableAndroid": false,
+          "disableIOS": false
+        }
+      ]
     ],
     "scheme": "collecti",
     "ios": {
