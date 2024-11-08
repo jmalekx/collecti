@@ -1,0 +1,17 @@
+{
+  "expo": {
+    "name": "collecti",
+    "slug": "collecti",
+    "version": "1.0.0",
+    "plugins": [
+      "expo-share-intent"
+    ],
+    "scheme": "collecti",
+    "ios": {
+      "bundleIdentifier": "com.jmalekx.collecti"
+    },
+    "android": {
+      "package": "com.jmalekx.collecti"
+    }
+  }
+}
