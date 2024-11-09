@@ -17,6 +17,7 @@
     "patch-package": "^8.0.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-render-html": "^6.3.4",
     "react-native-webview": "^13.12.3"
   },
   "devDependencies": {
