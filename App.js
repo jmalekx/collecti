@@ -3,8 +3,9 @@ import { View, Text, Alert, StyleSheet } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import InstagramEmbed from './InstagramEmbed';
 import PinterestAPI from './PinterestAPI.js';
+import TiktokEmbed from './TiktokEmbed';
 // import YoutubeAPI from './YoutubeAPI';
-// import TikTokEmbed from './TikTokEmbed';
+
 
 const Home = () => {
   const { shareIntent } = useShareIntentContext();  // Extract the shareIntent context
@@ -31,8 +32,8 @@ const Home = () => {
       setPlatform('pinterest');
     // } else if (url.includes('youtube.com') || url.includes('youtu.be')) {
     //   setPlatform('youtube');
-    // } else if (url.includes('tiktok.com')) {
-    //   setPlatform('tiktok');
+    } else if (url.includes('tiktok.com')) {
+      setPlatform('tiktok');
     } else {
       setPlatform(null);
     }
@@ -48,9 +49,9 @@ const Home = () => {
     case 'pinterest':
       return <PinterestAPI url={url} />;
     // case 'youtube':
-    //   return <YouTubeAPI url={url} />;
-    // case 'tiktok':
-    //   return <TikTokEmbed url={url} />;
+    //   return <YoutubeAPI url={url} />;
+    case 'tiktok':
+      return <TiktokEmbed url={url} />;
     default:
       return <Text>Unsupported platform or invalid URL.</Text>;
   }
