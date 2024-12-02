@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+#
+#
+# End-to-end (e2e) tests that read advertising objects and analytics data.
+#
+# This file runs the following scripts in the programming language directories
+# using access tokens associated with a test account on Pinterest:
+#   get_ads
+#   get_analytics
+#   analytics_api_example
+#
+# All of these scripts are read-only, so it should always be safe to run
+# the tests in this file.
+#
+# The tests in this file are only self-checking to the extent that all
+# should run to completion successfully. Knowledge about the test account
+# and manual checking is required to verify that the tests all returned
+# the expected data. Of course, it would be better to check the results
+# automatically, but for now the automation focuses on running a standard
+# set of tests.
+#
+# Note: The data entered via the printf statements needs to be changed
+# from time-to-time to match the campaigns running on the associated
+# account. It might be necessary to run the commands by hand to figure
+# out a sequence of responses that will generate each analytics report.
+#
+
+# get the location of this script
+# shellcheck disable=SC2164 # because the directory definitely exists
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+
+# source the common test script code
+# shellcheck source=./e2e_tests_preamble
+. "${SCRIPT_DIR}"/e2e_tests_preamble
+
+# delete output files to avoid overwrite confirmations by scripts
+rm -f ${OUTPUT_PREFIX}_*.csv
+rm -f ${OUTPUT_PREFIX}_*.json
+
+# Note: Pinterest ads test account tokens need to be recreated manually
+# once every 7 days. The following commands test to see whether the token
+# is valid.
+./scripts/get_access_token.${EXT} -a "${TEST3}"
+./scripts/get_access_token.${EXT} -a "${TEST4}"
+
+# get asynchronous analytics report
+DOCNAME=${OUTPUT_PREFIX}_metrics_report.csv
+printf "1\n${DOCNAME}\n" | \
+    ./scripts/analytics_api_example.${EXT} -a "${TEST3}"
+    wc "${DOCNAME}"
+
+# get all of the ads-related data for the test account
+./scripts/get_ads.${EXT} -a "${TEST4}" --all-ads
+
+# get user analytics
+DOCNAME=${OUTPUT_PREFIX}_user_analytics.json
+echo "${DOCNAME}" | \
+    ./scripts/get_analytics.${EXT} -a "${TEST3}"
+wc "${DOCNAME}"
+
+# get ad_account_user analytics
+DOCNAME=${OUTPUT_PREFIX}_ad_account_user_analytics.json
+printf "1\n${DOCNAME}\n" | \
+    ./scripts/get_analytics.${EXT} -a ${TEST3} -o ad_account_user
+wc ${DOCNAME}
+
+# get ad_account analytics
+DOCNAME=${OUTPUT_PREFIX}_ad_account_analytics.json
+printf "1\n${DOCNAME}\n" | \
+    ./scripts/get_analytics.${EXT} -a "${TEST3}" -o ad_account
+wc "${DOCNAME}"
+
+# get campaign analytics
+DOCNAME=${OUTPUT_PREFIX}_campaign_analytics.json
+printf "${DOCNAME}\n" | \
+    ./scripts/get_analytics.${EXT} -a "${TEST3}" -o campaign --ad-account-id ${TEST3_AD_ACCOUNT_ID} --campaign-id ${TEST3_CAMPAIGN_ID}
+wc "${DOCNAME}"
+
+# get ad group analytics
+DOCNAME=${OUTPUT_PREFIX}_ad_group_analytics.json
+    printf "1\n${DOCNAME}\n" | \
+         ./scripts/get_analytics.${EXT} -a "${TEST3}" -o ad_group --ad-account-id ${TEST3_AD_ACCOUNT_ID} --campaign-id ${TEST3_CAMPAIGN_ID}
+    wc "${DOCNAME}"
+
+# get ad analytics
+DOCNAME=${OUTPUT_PREFIX}_ad_analytics.json
+printf "1\n1\n${DOCNAME}\n" | \
+    ./scripts/get_analytics.${EXT} -a "${TEST3}" -o ad --ad-account-id ${TEST3_AD_ACCOUNT_ID} --campaign-id ${TEST3_CAMPAIGN_ID}
+wc "${DOCNAME}"
+
+# all tests existed successfully: delete output files
+rm -f ${OUTPUT_PREFIX}_*.json
+rm -f ${OUTPUT_PREFIX}_*.csv
+
+echo "=== ADS READ TEST COMPLETED SUCCESSFULLY ==="
