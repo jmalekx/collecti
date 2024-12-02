@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# This script runs the commands in one of the programming language directories
+# using access tokens associated with test accounts on Pinterest. Run the
+# integration_tests_prerequisitions script to set up the access tokens required
+# to run this script.
+#
+# For each of the required tokens:
+#    verify if the token can be refreshed. if not, prompt to login and get a new token.
+#
+
+# get the location of this script
+# shellcheck disable=SC2164 # because the directory definitely exists
+SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+
+# source the common test script code
+# shellcheck source=./e2e_tests_preamble
+. "${SCRIPT_DIR}"/e2e_tests_preamble
+
+LOGIN_MESSAGE="Log into the ${TEST1} (pins/boards read test) account in your web browser and hit any key to continue..."
+if (! ./scripts/refresh_access_token.${EXT} -a ${TEST1}) ; then
+    read -r -s -n 1 -p "${LOGIN_MESSAGE}"
+    echo "authorizing token for ${TEST1}"
+    ./scripts/get_access_token.${EXT} -a ${TEST1} -w -s pins:read,boards:read,user_accounts:read
+fi
+
+LOGIN_MESSAGE="Log into the ${TEST2} (pins/boards write test) account in your web browser and hit any key to continue..."
+if (! ./scripts/refresh_access_token.${EXT} -a ${TEST2}) ; then
+    read -r -s -n 1 -p "${LOGIN_MESSAGE}"
+    echo "authorizing v5 token for ${TEST2}"
+    ./scripts/get_access_token.${EXT} -a ${TEST2} -w -s pins:read,pins:write,boards:read,boards:write,user_accounts:read
+fi
+
+echo "Ensure that there is a valid access token for the ${TEST3} (ads test) account"
+./scripts/get_access_token.${EXT} -a ${TEST3}
+
+echo "Ensure that there is a valid access token for the ${TEST4} (ads test) account"
+./scripts/get_access_token.${EXT} -a ${TEST4}
