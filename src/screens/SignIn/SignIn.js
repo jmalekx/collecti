@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, useWindowDimensions} from 'react-native';
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import Logo from '../../../assets/images/tmplogo.png';
 
 const SignIn = () => {
     const {height} = useWindowDimensions();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const auth = FIREBASE_AUTH;
     
     return (
         <View style={styles.root}>
@@ -25,4 +30,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default SignIn
+export default SignIn;
