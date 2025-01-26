@@ -19,7 +19,7 @@ function InsideLayout() {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null); // Removed TypeScript-specific <User | null>
+  const [user, setUser] = useState(null); 
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -27,7 +27,7 @@ export default function App() {
       setUser(user);
     });
 
-    return () => unsubscribe(); // Clean up the subscription
+    return () => unsubscribe();
   }, []);
 
   return (
