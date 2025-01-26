@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
-import InstagramEmbed from './InstagramEmbed';
+import InstagramEmbed from './InstagramEmbed.js';
 import PinterestAPI from './PinterestAPI.js';
-import TiktokEmbed from './TiktokEmbed';
+import TiktokEmbed from './TiktokEmbed.js';
 // import YoutubeAPI from './YoutubeAPI';
 
 
