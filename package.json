@@ -10,6 +10,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@descope/react-native-sdk": "^0.7.1",
     "axios": "^1.7.7",
     "expo": "~51.0.28",
     "expo-share-intent": "^2.5.2",
