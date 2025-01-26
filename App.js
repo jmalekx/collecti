@@ -1,34 +1,52 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet, Text} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { onAuthStateChanged } from 'firebase/auth';
 import SignIn from './src/screens/SignIn';
+import Profile from './src/screens/Profile';
+import { FIREBASE_AUTH } from './FirebaseConfig';
 
 const Stack = createNativeStackNavigator();
+const InsideStack = createNativeStackNavigator();
 
-export default function App(){
-  return(
+function InsideLayout() {
+  return (
+    <InsideStack.Navigator>
+      <InsideStack.Screen name="My Profile" component={Profile} />
+    </InsideStack.Navigator>
+  );
+}
+
+export default function App() {
+  const [user, setUser] = useState(null); // Removed TypeScript-specific <User | null>
+  
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      console.log('user', user);
+      setUser(user);
+    });
+
+    return () => unsubscribe(); // Clean up the subscription
+  }, []);
+
+  return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='SignIn'>
-        <Stack.Screen name="SignIn" component={SignIn} options={{headerShown: false}} />
+      <Stack.Navigator initialRouteName="SignIn">
+        {user ? (
+          <Stack.Screen 
+            name="Inside" 
+            component={InsideLayout} 
+            options={{ headerShown: false }} 
+          />
+        ) : (
+          <Stack.Screen 
+            name="SignIn" 
+            component={SignIn} 
+            options={{ headerShown: false }} 
+          />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-// const App = () => {
-//   return (
-//     <SafeAreaView style ={styles.root}>
-//         <SignIn />
-//     </SafeAreaView>
-//   );
-// };
-
-// const styles= StyleSheet.create({
-//   root: {
-//     flex: 1,
-//     backgroundColor: 'FFF3E2',
-//   },
-// });
-
-// export default App;

@@ -15,7 +15,7 @@ const SignIn = () => {
     const logIn = async () => {
         setLoading(true);
         try {
-            const repsonse = await signInWithEmailAndPassword(auth, email, password);
+            const response = await signInWithEmailAndPassword(auth, email, password);
             console.log(response);
         } catch (error) {
             console.log(error);
@@ -28,7 +28,7 @@ const SignIn = () => {
     const signUp = async () => {
         setLoading(true);
         try {
-            const repsonse = await createUserWithEmailAndPassword(auth, email, password);
+            const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log(response);
             alert('check mail');
         } catch (error) {
@@ -61,8 +61,10 @@ const SignIn = () => {
 
 const styles = StyleSheet.create({
     root:{
+        flex:1,
         alignItems: 'center',
         padding: 20,
+        backgroundColor: '#FFF3E2',
     },
     logo:{
         width:'75%',
