@@ -10,12 +10,15 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@descope/react-native-sdk": "^0.7.1",
+    "@react-native-firebase/app": "^17.5.0",
+    "@react-native-firebase/auth": "^17.5.0",
     "axios": "^1.7.7",
     "expo": "~51.0.28",
     "expo-share-intent": "^2.5.2",
     "expo-status-bar": "~1.12.1",
+    "firebase": "^9.0.0",
     "patch-package": "^8.0.0",
+    "promise": "^8.3.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
     "react-native-render-html": "^6.3.4",
