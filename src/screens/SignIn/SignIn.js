@@ -2,20 +2,6 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, useWindowDimensions} from 'react-native';
 import Logo from '../../../assets/images/tmplogo.png';
 
-// import { useNavigate } from 'react-router-dom';
-// import { useDescope, SignUpOrInFlow } from '@descope/react-native-sdk'
-// const Login = () => {
-//     const navigate = useNavigate()
-//     return (
-//         <div>
-//             <SignUpOrInFlow
-//                 onSuccess={(e) => console.log('logged in')}
-//                 onError={(e) => console.log('error')}
-//             />
-//         </div>
-//     );
-// };
-
 const SignIn = () => {
     const {height} = useWindowDimensions();
     
