@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, Settings, StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import SignIn from './src/screens/SignIn';
+import UserSettings from './src/screens/UserSettings';
 import Profile from './src/screens/Profile';
 import { FIREBASE_AUTH } from './FirebaseConfig';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Stack = createNativeStackNavigator();
 const InsideStack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 function InsideLayout() {
   return (
-    <InsideStack.Navigator>
-      <InsideStack.Screen name="My Profile" component={Profile} />
-    </InsideStack.Navigator>
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={Profile} />
+      <Tab.Screen name="Settings" component={UserSettings} />
+    </Tab.Navigator>
   );
 }
 
