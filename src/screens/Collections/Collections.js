@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
 import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
-import EditProfile from './EditProfile';
+import { useFocusEffect } from '@react-navigation/native';
 
 //HEADER SECTION:
 //small profile image, username/displayname, short stats (no. of collections, no. of saved posts)
@@ -39,6 +39,17 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
       fetchCollections();
     }
   }, [userId]);
+
+   // Refetch profile and collections when the screen is focused (after editing profile)
+   useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        fetchUserProfile();
+        fetchCollections();
+      }
+    }, [userId])
+  );
+
 
     // Fetch user profile from Firestore
   const fetchUserProfile = async () => {
