@@ -9,6 +9,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import SignIn from './src/screens/SignIn';
 import HomePage from './src/screens/HomePage';
 import Collections from './src/screens/Collections';
+import CollectionDetails from './src/screens/Collections/CollectionDetails';
 import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/Collections/EditProfile';
 
@@ -58,6 +59,9 @@ export default function App() {
           component={EditProfile}
           options={{ headerShown: true, title: 'Edit Profile' }}
         />
+        <Stack.Screen 
+          name="CollectionDetails" 
+          component={CollectionDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );

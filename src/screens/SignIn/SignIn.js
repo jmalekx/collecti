@@ -44,6 +44,7 @@ const SignIn = () => {
                 bio: '',
                 createdAt: new Date(),
                 collections: 0,
+                posts: 0,
             });
 
             alert('Sign-up successful!');

@@ -4,10 +4,6 @@ import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firest
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 
-//HEADER SECTION:
-//small profile image, username/displayname, short stats (no. of collections, no. of saved posts)
-//edit profile button
-
 //MAIN SECTION:
 //grid layout of collection cards (2 columns? or just stacked 1 col each)
 //each collection has thmb image(of posts inside preview? or recently saved post), name, no. of posts in col
@@ -68,8 +64,8 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     }
   };
 
-  // Fetch collections from Firestore
-  const fetchCollections = async () => {
+// Inside your fetchCollections function, ensure you're fetching the thumbnail as well
+const fetchCollections = async () => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
       const querySnapshot = await getDocs(q);
@@ -77,7 +73,14 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
         id: doc.id,
         ...doc.data(),
       }));
-      setCollections(userCollections);
+  
+      // Fetch the thumbnail for each collection
+      const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
+        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
+        return { ...collection, thumbnail };
+      }));
+  
+      setCollections(collectionsWithThumbnails);
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
@@ -93,6 +96,7 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     try {
       await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
         name: newCollectionName,
+        description: '', // Empty string for description initially
         createdAt: new Date().toISOString(),
         items: [], // Empty array for items initially
       });
@@ -135,6 +139,7 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
             style={styles.collectionCard}
             onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
           >
+            <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
             <Text style={styles.collectionName}>{item.name}</Text>
             <Text style={styles.collectionStats}>{item.items.length} posts</Text>
           </TouchableOpacity>
