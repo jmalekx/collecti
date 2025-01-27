@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Button, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView} from 'react-native';
-import { FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { doc, setDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import Logo from '../../../assets/images/tmplogo.png';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -28,12 +29,27 @@ const SignIn = () => {
     const signUp = async () => {
         setLoading(true);
         try {
+            //create user
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log(response);
-            alert('check mail');
+            const user = response.user;
+            const defaultPfp = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
+
+            //init profile
+            const userRef = doc(FIREBASE_DB, 'users', user.uid); //firestore document reference
+            
+            await setDoc(userRef, {
+                email: user.email,
+                username: user.email.split('@')[0],  //fefault username from the email (can be edited later)
+                profilePicture: defaultPfp, 
+                bio: '',
+                createdAt: new Date(),
+                collections: 0,
+            });
+
+            alert('Sign-up successful!');
         } catch (error) {
             console.log(error);
-            alert('signup failed');
+            alert('Sign-up failed');
         } finally {
             setLoading(false);
         }
