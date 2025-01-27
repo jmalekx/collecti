@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
 import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
+import EditProfile from './EditProfile';
 
 //HEADER SECTION:
 //small profile image, username/displayname, short stats (no. of collections, no. of saved posts)
@@ -97,9 +98,9 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
       <ProfileHeader
         username={username}
         stats={stats}
-        profilePicture={profilePicture} // Pass profile picture
-        onEditProfile={() => alert('Edit profile clicked!')}
-      />
+        profilePicture={profilePicture}
+        onEditProfile={() => navigation.navigate('EditProfile')}
+        />
 
       {/* Create New Collection */}
       <View style={styles.newCollectionContainer}>

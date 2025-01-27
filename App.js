@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, Settings, StyleSheet, Text } from 'react-native';
+import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -10,9 +10,9 @@ import SignIn from './src/screens/SignIn';
 import HomePage from './src/screens/HomePage';
 import Collections from './src/screens/Collections';
 import UserSettings from './src/screens/UserSettings';
+import EditProfile from './src/screens/Collections/EditProfile';
 
 const Stack = createNativeStackNavigator();
-const InsideStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function InsideLayout() {
@@ -26,8 +26,8 @@ function InsideLayout() {
 }
 
 export default function App() {
-  const [user, setUser] = useState(null); 
-  
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
       console.log('user', user);
@@ -41,18 +41,23 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="SignIn">
         {user ? (
-          <Stack.Screen 
-            name="Inside" 
-            component={InsideLayout} 
-            options={{ headerShown: false }} 
+          <Stack.Screen
+            name="Inside"
+            component={InsideLayout}
+            options={{ headerShown: false }}
           />
         ) : (
-          <Stack.Screen 
-            name="SignIn" 
-            component={SignIn} 
-            options={{ headerShown: false }} 
+          <Stack.Screen
+            name="SignIn"
+            component={SignIn}
+            options={{ headerShown: false }}
           />
         )}
+        <Stack.Screen
+          name="EditProfile"  // Add the EditProfile screen here
+          component={EditProfile}
+          options={{ headerShown: true, title: 'Edit Profile' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
