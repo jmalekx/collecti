@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
 import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 
-// HEADER SECTION:
-// Dynamic Profile Header
-const ProfileHeader = ({ username, stats, onEditProfile }) => (
-  <View style={styles.header}>
-    <Text style={styles.username}>{username}</Text>
-    <Text style={styles.stats}>{stats}</Text>
-    <Button title="Edit Profile" onPress={onEditProfile} />
-  </View>
-);
+//HEADER SECTION:
+//small profile image, username/displayname, short stats (no. of collections, no. of saved posts)
+//edit profile button
 
-const Collections = ({ navigation }) => {
-  const [collections, setCollections] = useState([]);
-  const [newCollectionName, setNewCollectionName] = useState('');
-  const [username, setUsername] = useState('Loading...');
-  const [stats, setStats] = useState('Loading...');
-  const userId = FIREBASE_AUTH.currentUser?.uid;
+//MAIN SECTION:
+//grid layout of collection cards (2 columns? or just stacked 1 col each)
+//each collection has thmb image(of posts inside preview? or recently saved post), name, no. of posts in col
+//small menu btn for edit, delete, pin
+//drag and drop to reorganise collections
+//create new colleciton button
+
+const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
+    <View style={styles.header}>
+      <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+      <Text style={styles.username}>{username}</Text>
+      <Text style={styles.stats}>{stats}</Text>
+      <Button title="Edit Profile" onPress={onEditProfile} />
+    </View>
+  );
+
+  const Collections = ({ navigation }) => {
+    const [collections, setCollections] = useState([]);
+    const [newCollectionName, setNewCollectionName] = useState('');
+    const [username, setUsername] = useState('Loading...');
+    const [stats, setStats] = useState('Loading...');
+    const [profilePicture, setProfilePicture] = useState('');
+    const userId = FIREBASE_AUTH.currentUser?.uid;
 
   // Fetch user profile and collections on component mount
   useEffect(() => {
@@ -28,7 +39,7 @@ const Collections = ({ navigation }) => {
     }
   }, [userId]);
 
-  // Fetch user profile from Firestore
+    // Fetch user profile from Firestore
   const fetchUserProfile = async () => {
     try {
       const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
@@ -36,6 +47,7 @@ const Collections = ({ navigation }) => {
         const userData = userDoc.data();
         setUsername(userData.username || FIREBASE_AUTH.currentUser.email); // Use email as default name
         setStats(`${userData.collections || 0} collections | ${userData.posts || 0} posts`);
+        setProfilePicture(userData.profilePicture || 'default_image_url'); // Default image URL if not found
       } else {
         console.error('User document does not exist!');
       }
@@ -85,6 +97,7 @@ const Collections = ({ navigation }) => {
       <ProfileHeader
         username={username}
         stats={stats}
+        profilePicture={profilePicture} // Pass profile picture
         onEditProfile={() => alert('Edit profile clicked!')}
       />
 
@@ -127,6 +140,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+  },
+  profilePicture: {
+    width: 80,
+    height: 80,
+    borderRadius: 40, // Circular image
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: '#ccc',
   },
   header: {
     marginBottom: 16,
