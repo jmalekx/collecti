@@ -47,21 +47,25 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   );
 
 
-    // Fetch user profile from Firestore
+  // Fetch user profile from Firestore
   const fetchUserProfile = async () => {
-    try {
-      const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUsername(userData.username || FIREBASE_AUTH.currentUser.email); // Use email as default name
-        setStats(`${userData.collections || 0} collections | ${userData.posts || 0} posts`);
-        setProfilePicture(userData.profilePicture || 'default_image_url'); // Default image URL if not found
-      } else {
-        console.error('User document does not exist!');
+      try {
+          const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
+          if (userDoc.exists()) {
+              const userData = userDoc.data();
+              setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
+              setStats(`${userData.collections || 0} collections | ${userData.posts || 0} posts`);
+              
+              // Set profile picture, default if empty
+              setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== '' 
+                  ? userData.profilePicture 
+                  : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg'); // Default PFP URL
+          } else {
+              console.error('User document does not exist!');
+          }
+      } catch (error) {
+          console.error('Error fetching user profile: ', error);
       }
-    } catch (error) {
-      console.error('Error fetching user profile: ', error);
-    }
   };
 
 // Inside your fetchCollections function, ensure you're fetching the thumbnail as well
