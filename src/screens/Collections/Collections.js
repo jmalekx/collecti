@@ -32,10 +32,10 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   // Fetch user profile and collections on component mount
   useEffect(() => {
     if (userId) {
-      fetchUserProfile();
-      fetchCollections();
+        fetchUserProfile();
+        fetchCollections();
     }
-  }, [userId]);
+  }, [userId, collections]);
 
    // Refetch profile and collections when the screen is focused (after editing profile)
    useFocusEffect(
@@ -50,24 +50,30 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 
   // Fetch user profile from Firestore
   const fetchUserProfile = async () => {
-      try {
-          const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-          if (userDoc.exists()) {
-              const userData = userDoc.data();
-              setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
-              setStats(`${userData.collections || 0} collections | ${userData.posts || 0} posts`);
-              
-              // Set profile picture, default if empty
-              setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== '' 
-                  ? userData.profilePicture 
-                  : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg'); // Default PFP URL
-          } else {
-              console.error('User document does not exist!');
-          }
-      } catch (error) {
-          console.error('Error fetching user profile: ', error);
-      }
-  };
+    try {
+        const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
+            
+            // Fetch collections to get the post count
+            const collectionsCount = collections.length;
+            const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
+            
+            setStats(`${collectionsCount} collections | ${totalPosts} posts`);
+            
+            // Set profile picture, default if empty
+            setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== '' 
+                ? userData.profilePicture 
+                : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg'); // Default PFP URL
+        } else {
+            console.error('User document does not exist!');
+        }
+    } catch (error) {
+        console.error('Error fetching user profile: ', error);
+    }
+};
+
 
 // Inside your fetchCollections function, ensure you're fetching the thumbnail as well
 const fetchCollections = async () => {
