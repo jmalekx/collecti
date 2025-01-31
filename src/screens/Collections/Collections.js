@@ -141,12 +141,20 @@ const Collections = ({ navigation }) => {
 
   const handleAddPost = async (notes, tags, image, selectedCollection) => {
     try {
+      let thumbnail = image || DEFAULT_THUMBNAIL;
+  
+      // If the platform is Instagram, generate the embed URL
+      if (platform === 'instagram') {
+        const postId = image.split('/')[4]; // Extract the post ID from the URL
+        thumbnail = `https://www.instagram.com/p/${postId}/embed`; // Use the embed URL as the thumbnail
+      }
+  
       const postData = {
         notes,
         tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
         image, // Use the image passed from AddButton
         createdAt: new Date().toISOString(),
-        thumbnail: image || DEFAULT_THUMBNAIL, // Use the image or default thumbnail
+        thumbnail, // Use the embed URL for Instagram, otherwise use the image or default thumbnail
       };
   
       // Add a new document to the selected collection's 'posts' subcollection
@@ -214,7 +222,10 @@ const Collections = ({ navigation }) => {
 
       {/* AddButton Component */}
       <View style={styles.addButtonContainer}>
-        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} collections={collections}/>
+        <AddButton 
+          onAddPost={handleAddPost} 
+          onAddCollection={handleAddCollection} 
+          collections={collections}/>
       </View>
     </View>
   );

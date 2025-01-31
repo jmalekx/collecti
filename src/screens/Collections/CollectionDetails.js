@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import { WebView } from 'react-native-webview'; // Correct import
 import { collection, doc, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
@@ -126,6 +127,30 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsMenuVisible(false);
   };
 
+  // Render post content based on the platform
+  const renderPostContent = (post) => {
+    if (post.thumbnail.includes('instagram.com')) {
+      // Render Instagram posts as WebView embeds
+      return (
+        <WebView
+          source={{ uri: post.thumbnail }}
+          style={styles.webview}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+        />
+      );
+    } else {
+      // Render other posts as images
+      return (
+        <Image
+          source={{ uri: post.thumbnail }}
+          style={styles.thumbnail}
+          onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
+        />
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* Collection Header */}
@@ -160,7 +185,7 @@ const CollectionDetails = ({ route, navigation }) => {
             </TouchableOpacity>
 
             {/* Post Content */}
-            <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+            {renderPostContent(item)}
             <Text style={styles.postTitle}>{item.notes}</Text>
           </View>
         )}
@@ -243,6 +268,12 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the button is above other content
   },
   thumbnail: {
+    width: '100%',
+    height: 150, // Adjust height for 4:3 aspect ratio
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  webview: {
     width: '100%',
     height: 150, // Adjust height for 4:3 aspect ratio
     borderRadius: 8,

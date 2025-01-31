@@ -2,17 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Alert, StyleSheet } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, setDoc, addDoc } from 'firebase/firestore';
+import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
-import InstagramEmbed from '../APIs/InstagramEmbed';
-import TikTokEmbed from '../APIs/TiktokEmbed';
-// import AddButton from '../../components/AddButton';
+import AddButton from '../../components/AddButton';
 
 const HomePage = () => {
   const { shareIntent } = useShareIntentContext();
   const [url, setUrl] = useState(null);
   const [platform, setPlatform] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [collections, setCollections] = useState([]);
 
   useEffect(() => {
     console.log("Share Intent Data:", shareIntent);
@@ -28,8 +27,24 @@ const HomePage = () => {
     const auth = getAuth();
     if (auth.currentUser) {
       setUserId(auth.currentUser.uid);
+      fetchCollections(auth.currentUser.uid); // Fetch collections when user is authenticated
     }
   }, [shareIntent]);
+
+  const fetchCollections = async (userId) => {
+    try {
+      const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
+      const querySnapshot = await getDocs(q);
+      const collectionsData = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCollections(collectionsData); // Update collections state
+      console.log("Collections fetched:", collectionsData);
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+    }
+  };
 
   const detectPlatform = (url) => {
     if (url.includes('instagram.com')) {
@@ -43,28 +58,38 @@ const HomePage = () => {
     }
   };
 
-  const renderPlatformEmbed = () => {
-    switch (platform) {
-      case 'instagram':
-        return <InstagramEmbed url={url} />;
-      case 'pinterest':
-        return <PinterestAPI url={url} />;
-      case 'tiktok':
-        return <TikTokEmbed url={url} />;
-      default:
-        return <Text>Unsupported platform or invalid URL.</Text>;
+  const handleAddPost = async (notes, tags, image, selectedCollection) => {
+    try {
+      const postData = {
+        notes,
+        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
+        image: image || url, // Use the shared URL if no image is provided
+        createdAt: new Date().toISOString(),
+        thumbnail: image || url || DEFAULT_THUMBNAIL, // Use the image or shared URL as thumbnail
+      };
+
+      // Add a new document to the selected collection's 'posts' subcollection
+      await addDoc(
+        collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
+        postData
+      );
+
+      Alert.alert('Success', 'Post added successfully');
+    } catch (error) {
+      console.error('Error adding post: ', error);
+      Alert.alert('Error', 'Failed to add post');
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* Main Content */}
-      {renderPlatformEmbed()}
-
       {/* AddButton Component */}
-      {/* <View style={styles.addButtonContainer}>
-        <AddButton />
-      </View> */}
+      <AddButton
+        onAddPost={handleAddPost}
+        sharedUrl={url} // Pass the shared URL to AddButton
+        platform={platform} // Pass the detected platform to AddButton
+        collections={collections} // Pass the collections array
+      />
     </View>
   );
 };
@@ -75,10 +100,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  // addButtonContainer: {
-  //   flex: 1,
-  //   justifyContent: 'flex-end', // Ensures the button is at the bottom
-  // },
 });
 
 export default function App() {

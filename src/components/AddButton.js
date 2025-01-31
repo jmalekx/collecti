@@ -1,50 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker'; // For image picker
-import { Picker } from '@react-native-picker/picker'; // Correct import
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { Picker } from '@react-native-picker/picker';
 
-const AddButton = ({ onAddPost, onAddCollection, collections }) => {
+const AddButton = ({ onAddPost, sharedUrl, platform, collections = [] }) => {
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
-  const [image, setImage] = useState(null); // To store the selected image or URL
-  const [imageUrl, setImageUrl] = useState(''); // For pasting image URL
+  const [image, setImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
   const [notes, setNotes] = useState('');
   const [tags, setTags] = useState('');
   const [selectedCollection, setSelectedCollection] = useState('Unsorted'); // Default collection
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
-  const navigation = useNavigation();
 
-  useFocusEffect(
-    useCallback(() => {
-      // This effect runs when the screen is focused
-      return () => {
-        // This cleanup runs when the screen loses focus
-        setIsFabMenuVisible(false);
-        setIsModalVisible(false);
-        setIsAddCollectionModalVisible(false);
-      };
-    }, [])
-  );
+  // Automatically open the modal and pre-fill the URL for Instagram and TikTok
+  useEffect(() => {
+    if (sharedUrl && (platform === 'instagram' || platform === 'tiktok')) {
+      setImageUrl(sharedUrl); // Pre-fill the image URL field with the shared URL
+      setIsModalVisible(true); // Open the "Add New Post" modal
+    }
+  }, [sharedUrl, platform]);
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
       Alert.alert('Error', 'Please select an image or paste an image URL');
       return;
     }
-  
-    // If image is null, use imageUrl or fallback
+
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
-  
-    // Ensure the selectedCollection is 'Unsorted' if no collection is selected
     const collectionToUse = selectedCollection || 'Unsorted';
-  
-    // Pass notes, tags, imageToUse, and collectionToUse to onAddPost
+
     onAddPost(notes, tags, imageToUse, collectionToUse);
-  
+
     // Reset modal and form fields
     setIsModalVisible(false);
     setNotes('');
@@ -53,27 +42,26 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
     setImageUrl('');
     setIsFabMenuVisible(false);
   };
-  
+
   const handleAddCollection = () => {
     const trimmedName = newCollectionName.trim().toLowerCase();
-    
+
     if (!trimmedName) {
       alert('Collection name cannot be empty!');
       return;
     }
-  
+
     if (trimmedName === 'unsorted') {
       alert('You cannot name a collection "Unsorted" as it is the default collection.');
       return;
     }
-  
+
     onAddCollection(newCollectionName, newCollectionDescription);
     setIsAddCollectionModalVisible(false);
     setNewCollectionName('');
     setNewCollectionDescription('');
     setIsFabMenuVisible(false);
   };
-  
 
   const handleImagePicker = () => {
     launchImageLibrary(
@@ -84,7 +72,7 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
         } else if (response.errorCode) {
           console.log('Image picker error: ', response.errorMessage);
         } else {
-          setImage(response.assets[0].uri); // Set the selected image URI
+          setImage(response.assets[0].uri);
         }
       }
     );
@@ -182,7 +170,7 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
       {/* FAB Button */}
       <TouchableOpacity
         style={styles.fabButton}
-        onPress={() => setIsFabMenuVisible(!isFabMenuVisible)} // Toggle FAB menu visibility
+        onPress={() => setIsFabMenuVisible(!isFabMenuVisible)}
       >
         <Text style={styles.fabButtonText}>+</Text>
       </TouchableOpacity>
