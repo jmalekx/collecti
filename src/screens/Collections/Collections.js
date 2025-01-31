@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Alert, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
 import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
+import AddButton from '../../components/AddButton';
 
 //MAIN SECTION:
 //grid layout of collection cards (2 columns? or just stacked 1 col each)
@@ -90,26 +91,53 @@ const fetchCollections = async () => {
     }
   };
 
-  // Add a new collection to Firestore
-  const addCollection = async () => {
-    if (!newCollectionName.trim()) {
-      alert('Collection name cannot be empty!');
-      return;
-    }
-
-    try {
-      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
-        name: newCollectionName,
-        description: '', // Empty string for description initially
-        createdAt: new Date().toISOString(),
-        items: [], // Empty array for items initially
-      });
-      setNewCollectionName(''); // Clear input
-      fetchCollections(); // Refresh collections
-    } catch (error) {
-      console.error('Error adding collection: ', error);
-    }
-  };
+  const handleAddPost = async (notes, tags) => {
+      const postData = {
+        url,
+        platform,
+        notes,
+        tags: tags.split(',').map(tag => tag.trim()),
+        createdAt: new Date(),
+      };
+  
+      try {
+        await setDoc(doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts', new Date().toISOString()), postData);
+        Alert.alert('Success', 'Post added successfully');
+      } catch (error) {
+        console.error('Error adding post: ', error);
+        Alert.alert('Error', 'Failed to add post');
+      }
+    };
+  
+    const handleAddCollection = async (collectionName) => {
+      try {
+        const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+          name: collectionName,
+          description: '', // Empty string for description initially
+          createdAt: new Date().toISOString(),
+          items: [], // Empty array for items initially
+        });
+    
+        // Add the new collection to the state immediately
+        setCollections(prevCollections => [
+          ...prevCollections,
+          {
+            id: newCollectionRef.id,
+            name: collectionName,
+            description: '',
+            createdAt: new Date().toISOString(),
+            items: [], // Empty array for items initially
+            thumbnail: 'default_thumbnail_url', // Default thumbnail
+          }
+        ]);
+    
+        Alert.alert('Success', 'Collection created successfully');
+      } catch (error) {
+        console.error('Error adding collection: ', error);
+        Alert.alert('Error', 'Failed to create collection');
+      }
+    };
+    
 
   return (
     <View style={styles.container}>
@@ -120,18 +148,6 @@ const fetchCollections = async () => {
         profilePicture={profilePicture}
         onEditProfile={() => navigation.navigate('EditProfile')}
         />
-
-      {/* Create New Collection */}
-      <View style={styles.newCollectionContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="New Collection Name"
-          value={newCollectionName}
-          onChangeText={setNewCollectionName}
-        />
-        <Button title="Add Collection" onPress={addCollection} />
-      </View>
-
       {/* Collection Grid */}
       <FlatList
         data={collections}
@@ -149,6 +165,10 @@ const fetchCollections = async () => {
           </TouchableOpacity>
         )}
       />
+      {/* AddButton Component */}
+      <View style={styles.addButtonContainer}>
+        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} />
+      </View>
     </View>
   );
 };
@@ -218,5 +238,9 @@ const styles = StyleSheet.create({
   collectionStats: {
     fontSize: 12,
     color: '#555',
+  },
+  addButtonContainer: {
+    flex: 1,
+    justifyContent: 'flex-end', // Ensures the button is at the bottom
   },
 });
