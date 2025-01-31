@@ -29,24 +29,43 @@ const SignIn = () => {
     const signUp = async () => {
         setLoading(true);
         try {
-            //create user
+            // Create user
             const response = await createUserWithEmailAndPassword(auth, email, password);
             const user = response.user;
             const defaultPfp = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
-
-            //init profile
-            const userRef = doc(FIREBASE_DB, 'users', user.uid); //firestore document reference
-            
+            const defaultThumbnail = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
+    
+            // Init profile
+            const userRef = doc(FIREBASE_DB, 'users', user.uid); // firestore document reference
             await setDoc(userRef, {
                 email: user.email,
-                username: user.email.split('@')[0],  //fefault username from the email (can be edited later)
-                profilePicture: defaultPfp, 
+                username: user.email.split('@')[0],  // Default username from the email (can be edited later)
+                profilePicture: defaultPfp,
                 bio: '',
                 createdAt: new Date(),
-                collections: 0,
+                collections: 1, // Start with one collection: 'Unsorted'
                 posts: 0,
             });
-
+    
+            // Create 'Unsorted' collection
+            const unsortedCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', user.uid, 'collections'), {
+                name: 'Unsorted',
+                description: 'Posts not yet assigned to a collection',
+                createdAt: new Date().toISOString(),
+                items: [], // No items initially
+                thumbnail: defaultThumbnail,
+            });
+    
+            // Update 'Unsorted' collection to be pinned at the top
+            await setDoc(doc(FIREBASE_DB, 'users', user.uid, 'collections', unsortedCollectionRef.id), {
+                name: 'Unsorted',
+                description: 'Posts not yet assigned to a collection',
+                createdAt: new Date().toISOString(),
+                items: [],
+                thumbnail: defaultThumbnail,
+                isPinned: true, // Add 'isPinned' field to mark it as pinned
+            });
+    
             alert('Sign-up successful!');
         } catch (error) {
             console.log(error);
@@ -54,7 +73,8 @@ const SignIn = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
+    
     
     return (
         <View style={styles.root}>

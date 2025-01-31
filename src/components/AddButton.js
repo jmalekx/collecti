@@ -1,113 +1,148 @@
 import React, { useState } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet } from 'react-native';
+import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker'; // For image picker
 
 const AddButton = ({ onAddPost, onAddCollection }) => {
-    const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
-    const [notes, setNotes] = useState('');
-    const [tags, setTags] = useState('');
-    const [newCollectionName, setNewCollectionName] = useState('');
-  
-    const handleAddPost = () => {
-      onAddPost(notes, tags); // Pass the entered notes and tags to the parent
-      setIsModalVisible(false);
-      setNotes('');
-      setTags('');
-      setIsFabMenuVisible(false); // Hide the FAB menu after adding post
-    };
-  
-    const handleAddCollection = () => {
-      if (!newCollectionName.trim()) {
-        alert('Collection name cannot be empty!');
-        return;
+  const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
+  const [image, setImage] = useState(null); // To store the selected image or URL
+  const [imageUrl, setImageUrl] = useState(''); // For pasting image URL
+  const [notes, setNotes] = useState('');
+  const [tags, setTags] = useState('');
+  const [newCollectionName, setNewCollectionName] = useState('');
+
+  const handleAddPost = () => {
+    if (!image && !imageUrl) {
+      Alert.alert('Error', 'Please select an image or paste an image URL');
+      return;
+    }
+    onAddPost(notes, tags, image || imageUrl); // Pass notes, tags, and the image (or URL) to the parent
+    setIsModalVisible(false);
+    setNotes('');
+    setTags('');
+    setImage(null);
+    setImageUrl('');
+    setIsFabMenuVisible(false); // Hide the FAB menu after adding post
+  };
+
+  const handleAddCollection = () => {
+    if (!newCollectionName.trim()) {
+      alert('Collection name cannot be empty!');
+      return;
+    }
+    onAddCollection(newCollectionName); // Pass the collection name to the parent
+    setIsAddCollectionModalVisible(false);
+    setNewCollectionName('');
+    setIsFabMenuVisible(false); // Hide the FAB menu after adding collection
+  };
+
+  const handleImagePicker = () => {
+    launchImageLibrary(
+      { mediaType: 'photo', quality: 1 },
+      (response) => {
+        if (response.didCancel) {
+          console.log('User cancelled image picker');
+        } else if (response.errorCode) {
+          console.log('Image picker error: ', response.errorMessage);
+        } else {
+          setImage(response.assets[0].uri); // Set the selected image URI
+        }
       }
-      onAddCollection(newCollectionName); // Pass the collection name to the parent
-      setIsAddCollectionModalVisible(false);
-      setNewCollectionName('');
-      setIsFabMenuVisible(false); // Hide the FAB menu after adding collection
-    };
-  
-    return (
-      <View>
-        {/* Add New Collection Modal */}
-        {isAddCollectionModalVisible && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isAddCollectionModalVisible}
-            onRequestClose={() => setIsAddCollectionModalVisible(false)}
-          >
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Add New Collection</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter Collection Name"
-                  value={newCollectionName}
-                  onChangeText={setNewCollectionName}
-                />
-                <Button title="Create Collection" onPress={handleAddCollection} />
-                <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
-              </View>
-            </View>
-          </Modal>
-        )}
-  
-        {/* Quick Add / Detailed Add Modal */}
-        {isModalVisible && (
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isModalVisible}
-            onRequestClose={() => setIsModalVisible(false)}
-          >
-            <View style={styles.modalBackground}>
-              <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Add to Collection</Text>
-  
-                <TextInput
-                  placeholder="Enter Notes"
-                  value={notes}
-                  onChangeText={setNotes}
-                  style={styles.input}
-                />
-                <TextInput
-                  placeholder="Enter Tags (comma separated)"
-                  value={tags}
-                  onChangeText={setTags}
-                  style={styles.input}
-                />
-  
-                <Button title="Quick Add" onPress={handleAddPost} />
-                <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
-              </View>
-            </View>
-          </Modal>
-        )}
-  
-        {/* FAB Button */}
-        <TouchableOpacity
-          style={styles.fabButton}
-          onPress={() => setIsFabMenuVisible(!isFabMenuVisible)} // Toggle FAB menu visibility
-        >
-          <Text style={styles.fabButtonText}>+</Text>
-        </TouchableOpacity>
-  
-        {/* FAB Menu Options */}
-        {isFabMenuVisible && (
-          <View style={styles.fabMenu}>
-            <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsModalVisible(true); setIsFabMenuVisible(false); }}>
-              <Text style={styles.fabMenuText}>Add New Post</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsAddCollectionModalVisible(true); setIsFabMenuVisible(false); }}>
-              <Text style={styles.fabMenuText}>Add New Collection</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
     );
-  };  
+  };
+
+  return (
+    <View>
+      {/* Add New Collection Modal */}
+      {isAddCollectionModalVisible && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isAddCollectionModalVisible}
+          onRequestClose={() => setIsAddCollectionModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Add New Collection</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Collection Name"
+                value={newCollectionName}
+                onChangeText={setNewCollectionName}
+              />
+              <Button title="Create Collection" onPress={handleAddCollection} />
+              <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Quick Add / Detailed Add Modal */}
+      {isModalVisible && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={() => setIsModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalTitle}>Add to Collection</Text>
+
+              {/* Image Upload or URL */}
+              <TouchableOpacity onPress={handleImagePicker} style={styles.uploadButton}>
+                <Text>Upload Image</Text>
+              </TouchableOpacity>
+              <TextInput
+                placeholder="Or paste image URL"
+                value={imageUrl}
+                onChangeText={setImageUrl}
+                style={styles.input}
+              />
+
+              <TextInput
+                placeholder="Enter Notes"
+                value={notes}
+                onChangeText={setNotes}
+                style={styles.input}
+              />
+              <TextInput
+                placeholder="Enter Tags (comma separated)"
+                value={tags}
+                onChangeText={setTags}
+                style={styles.input}
+              />
+
+              <Button title="Quick Add" onPress={handleAddPost} />
+              <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* FAB Button */}
+      <TouchableOpacity
+        style={styles.fabButton}
+        onPress={() => setIsFabMenuVisible(!isFabMenuVisible)} // Toggle FAB menu visibility
+      >
+        <Text style={styles.fabButtonText}>+</Text>
+      </TouchableOpacity>
+
+      {/* FAB Menu Options */}
+      {isFabMenuVisible && (
+        <View style={styles.fabMenu}>
+          <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsModalVisible(true); setIsFabMenuVisible(false); }}>
+            <Text style={styles.fabMenuText}>Add New Post</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsAddCollectionModalVisible(true); setIsFabMenuVisible(false); }}>
+            <Text style={styles.fabMenuText}>Add New Collection</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   modalBackground: {
@@ -132,6 +167,13 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     marginBottom: 10,
     padding: 8,
+    borderRadius: 5,
+  },
+  uploadButton: {
+    backgroundColor: '#007bff',
+    padding: 10,
+    marginBottom: 10,
+    alignItems: 'center',
     borderRadius: 5,
   },
   fabButton: {

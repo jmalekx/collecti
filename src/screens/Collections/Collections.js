@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Alert, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Alert, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import AddButton from '../../components/AddButton';
 
-//MAIN SECTION:
-//grid layout of collection cards (2 columns? or just stacked 1 col each)
-//each collection has thmb image(of posts inside preview? or recently saved post), name, no. of posts in col
-//small menu btn for edit, delete, pin
-//drag and drop to reorganise collections
-//create new colleciton button
+const DEFAULT_THUMBNAIL = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
+const DEFAULT_PROFILE_PICTURE = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
-    <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+    <Image
+      source={{ uri: profilePicture || DEFAULT_PROFILE_PICTURE }}
+      style={styles.profilePicture}
+      onError={(e) => console.log('Failed to load profile picture:', e.nativeEvent.error)}
+    />
     <Text style={styles.username}>{username}</Text>
     <Text style={styles.stats}>{stats}</Text>
     <Button title="Edit Profile" onPress={onEditProfile} />
@@ -23,8 +23,7 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 
 const Collections = ({ navigation }) => {
   const [collections, setCollections] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');  // Added state for search query
-  const [newCollectionName, setNewCollectionName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [username, setUsername] = useState('Loading...');
   const [stats, setStats] = useState('Loading...');
   const [profilePicture, setProfilePicture] = useState('');
@@ -55,9 +54,7 @@ const Collections = ({ navigation }) => {
         const collectionsCount = collections.length;
         const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
         setStats(`${collectionsCount} collections | ${totalPosts} posts`);
-        setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== ''
-          ? userData.profilePicture
-          : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg');
+        setProfilePicture(userData.profilePicture || DEFAULT_PROFILE_PICTURE);
       } else {
         console.error('User document does not exist!');
       }
@@ -75,25 +72,30 @@ const Collections = ({ navigation }) => {
         ...doc.data(),
       }));
 
-      const unsortedCollection = {
+      // Ensure 'Unsorted' collection exists
+      let unsortedCollection = {
         id: 'Unsorted',
         name: 'Unsorted',
         description: 'Posts not yet assigned to a collection',
         createdAt: new Date().toISOString(),
         items: [],
-        thumbnail: 'default_thumbnail_url',
+        thumbnail: DEFAULT_THUMBNAIL,
+        isPinned: true,
       };
 
+      // Fetch posts in the 'Unsorted' collection
       const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
       const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
       unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
 
+      // Fetch thumbnails for other collections
       const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
-        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
+        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : DEFAULT_THUMBNAIL;
         return { ...collection, thumbnail };
       }));
 
-      setCollections([unsortedCollection, ...collectionsWithThumbnails]);
+      // Combine 'Unsorted' with other collections
+      setCollections([unsortedCollection, ...collectionsWithThumbnails.filter(col => col.name !== 'Unsorted')]);
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
@@ -106,6 +108,7 @@ const Collections = ({ navigation }) => {
         description: '',
         createdAt: new Date().toISOString(),
         items: [],
+        thumbnail: DEFAULT_THUMBNAIL,
       });
 
       setCollections(prevCollections => [
@@ -116,7 +119,7 @@ const Collections = ({ navigation }) => {
           description: '',
           createdAt: new Date().toISOString(),
           items: [],
-          thumbnail: 'default_thumbnail_url',
+          thumbnail: DEFAULT_THUMBNAIL,
         }
       ]);
 
@@ -124,6 +127,25 @@ const Collections = ({ navigation }) => {
     } catch (error) {
       console.error('Error adding collection: ', error);
       Alert.alert('Error', 'Failed to create collection');
+    }
+  };
+
+  const handleAddPost = async (notes, tags) => {
+    const postData = {
+      url,
+      platform,
+      notes,
+      tags: tags.split(',').map(tag => tag.trim()),
+      createdAt: new Date(),
+      thumbnail: DEFAULT_THUMBNAIL, // Add a valid thumbnail URI
+    };
+
+    try {
+      await setDoc(doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts', new Date().toISOString()), postData);
+      Alert.alert('Success', 'Post added successfully');
+    } catch (error) {
+      console.error('Error adding post: ', error);
+      Alert.alert('Error', 'Failed to add post');
     }
   };
 
@@ -141,7 +163,7 @@ const Collections = ({ navigation }) => {
         profilePicture={profilePicture}
         onEditProfile={() => navigation.navigate('EditProfile')}
       />
-      
+
       {/* Search Bar */}
       <TextInput
         style={styles.searchInput}
@@ -161,7 +183,11 @@ const Collections = ({ navigation }) => {
             style={styles.collectionCard}
             onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
           >
-            <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+            <Image
+              source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }}
+              style={styles.thumbnail}
+              onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
+            />
             <Text style={styles.collectionName}>{item.name}</Text>
             <Text style={styles.collectionStats}>{item.items.length} posts</Text>
           </TouchableOpacity>
@@ -170,7 +196,7 @@ const Collections = ({ navigation }) => {
 
       {/* AddButton Component */}
       <View style={styles.addButtonContainer}>
-        <AddButton onAddCollection={handleAddCollection} />
+        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} />
       </View>
     </View>
   );
@@ -238,6 +264,12 @@ const styles = StyleSheet.create({
   },
   addButtonContainer: {
     flex: 1,
-    justifyContent: 'flex-end', // Ensures the button is at the bottom
+    justifyContent: 'flex-end',
+  },
+  thumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
   },
 });
