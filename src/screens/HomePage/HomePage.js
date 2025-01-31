@@ -79,7 +79,7 @@ const HomePage = () => {
       case 'pinterest':
         return <PinterestAPI url={url} />;
       case 'tiktok':
-        return <TiktokEmbed url={url} />;
+        return <TikTokEmbed url={url} />;
       default:
         return <Text>Unsupported platform or invalid URL.</Text>;
     }
