@@ -51,6 +51,8 @@ const Collections = ({ navigation }) => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
+        
+        // Calculate stats after collections are fetched
         const collectionsCount = collections.length;
         const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
         setStats(`${collectionsCount} collections | ${totalPosts} posts`);
@@ -62,7 +64,7 @@ const Collections = ({ navigation }) => {
       console.error('Error fetching user profile: ', error);
     }
   };
-
+  
   const fetchCollections = async () => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
@@ -71,7 +73,7 @@ const Collections = ({ navigation }) => {
         id: doc.id,
         ...doc.data(),
       }));
-
+  
       // Ensure 'Unsorted' collection exists
       let unsortedCollection = {
         id: 'Unsorted',
@@ -82,24 +84,32 @@ const Collections = ({ navigation }) => {
         thumbnail: DEFAULT_THUMBNAIL,
         isPinned: true,
       };
-
+  
       // Fetch posts in the 'Unsorted' collection
       const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
       const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
       unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-
+  
       // Fetch thumbnails for other collections
       const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
         const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : DEFAULT_THUMBNAIL;
         return { ...collection, thumbnail };
       }));
-
+  
       // Combine 'Unsorted' with other collections
-      setCollections([unsortedCollection, ...collectionsWithThumbnails.filter(col => col.name !== 'Unsorted')]);
+      const allCollections = [unsortedCollection, ...collectionsWithThumbnails.filter(col => col.name !== 'Unsorted')];
+      setCollections(allCollections);
+  
+      // Calculate stats after collections are updated
+      const collectionsCount = allCollections.length;
+      const totalPosts = allCollections.reduce((sum, collection) => sum + collection.items.length, 0);
+      setStats(`${collectionsCount} collections | ${totalPosts} posts`);
+  
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
   };
+  
 
   const handleAddCollection = async (collectionName) => {
     try {
