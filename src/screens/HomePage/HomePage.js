@@ -49,6 +49,16 @@ const HomePage = () => {
   const detectPlatform = (url) => {
     if (url.includes('instagram.com')) {
       setPlatform('instagram');
+      // Extract the actual Instagram post URL from the intent URL
+      const intentUrl = new URL(url);
+      const fallbackUrl = intentUrl.searchParams.get('S.browser_fallback_url');
+      if (fallbackUrl) {
+        const decodedUrl = decodeURIComponent(fallbackUrl);
+        const instagramUrl = new URL(decodedUrl).searchParams.get('referrer');
+        if (instagramUrl) {
+          setUrl(instagramUrl);
+        }
+      }
     } else if (url.includes('pinterest.com')) {
       setPlatform('pinterest');
     } else if (url.includes('tiktok.com')) {

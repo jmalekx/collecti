@@ -133,7 +133,7 @@ const CollectionDetails = ({ route, navigation }) => {
       // Render Instagram posts as WebView embeds
       return (
         <WebView
-          source={{ uri: post.thumbnail }}
+          source={{ uri: `https://www.instagram.com/p/${post.thumbnail.split('/')[4]}/embed` }}
           style={styles.webview}
           javaScriptEnabled={true}
           domStorageEnabled={true}
