@@ -11,6 +11,8 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
   const [notes, setNotes] = useState('');
   const [tags, setTags] = useState('');
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [newCollectionDescription, setNewCollectionDescription] = useState('');
+
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
@@ -31,11 +33,13 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
       alert('Collection name cannot be empty!');
       return;
     }
-    onAddCollection(newCollectionName); // Pass the collection name to the parent
+    onAddCollection(newCollectionName, newCollectionDescription); // Pass both name and description
     setIsAddCollectionModalVisible(false);
     setNewCollectionName('');
+    setNewCollectionDescription(''); // Clear the description field
     setIsFabMenuVisible(false); // Hide the FAB menu after adding collection
   };
+  
 
   const handleImagePicker = () => {
     launchImageLibrary(
@@ -54,29 +58,38 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
 
   return (
     <View>
-      {/* Add New Collection Modal */}
-      {isAddCollectionModalVisible && (
+        {/* Add New Collection Modal */}
+        {isAddCollectionModalVisible && (
         <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isAddCollectionModalVisible}
-          onRequestClose={() => setIsAddCollectionModalVisible(false)}
+            animationType="slide"
+            transparent={true}
+            visible={isAddCollectionModalVisible}
+            onRequestClose={() => setIsAddCollectionModalVisible(false)}
         >
-          <View style={styles.modalBackground}>
+            <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Add New Collection</Text>
-              <TextInput
+                <Text style={styles.modalTitle}>Add New Collection</Text>
+                
+                <TextInput
                 style={styles.input}
                 placeholder="Enter Collection Name"
                 value={newCollectionName}
                 onChangeText={setNewCollectionName}
-              />
-              <Button title="Create Collection" onPress={handleAddCollection} />
-              <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
+                />
+                
+                <TextInput
+                style={styles.input}
+                placeholder="Enter Description"
+                value={newCollectionDescription}
+                onChangeText={setNewCollectionDescription}
+                />
+                
+                <Button title="Create Collection" onPress={handleAddCollection} />
+                <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
             </View>
-          </View>
+            </View>
         </Modal>
-      )}
+        )}
 
       {/* Quick Add / Detailed Add Modal */}
       {isModalVisible && (

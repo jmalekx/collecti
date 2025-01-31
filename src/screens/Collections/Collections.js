@@ -111,34 +111,35 @@ const Collections = ({ navigation }) => {
   };
   
 
-  const handleAddCollection = async (collectionName) => {
+  const handleAddCollection = async (collectionName, collectionDescription) => {
     try {
       const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
         name: collectionName,
-        description: '',
+        description: collectionDescription,  // Save the description
         createdAt: new Date().toISOString(),
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-
+  
       setCollections(prevCollections => [
         ...prevCollections,
         {
           id: newCollectionRef.id,
           name: collectionName,
-          description: '',
+          description: collectionDescription,  // Add description
           createdAt: new Date().toISOString(),
           items: [],
           thumbnail: DEFAULT_THUMBNAIL,
         }
       ]);
-
+  
       Alert.alert('Success', 'Collection created successfully');
     } catch (error) {
       console.error('Error adding collection: ', error);
       Alert.alert('Error', 'Failed to create collection');
     }
   };
+  
 
   const handleAddPost = async (notes, tags) => {
     const postData = {

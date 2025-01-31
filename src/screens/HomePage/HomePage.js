@@ -6,7 +6,7 @@ import { collection, doc, setDoc, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import InstagramEmbed from '../APIs/InstagramEmbed';
 import TikTokEmbed from '../APIs/TiktokEmbed';
-import AddButton from '../../components/AddButton';
+// import AddButton from '../../components/AddButton';
 
 const HomePage = () => {
   const { shareIntent } = useShareIntentContext();
@@ -75,10 +75,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  addButtonContainer: {
-    flex: 1,
-    justifyContent: 'flex-end', // Ensures the button is at the bottom
-  },
+  // addButtonContainer: {
+  //   flex: 1,
+  //   justifyContent: 'flex-end', // Ensures the button is at the bottom
+  // },
 });
 
 export default function App() {
