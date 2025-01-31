@@ -22,6 +22,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const [collectionDescription, setCollectionDescription] = useState('');
   const [selectedPost, setSelectedPost] = useState(null); // Track the selected post for actions
   const [isMenuVisible, setIsMenuVisible] = useState(false); // Control menu visibility
+  const [numColumns, setNumColumns] = useState(2); // Set the initial number of columns
 
   // Get the current user ID
   const userId = getAuth().currentUser?.uid;
@@ -146,6 +147,8 @@ const CollectionDetails = ({ route, navigation }) => {
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}
+        numColumns={numColumns} // Use the state to dynamically control columns
+        key={numColumns} // Force a re-render when numColumns changes
         renderItem={({ item }) => (
           <View style={styles.postCard}>
             {/* 3-Dots Button */}
@@ -230,6 +233,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
     position: 'relative', // For positioning the 3-dots button
+    width: '48%', // Adjust width for 2 columns
+    margin: '1%', // To create spacing between items
   },
   menuButton: {
     position: 'absolute',
@@ -238,8 +243,8 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the button is above other content
   },
   thumbnail: {
-    width: 100,
-    height: 100,
+    width: '100%',
+    height: 150, // Adjust height for 4:3 aspect ratio
     borderRadius: 8,
     marginBottom: 8,
   },
