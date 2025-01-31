@@ -43,39 +43,6 @@ const HomePage = () => {
     }
   };
 
-  const handleAddPost = async (notes, tags) => {
-    const postData = {
-      url,
-      platform,
-      notes,
-      tags: tags.split(',').map(tag => tag.trim()),
-      createdAt: new Date(),
-    };
-
-    try {
-      await setDoc(doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts', new Date().toISOString()), postData);
-      Alert.alert('Success', 'Post added successfully');
-    } catch (error) {
-      console.error('Error adding post: ', error);
-      Alert.alert('Error', 'Failed to add post');
-    }
-  };
-
-  const handleAddCollection = async (collectionName) => {
-    try {
-      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
-        name: collectionName,
-        description: '', // Empty string for description initially
-        createdAt: new Date().toISOString(),
-        items: [], // Empty array for items initially
-      });
-      Alert.alert('Success', 'Collection created successfully');
-    } catch (error) {
-      console.error('Error adding collection: ', error);
-      Alert.alert('Error', 'Failed to create collection');
-    }
-  };
-
   const renderPlatformEmbed = () => {
     switch (platform) {
       case 'instagram':
@@ -95,9 +62,9 @@ const HomePage = () => {
       {renderPlatformEmbed()}
 
       {/* AddButton Component */}
-      <View style={styles.addButtonContainer}>
-        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} />
-      </View>
+      {/* <View style={styles.addButtonContainer}>
+        <AddButton />
+      </View> */}
     </View>
   );
 };
