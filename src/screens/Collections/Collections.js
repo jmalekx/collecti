@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Alert, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, addDoc, query, getDocs, setDoc } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import AddButton from '../../components/AddButton';
@@ -141,24 +141,25 @@ const Collections = ({ navigation }) => {
   };
   
 
-  const handleAddPost = async (notes, tags) => {
+  const handleAddPost = async (notes, tags, image) => {
     const postData = {
-      url,
-      platform,
+      url: image || DEFAULT_THUMBNAIL, // Use the selected image or default thumbnail
       notes,
-      tags: tags.split(',').map(tag => tag.trim()),
+      tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
       createdAt: new Date(),
-      thumbnail: DEFAULT_THUMBNAIL, // Add a valid thumbnail URI
+      thumbnail: image || DEFAULT_THUMBNAIL, // Use the selected image or default thumbnail
     };
-
+  
     try {
-      await setDoc(doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts', new Date().toISOString()), postData);
+      // Add a new document to the 'posts' subcollection
+      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'), postData);
       Alert.alert('Success', 'Post added successfully');
     } catch (error) {
       console.error('Error adding post: ', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
+  
 
   // Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>

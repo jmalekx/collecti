@@ -19,7 +19,10 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
       Alert.alert('Error', 'Please select an image or paste an image URL');
       return;
     }
-    onAddPost(notes, tags, image || imageUrl); // Pass notes, tags, and the image (or URL) to the parent
+  
+    // If image is null, use imageUrl or fallback
+    const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
+    onAddPost(notes, tags, imageToUse); // Pass notes, tags, and the image (or URL)
     setIsModalVisible(false);
     setNotes('');
     setTags('');
@@ -27,6 +30,7 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
     setImageUrl('');
     setIsFabMenuVisible(false); // Hide the FAB menu after adding post
   };
+  
 
   const handleAddCollection = () => {
     if (!newCollectionName.trim()) {
