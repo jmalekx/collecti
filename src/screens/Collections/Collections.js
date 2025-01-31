@@ -4,6 +4,7 @@ import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firest
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useFocusEffect } from '@react-navigation/native';
 import AddButton from '../../components/AddButton';
+import { WebView } from 'react-native-webview'; // Import WebView
 
 const DEFAULT_THUMBNAIL = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
 const DEFAULT_PROFILE_PICTURE = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
@@ -71,15 +72,15 @@ const Collections = ({ navigation }) => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
       const querySnapshot = await getDocs(q);
-  
+
       let userCollections = await Promise.all(querySnapshot.docs.map(async (doc) => {
         const collectionData = doc.data();
-  
+
         // Fetch posts count and thumbnail
         const postsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts'));
         const postsSnapshot = await getDocs(postsQuery);
         const posts = postsSnapshot.docs.map((postDoc) => postDoc.data());
-  
+
         return {
           id: doc.id,
           name: collectionData.name,
@@ -91,12 +92,12 @@ const Collections = ({ navigation }) => {
           isPinned: collectionData.isPinned || false,
         };
       }));
-  
+
       // Ensure 'Unsorted' collection exists
       const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
       const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
       const unsortedPosts = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-  
+
       let unsortedCollection = {
         id: 'Unsorted',
         name: 'Unsorted',
@@ -107,48 +108,46 @@ const Collections = ({ navigation }) => {
         thumbnail: unsortedPosts.length > 0 ? unsortedPosts[0].thumbnail : DEFAULT_THUMBNAIL,
         isPinned: true,
       };
-  
+
       // Combine 'Unsorted' with other collections
       const allCollections = [unsortedCollection, ...userCollections.filter(col => col.id !== 'Unsorted')];
-  
+
       setCollections(allCollections);
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
   };
-  
 
   const handleAddCollection = async (collectionName, collectionDescription) => {
     try {
       const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
         name: collectionName,
-        description: collectionDescription,  // Save the description
+        description: collectionDescription,
         createdAt: new Date().toISOString(),
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-  
+
       // Refresh the collections list and update stats
       await fetchCollections();
-  
+
       Alert.alert('Success', 'Collection created successfully');
     } catch (error) {
       console.error('Error adding collection: ', error);
       Alert.alert('Error', 'Failed to create collection');
     }
   };
-  
 
   const handleAddPost = async (notes, tags, image, selectedCollection) => {
     try {
       let thumbnail = image || DEFAULT_THUMBNAIL;
-  
+
       // If the platform is Instagram, generate the embed URL
       if (platform === 'instagram') {
         const postId = image.split('/')[4]; // Extract the post ID from the URL
         thumbnail = `https://www.instagram.com/p/${postId}/embed`; // Use the embed URL as the thumbnail
       }
-  
+
       const postData = {
         notes,
         tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
@@ -156,28 +155,52 @@ const Collections = ({ navigation }) => {
         createdAt: new Date().toISOString(),
         thumbnail, // Use the embed URL for Instagram, otherwise use the image or default thumbnail
       };
-  
+
       // Add a new document to the selected collection's 'posts' subcollection
       await addDoc(
         collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
         postData
       );
-  
+
       // Refresh the collections list and update stats
       await fetchCollections();
-  
+
       Alert.alert('Success', 'Post added successfully');
     } catch (error) {
       console.error('Error adding post: ', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
-  
 
   // Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Render thumbnail or WebView for Instagram posts
+  const renderThumbnail = (thumbnail) => {
+    if (thumbnail.includes('instagram.com')) {
+      const postId = thumbnail.split('/')[4]; // Extract the post ID from the URL
+      const embedUrl = `https://www.instagram.com/p/${postId}/embed`;
+
+      return (
+        <WebView
+          source={{ uri: embedUrl }}
+          style={styles.webview}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+        />
+      );
+    } else {
+      return (
+        <Image
+          source={{ uri: thumbnail || DEFAULT_THUMBNAIL }}
+          style={styles.thumbnail}
+          onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
+        />
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -209,11 +232,7 @@ const Collections = ({ navigation }) => {
             style={styles.collectionCard}
             onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
           >
-            <Image
-              source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }}
-              style={styles.thumbnail}
-              onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
-            />
+            {renderThumbnail(item.thumbnail)}
             <Text style={styles.collectionName}>{item.name}</Text>
             <Text style={styles.collectionStats}>{item.items.length} posts</Text>
           </TouchableOpacity>
@@ -222,10 +241,11 @@ const Collections = ({ navigation }) => {
 
       {/* AddButton Component */}
       <View style={styles.addButtonContainer}>
-        <AddButton 
-          onAddPost={handleAddPost} 
-          onAddCollection={handleAddCollection} 
-          collections={collections}/>
+        <AddButton
+          onAddPost={handleAddPost}
+          onAddCollection={handleAddCollection}
+          collections={collections}
+        />
       </View>
     </View>
   );
@@ -282,7 +302,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },  
+  },
   collectionName: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -296,6 +316,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   thumbnail: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  webview: {
     width: 100,
     height: 100,
     borderRadius: 8,
