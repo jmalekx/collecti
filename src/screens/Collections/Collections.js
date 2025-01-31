@@ -77,25 +77,43 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 
 // Inside your fetchCollections function, ensure you're fetching the thumbnail as well
 const fetchCollections = async () => {
-    try {
-      const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
-      const querySnapshot = await getDocs(q);
-      const userCollections = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      // Fetch the thumbnail for each collection
-      const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
-        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
-        return { ...collection, thumbnail };
-      }));
-  
-      setCollections(collectionsWithThumbnails);
-    } catch (error) {
-      console.error('Error fetching collections: ', error);
-    }
-  };
+  try {
+    // First, fetch all collections
+    const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
+    const querySnapshot = await getDocs(q);
+    const userCollections = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Always include the "Unsorted" collection
+    const unsortedCollection = {
+      id: 'Unsorted', // You can give it a custom id or fetch it from your DB if needed
+      name: 'Unsorted',
+      description: 'Posts not yet assigned to a collection',
+      createdAt: new Date().toISOString(),
+      items: [], // This will be populated with the posts that are not assigned to any collection
+      thumbnail: 'default_thumbnail_url', // Set a default thumbnail or fetch one if you want
+    };
+
+    // If you have items in "Unsorted", make sure to fetch them
+    const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
+    const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
+    unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
+
+    // Add "Unsorted" to the collections list
+    const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
+      const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
+      return { ...collection, thumbnail };
+    }));
+
+    // Set collections including "Unsorted"
+    setCollections([unsortedCollection, ...collectionsWithThumbnails]);
+  } catch (error) {
+    console.error('Error fetching collections: ', error);
+  }
+};
+
 
   const handleAddPost = async (notes, tags) => {
       const postData = {
