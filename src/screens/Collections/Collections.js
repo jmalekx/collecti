@@ -71,40 +71,52 @@ const Collections = ({ navigation }) => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
       const querySnapshot = await getDocs(q);
-      const userCollections = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
+  
+      let userCollections = await Promise.all(querySnapshot.docs.map(async (doc) => {
+        const collectionData = doc.data();
+        
+        // Fetch posts count and thumbnail
+        const postsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts'));
+        const postsSnapshot = await getDocs(postsQuery);
+        const posts = postsSnapshot.docs.map((postDoc) => postDoc.data());
+  
+        return {
+          id: doc.id,
+          name: collectionData.name,
+          description: collectionData.description || '',
+          createdAt: collectionData.createdAt || new Date().toISOString(),
+          postCount: posts.length,
+          items: posts,
+          thumbnail: posts.length > 0 ? posts[0].thumbnail : DEFAULT_THUMBNAIL,
+          isPinned: collectionData.isPinned || false,
+        };
       }));
-
+  
       // Ensure 'Unsorted' collection exists
+      const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
+      const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
+      const unsortedPosts = unsortedPostsSnapshot.docs.map((doc) => doc.data());
+  
       let unsortedCollection = {
         id: 'Unsorted',
         name: 'Unsorted',
         description: 'Posts not yet assigned to a collection',
         createdAt: new Date().toISOString(),
-        items: [],
-        thumbnail: DEFAULT_THUMBNAIL,
+        postCount: unsortedPosts.length,
+        items: unsortedPosts,
+        thumbnail: unsortedPosts.length > 0 ? unsortedPosts[0].thumbnail : DEFAULT_THUMBNAIL,
         isPinned: true,
       };
-
-      // Fetch posts in the 'Unsorted' collection
-      const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
-      const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
-      unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-
-      // Fetch thumbnails for other collections
-      const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
-        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : DEFAULT_THUMBNAIL;
-        return { ...collection, thumbnail };
-      }));
-
+  
       // Combine 'Unsorted' with other collections
-      const allCollections = [unsortedCollection, ...collectionsWithThumbnails.filter(col => col.name !== 'Unsorted')];
+      const allCollections = [unsortedCollection, ...userCollections.filter(col => col.id !== 'Unsorted')];
+  
       setCollections(allCollections);
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
   };
+  
 
   const handleAddCollection = async (collectionName, collectionDescription) => {
     try {
