@@ -74,7 +74,7 @@ const Collections = ({ navigation }) => {
   
       let userCollections = await Promise.all(querySnapshot.docs.map(async (doc) => {
         const collectionData = doc.data();
-        
+  
         // Fetch posts count and thumbnail
         const postsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts'));
         const postsSnapshot = await getDocs(postsQuery);

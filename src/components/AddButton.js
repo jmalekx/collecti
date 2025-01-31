@@ -24,8 +24,11 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
     // If image is null, use imageUrl or fallback
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
   
-    // Pass notes, tags, imageToUse, and selectedCollection to onAddPost
-    onAddPost(notes, tags, imageToUse, selectedCollection);
+    // Ensure the selectedCollection is 'Unsorted' if no collection is selected
+    const collectionToUse = selectedCollection || 'Unsorted';
+  
+    // Pass notes, tags, imageToUse, and collectionToUse to onAddPost
+    onAddPost(notes, tags, imageToUse, collectionToUse);
   
     // Reset modal and form fields
     setIsModalVisible(false);
