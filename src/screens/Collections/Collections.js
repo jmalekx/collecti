@@ -195,6 +195,7 @@ const Collections = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.grid}
+        columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensures items don't stretch
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.collectionCard}
@@ -260,17 +261,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   collectionCard: {
-    flex: 1,
+    width: '48%', // Ensure it fits within 2 columns
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     padding: 16,
-    margin: 8,
+    marginBottom: 16, // Space between rows
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-  },
+  },  
   collectionName: {
     fontSize: 16,
     fontWeight: 'bold',
