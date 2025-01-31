@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker'; // For image picker
+import { Picker } from '@react-native-picker/picker'; // Correct import
 
-const AddButton = ({ onAddPost, onAddCollection }) => {
+const AddButton = ({ onAddPost, onAddCollection, collections }) => {
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
@@ -10,9 +11,9 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
   const [imageUrl, setImageUrl] = useState(''); // For pasting image URL
   const [notes, setNotes] = useState('');
   const [tags, setTags] = useState('');
+  const [selectedCollection, setSelectedCollection] = useState('Unsorted'); // Default collection
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
-
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
@@ -22,7 +23,7 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
   
     // If image is null, use imageUrl or fallback
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
-    onAddPost(notes, tags, imageToUse); // Pass notes, tags, and the image (or URL)
+    onAddPost(notes, tags, imageToUse, selectedCollection); // Pass selectedCollection
     setIsModalVisible(false);
     setNotes('');
     setTags('');
@@ -30,7 +31,6 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
     setImageUrl('');
     setIsFabMenuVisible(false); // Hide the FAB menu after adding post
   };
-  
 
   const handleAddCollection = () => {
     if (!newCollectionName.trim()) {
@@ -43,7 +43,6 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
     setNewCollectionDescription(''); // Clear the description field
     setIsFabMenuVisible(false); // Hide the FAB menu after adding collection
   };
-  
 
   const handleImagePicker = () => {
     launchImageLibrary(
@@ -62,38 +61,38 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
 
   return (
     <View>
-        {/* Add New Collection Modal */}
-        {isAddCollectionModalVisible && (
+      {/* Add New Collection Modal */}
+      {isAddCollectionModalVisible && (
         <Modal
-            animationType="slide"
-            transparent={true}
-            visible={isAddCollectionModalVisible}
-            onRequestClose={() => setIsAddCollectionModalVisible(false)}
+          animationType="slide"
+          transparent={true}
+          visible={isAddCollectionModalVisible}
+          onRequestClose={() => setIsAddCollectionModalVisible(false)}
         >
-            <View style={styles.modalBackground}>
+          <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>Add New Collection</Text>
-                
-                <TextInput
+              <Text style={styles.modalTitle}>Add New Collection</Text>
+
+              <TextInput
                 style={styles.input}
                 placeholder="Enter Collection Name"
                 value={newCollectionName}
                 onChangeText={setNewCollectionName}
-                />
-                
-                <TextInput
+              />
+
+              <TextInput
                 style={styles.input}
                 placeholder="Enter Description"
                 value={newCollectionDescription}
                 onChangeText={setNewCollectionDescription}
-                />
-                
-                <Button title="Create Collection" onPress={handleAddCollection} />
-                <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
+              />
+
+              <Button title="Create Collection" onPress={handleAddCollection} />
+              <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
             </View>
-            </View>
+          </View>
         </Modal>
-        )}
+      )}
 
       {/* Quick Add / Detailed Add Modal */}
       {isModalVisible && (
@@ -130,6 +129,17 @@ const AddButton = ({ onAddPost, onAddCollection }) => {
                 onChangeText={setTags}
                 style={styles.input}
               />
+
+              {/* Dropdown to select collection */}
+              <Picker
+                selectedValue={selectedCollection}
+                onValueChange={(itemValue) => setSelectedCollection(itemValue)}
+                style={styles.input}
+              >
+                {collections.map((collection) => (
+                  <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
+                ))}
+              </Picker>
 
               <Button title="Quick Add" onPress={handleAddPost} />
               <Button title="Cancel" onPress={() => setIsModalVisible(false)} />

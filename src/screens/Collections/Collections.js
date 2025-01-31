@@ -141,24 +141,59 @@ const Collections = ({ navigation }) => {
   };
   
 
-  const handleAddPost = async (notes, tags, image) => {
-    const postData = {
-      url: image || DEFAULT_THUMBNAIL, // Use the selected image or default thumbnail
-      notes,
-      tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
-      createdAt: new Date(),
-      thumbnail: image || DEFAULT_THUMBNAIL, // Use the selected image or default thumbnail
-    };
+  const handleAddPost = async () => {
+    if (!image && !imageUrl) {
+      Alert.alert('Error', 'Please select an image or paste an image URL');
+      return;
+    }
   
+    // If image is null, use imageUrl or fallback
+    const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
+  
+    // Add the post to the collection in Firestore
     try {
-      // Add a new document to the 'posts' subcollection
-      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'), postData);
-      Alert.alert('Success', 'Post added successfully');
+      const postRef = await addDoc(
+        collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
+        {
+          notes,
+          tags,
+          image: imageToUse,
+          createdAt: new Date().toISOString(),
+        }
+      );
+  
+      // Update the local collection state
+      const updatedCollections = collections.map((collection) => {
+        if (collection.id === selectedCollection) {
+          return {
+            ...collection,
+            items: [...collection.items, { id: postRef.id, notes, tags, image: imageToUse }],
+          };
+        }
+        return collection;
+      });
+  
+      setCollections(updatedCollections);
+  
+      // Calculate and update stats after adding post
+      const collectionsCount = updatedCollections.length;
+      const totalPosts = updatedCollections.reduce((sum, collection) => sum + collection.items.length, 0);
+      setStats(`${collectionsCount} collections | ${totalPosts} posts`);
+  
+      // Reset modal and form fields
+      setIsModalVisible(false);
+      setNotes('');
+      setTags('');
+      setImage(null);
+      setImageUrl('');
+      setIsFabMenuVisible(false); // Hide the FAB menu after adding post
+  
     } catch (error) {
       console.error('Error adding post: ', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
+  
   
 
   // Filter collections based on search query
@@ -208,7 +243,7 @@ const Collections = ({ navigation }) => {
 
       {/* AddButton Component */}
       <View style={styles.addButtonContainer}>
-        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} />
+        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} collections={collections}/>
       </View>
     </View>
   );

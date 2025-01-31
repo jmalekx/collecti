@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, Button, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  Button,
+  Alert,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
 import { collection, doc, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
+import { MaterialIcons } from '@expo/vector-icons'; // For the 3-dots icon
 
 const CollectionDetails = ({ route, navigation }) => {
   const { collectionId } = route.params; // Get the collectionId from route params
   const [posts, setPosts] = useState([]);
   const [collectionName, setCollectionName] = useState('');
   const [collectionDescription, setCollectionDescription] = useState('');
+  const [selectedPost, setSelectedPost] = useState(null); // Track the selected post for actions
+  const [isMenuVisible, setIsMenuVisible] = useState(false); // Control menu visibility
 
   // Get the current user ID
   const userId = getAuth().currentUser?.uid;
@@ -75,6 +88,43 @@ const CollectionDetails = ({ route, navigation }) => {
     );
   };
 
+  // Delete post with confirmation
+  const deletePost = async (postId) => {
+    Alert.alert(
+      'Delete Post',
+      'Are you sure you want to delete this post?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
+              await deleteDoc(postRef);
+              fetchPosts(); // Refresh the posts list
+              setIsMenuVisible(false); // Close the menu
+            } catch (error) {
+              console.error('Error deleting post: ', error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Open the menu for a specific post
+  const openMenu = (post) => {
+    setSelectedPost(post);
+    setIsMenuVisible(true);
+  };
+
+  // Close the menu
+  const closeMenu = () => {
+    setSelectedPost(null);
+    setIsMenuVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       {/* Collection Header */}
@@ -95,6 +145,15 @@ const CollectionDetails = ({ route, navigation }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.postCard}>
+            {/* 3-Dots Button */}
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => openMenu(item)}
+            >
+              <MaterialIcons name="more-vert" size={24} color="#000" />
+            </TouchableOpacity>
+
+            {/* Post Content */}
             <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
             <Text style={styles.postTitle}>{item.title}</Text>
             <Text style={styles.postDescription}>{item.description}</Text>
@@ -102,6 +161,37 @@ const CollectionDetails = ({ route, navigation }) => {
           </View>
         )}
       />
+
+      {/* Menu Modal */}
+      <Modal
+        visible={isMenuVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={closeMenu}
+      >
+        <View style={styles.menuModal}>
+          <View style={styles.menuContent}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                navigation.navigate('EditPost', { collectionId, postId: selectedPost.id });
+                closeMenu();
+              }}
+            >
+              <Text style={styles.menuText}>Edit Post</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => deletePost(selectedPost.id)}
+            >
+              <Text style={[styles.menuText, { color: 'red' }]}>Delete Post</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} onPress={closeMenu}>
+              <Text style={styles.menuText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -138,6 +228,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    position: 'relative', // For positioning the 3-dots button
+  },
+  menuButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1, // Ensure the button is above other content
   },
   thumbnail: {
     width: 100,
@@ -158,9 +255,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
   },
-  postPlatform: {
-    fontSize: 12,
-    color: '#888',
+  menuModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  menuContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 20,
+    width: '80%',
+  },
+  menuItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
+  menuText: {
+    fontSize: 16,
   },
 });
 
