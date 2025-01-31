@@ -55,16 +55,25 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
   };
   
   const handleAddCollection = () => {
-    if (!newCollectionName.trim()) {
+    const trimmedName = newCollectionName.trim().toLowerCase();
+    
+    if (!trimmedName) {
       alert('Collection name cannot be empty!');
       return;
     }
-    onAddCollection(newCollectionName, newCollectionDescription); // Pass both name and description
+  
+    if (trimmedName === 'unsorted') {
+      alert('You cannot name a collection "Unsorted" as it is the default collection.');
+      return;
+    }
+  
+    onAddCollection(newCollectionName, newCollectionDescription);
     setIsAddCollectionModalVisible(false);
     setNewCollectionName('');
-    setNewCollectionDescription(''); // Clear the description field
-    setIsFabMenuVisible(false); // Hide the FAB menu after adding collection
+    setNewCollectionDescription('');
+    setIsFabMenuVisible(false);
   };
+  
 
   const handleImagePicker = () => {
     launchImageLibrary(

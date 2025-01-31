@@ -136,7 +136,10 @@ const CollectionDetails = ({ route, navigation }) => {
       {/* Edit and Delete Buttons */}
       <View style={styles.buttonContainer}>
         <Button title="Edit Collection" onPress={() => navigation.navigate('EditCollection', { collectionId })} />
-        <Button title="Delete Collection" onPress={deleteCollection} color="red" />
+         {/* Only show the delete button if it's NOT the "Unsorted Collection" */}
+        {collectionName !== "Unsorted" && (
+          <Button title="Delete Collection" onPress={deleteCollection} color="red" />
+        )}
       </View>
 
       {/* Posts List */}
