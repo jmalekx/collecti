@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker'; // For image picker
 import { Picker } from '@react-native-picker/picker'; // Correct import
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const AddButton = ({ onAddPost, onAddCollection, collections }) => {
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
@@ -14,6 +16,19 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
   const [selectedCollection, setSelectedCollection] = useState('Unsorted'); // Default collection
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    useCallback(() => {
+      // This effect runs when the screen is focused
+      return () => {
+        // This cleanup runs when the screen loses focus
+        setIsFabMenuVisible(false);
+        setIsModalVisible(false);
+        setIsAddCollectionModalVisible(false);
+      };
+    }, [])
+  );
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
