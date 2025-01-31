@@ -141,58 +141,32 @@ const Collections = ({ navigation }) => {
   };
   
 
-  const handleAddPost = async () => {
-    if (!image && !imageUrl) {
-      Alert.alert('Error', 'Please select an image or paste an image URL');
-      return;
-    }
-  
-    // If image is null, use imageUrl or fallback
-    const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
-  
-    // Add the post to the collection in Firestore
+  const handleAddPost = async (notes, tags, image, selectedCollection) => {
     try {
-      const postRef = await addDoc(
+      const postData = {
+        notes,
+        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
+        image, // Use the image passed from AddButton
+        createdAt: new Date().toISOString(),
+        thumbnail: image || DEFAULT_THUMBNAIL, // Use the image or default thumbnail
+      };
+  
+      // Add a new document to the selected collection's 'posts' subcollection
+      await addDoc(
         collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
-        {
-          notes,
-          tags,
-          image: imageToUse,
-          createdAt: new Date().toISOString(),
-        }
+        postData
       );
   
-      // Update the local collection state
-      const updatedCollections = collections.map((collection) => {
-        if (collection.id === selectedCollection) {
-          return {
-            ...collection,
-            items: [...collection.items, { id: postRef.id, notes, tags, image: imageToUse }],
-          };
-        }
-        return collection;
-      });
+      // Refresh the collections list
+      fetchCollections();
   
-      setCollections(updatedCollections);
-  
-      // Calculate and update stats after adding post
-      const collectionsCount = updatedCollections.length;
-      const totalPosts = updatedCollections.reduce((sum, collection) => sum + collection.items.length, 0);
-      setStats(`${collectionsCount} collections | ${totalPosts} posts`);
-  
-      // Reset modal and form fields
-      setIsModalVisible(false);
-      setNotes('');
-      setTags('');
-      setImage(null);
-      setImageUrl('');
-      setIsFabMenuVisible(false); // Hide the FAB menu after adding post
-  
+      Alert.alert('Success', 'Post added successfully');
     } catch (error) {
       console.error('Error adding post: ', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
+  
   
   
 

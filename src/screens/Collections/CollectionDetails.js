@@ -155,9 +155,7 @@ const CollectionDetails = ({ route, navigation }) => {
 
             {/* Post Content */}
             <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
-            <Text style={styles.postTitle}>{item.title}</Text>
-            <Text style={styles.postDescription}>{item.description}</Text>
-            <Text style={styles.postTags}>Tags: {item.tags.join(', ')}</Text>
+            <Text style={styles.postTitle}>{item.notes}</Text>
           </View>
         )}
       />

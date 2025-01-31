@@ -23,15 +23,19 @@ const AddButton = ({ onAddPost, onAddCollection, collections }) => {
   
     // If image is null, use imageUrl or fallback
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
-    onAddPost(notes, tags, imageToUse, selectedCollection); // Pass selectedCollection
+  
+    // Pass notes, tags, imageToUse, and selectedCollection to onAddPost
+    onAddPost(notes, tags, imageToUse, selectedCollection);
+  
+    // Reset modal and form fields
     setIsModalVisible(false);
     setNotes('');
     setTags('');
     setImage(null);
     setImageUrl('');
-    setIsFabMenuVisible(false); // Hide the FAB menu after adding post
+    setIsFabMenuVisible(false);
   };
-
+  
   const handleAddCollection = () => {
     if (!newCollectionName.trim()) {
       alert('Collection name cannot be empty!');
