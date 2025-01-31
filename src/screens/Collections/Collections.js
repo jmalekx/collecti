@@ -13,32 +13,31 @@ import AddButton from '../../components/AddButton';
 //create new colleciton button
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
-    <View style={styles.header}>
-      <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-      <Text style={styles.username}>{username}</Text>
-      <Text style={styles.stats}>{stats}</Text>
-      <Button title="Edit Profile" onPress={onEditProfile} />
-    </View>
-  );
+  <View style={styles.header}>
+    <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+    <Text style={styles.username}>{username}</Text>
+    <Text style={styles.stats}>{stats}</Text>
+    <Button title="Edit Profile" onPress={onEditProfile} />
+  </View>
+);
 
-  const Collections = ({ navigation }) => {
-    const [collections, setCollections] = useState([]);
-    const [newCollectionName, setNewCollectionName] = useState('');
-    const [username, setUsername] = useState('Loading...');
-    const [stats, setStats] = useState('Loading...');
-    const [profilePicture, setProfilePicture] = useState('');
-    const userId = FIREBASE_AUTH.currentUser?.uid;
+const Collections = ({ navigation }) => {
+  const [collections, setCollections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');  // Added state for search query
+  const [newCollectionName, setNewCollectionName] = useState('');
+  const [username, setUsername] = useState('Loading...');
+  const [stats, setStats] = useState('Loading...');
+  const [profilePicture, setProfilePicture] = useState('');
+  const userId = FIREBASE_AUTH.currentUser?.uid;
 
-  // Fetch user profile and collections on component mount
   useEffect(() => {
     if (userId) {
-        fetchUserProfile();
-        fetchCollections();
+      fetchUserProfile();
+      fetchCollections();
     }
-  }, [userId, collections]);
+  }, [userId]);
 
-   // Refetch profile and collections when the screen is focused (after editing profile)
-   useFocusEffect(
+  useFocusEffect(
     React.useCallback(() => {
       if (userId) {
         fetchUserProfile();
@@ -47,121 +46,91 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     }, [userId])
   );
 
-
-  // Fetch user profile from Firestore
   const fetchUserProfile = async () => {
     try {
-        const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
-            
-            // Fetch collections to get the post count
-            const collectionsCount = collections.length;
-            const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
-            
-            setStats(`${collectionsCount} collections | ${totalPosts} posts`);
-            
-            // Set profile picture, default if empty
-            setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== '' 
-                ? userData.profilePicture 
-                : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg'); // Default PFP URL
-        } else {
-            console.error('User document does not exist!');
-        }
+      const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
+        const collectionsCount = collections.length;
+        const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
+        setStats(`${collectionsCount} collections | ${totalPosts} posts`);
+        setProfilePicture(userData.profilePicture && userData.profilePicture.trim() !== ''
+          ? userData.profilePicture
+          : 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg');
+      } else {
+        console.error('User document does not exist!');
+      }
     } catch (error) {
-        console.error('Error fetching user profile: ', error);
+      console.error('Error fetching user profile: ', error);
     }
-};
+  };
 
+  const fetchCollections = async () => {
+    try {
+      const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
+      const querySnapshot = await getDocs(q);
+      const userCollections = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-// Inside your fetchCollections function, ensure you're fetching the thumbnail as well
-const fetchCollections = async () => {
-  try {
-    // First, fetch all collections
-    const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
-    const querySnapshot = await getDocs(q);
-    const userCollections = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Always include the "Unsorted" collection
-    const unsortedCollection = {
-      id: 'Unsorted', // You can give it a custom id or fetch it from your DB if needed
-      name: 'Unsorted',
-      description: 'Posts not yet assigned to a collection',
-      createdAt: new Date().toISOString(),
-      items: [], // This will be populated with the posts that are not assigned to any collection
-      thumbnail: 'default_thumbnail_url', // Set a default thumbnail or fetch one if you want
-    };
-
-    // If you have items in "Unsorted", make sure to fetch them
-    const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
-    const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
-    unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-
-    // Add "Unsorted" to the collections list
-    const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
-      const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
-      return { ...collection, thumbnail };
-    }));
-
-    // Set collections including "Unsorted"
-    setCollections([unsortedCollection, ...collectionsWithThumbnails]);
-  } catch (error) {
-    console.error('Error fetching collections: ', error);
-  }
-};
-
-
-  const handleAddPost = async (notes, tags) => {
-      const postData = {
-        url,
-        platform,
-        notes,
-        tags: tags.split(',').map(tag => tag.trim()),
-        createdAt: new Date(),
+      const unsortedCollection = {
+        id: 'Unsorted',
+        name: 'Unsorted',
+        description: 'Posts not yet assigned to a collection',
+        createdAt: new Date().toISOString(),
+        items: [],
+        thumbnail: 'default_thumbnail_url',
       };
-  
-      try {
-        await setDoc(doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts', new Date().toISOString()), postData);
-        Alert.alert('Success', 'Post added successfully');
-      } catch (error) {
-        console.error('Error adding post: ', error);
-        Alert.alert('Error', 'Failed to add post');
-      }
-    };
-  
-    const handleAddCollection = async (collectionName) => {
-      try {
-        const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+
+      const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
+      const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
+      unsortedCollection.items = unsortedPostsSnapshot.docs.map((doc) => doc.data());
+
+      const collectionsWithThumbnails = await Promise.all(userCollections.map(async (collection) => {
+        const thumbnail = collection.items.length > 0 ? collection.items[0].thumbnail : 'default_thumbnail_url';
+        return { ...collection, thumbnail };
+      }));
+
+      setCollections([unsortedCollection, ...collectionsWithThumbnails]);
+    } catch (error) {
+      console.error('Error fetching collections: ', error);
+    }
+  };
+
+  const handleAddCollection = async (collectionName) => {
+    try {
+      const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+        name: collectionName,
+        description: '',
+        createdAt: new Date().toISOString(),
+        items: [],
+      });
+
+      setCollections(prevCollections => [
+        ...prevCollections,
+        {
+          id: newCollectionRef.id,
           name: collectionName,
-          description: '', // Empty string for description initially
+          description: '',
           createdAt: new Date().toISOString(),
-          items: [], // Empty array for items initially
-        });
-    
-        // Add the new collection to the state immediately
-        setCollections(prevCollections => [
-          ...prevCollections,
-          {
-            id: newCollectionRef.id,
-            name: collectionName,
-            description: '',
-            createdAt: new Date().toISOString(),
-            items: [], // Empty array for items initially
-            thumbnail: 'default_thumbnail_url', // Default thumbnail
-          }
-        ]);
-    
-        Alert.alert('Success', 'Collection created successfully');
-      } catch (error) {
-        console.error('Error adding collection: ', error);
-        Alert.alert('Error', 'Failed to create collection');
-      }
-    };
-    
+          items: [],
+          thumbnail: 'default_thumbnail_url',
+        }
+      ]);
+
+      Alert.alert('Success', 'Collection created successfully');
+    } catch (error) {
+      console.error('Error adding collection: ', error);
+      Alert.alert('Error', 'Failed to create collection');
+    }
+  };
+
+  // Filter collections based on search query
+  const filteredCollections = collections.filter((collection) =>
+    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
@@ -171,12 +140,21 @@ const fetchCollections = async () => {
         stats={stats}
         profilePicture={profilePicture}
         onEditProfile={() => navigation.navigate('EditProfile')}
-        />
+      />
+      
+      {/* Search Bar */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search collections..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
       {/* Collection Grid */}
       <FlatList
-        data={collections}
+        data={filteredCollections}
         keyExtractor={(item) => item.id}
-        numColumns={2} // Grid layout: 2 columns
+        numColumns={2}
         contentContainerStyle={styles.grid}
         renderItem={({ item }) => (
           <TouchableOpacity
@@ -189,9 +167,10 @@ const fetchCollections = async () => {
           </TouchableOpacity>
         )}
       />
+
       {/* AddButton Component */}
       <View style={styles.addButtonContainer}>
-        <AddButton onAddPost={handleAddPost} onAddCollection={handleAddCollection} />
+        <AddButton onAddCollection={handleAddCollection} />
       </View>
     </View>
   );
@@ -199,7 +178,6 @@ const fetchCollections = async () => {
 
 export default Collections;
 
-// STYLES
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -209,7 +187,7 @@ const styles = StyleSheet.create({
   profilePicture: {
     width: 80,
     height: 80,
-    borderRadius: 40, // Circular image
+    borderRadius: 40,
     marginBottom: 8,
     borderWidth: 2,
     borderColor: '#ccc',
@@ -227,18 +205,13 @@ const styles = StyleSheet.create({
     color: '#888',
     marginVertical: 8,
   },
-  newCollectionContainer: {
-    flexDirection: 'row',
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  input: {
-    flex: 1,
+  searchInput: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 8,
-    marginRight: 8,
+    marginBottom: 16,
+    fontSize: 16,
   },
   grid: {
     justifyContent: 'space-between',
