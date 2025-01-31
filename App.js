@@ -11,7 +11,7 @@ import HomePage from './src/screens/HomePage';
 import Collections from './src/screens/Collections';
 import CollectionDetails from './src/screens/Collections/CollectionDetails';
 import UserSettings from './src/screens/UserSettings';
-import EditProfile from './src/screens/Collections/EditProfile';
+import EditProfile from './src/screens/UserSettings/EditProfile';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
