@@ -156,7 +156,10 @@ const CollectionDetails = ({ route, navigation }) => {
       {/* Collection Header */}
       <View style={styles.header}>
         <Text style={styles.collectionName}>{collectionName}</Text>
-        <Text style={styles.collectionDescription}>{collectionDescription}</Text>
+        <View style={styles.headerBottom}>
+          <Text style={styles.collectionDescription}>{collectionDescription}</Text>
+          <Text style={styles.postCount}>{posts.length} posts</Text>
+        </View>
       </View>
 
       {/* Edit and Delete Buttons */}
@@ -234,6 +237,12 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 16,
   },
+  headerBottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
   collectionName: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -241,7 +250,13 @@ const styles = StyleSheet.create({
   collectionDescription: {
     fontSize: 16,
     color: '#555',
-    marginTop: 8,
+    flex: 1,
+    marginRight: 16,
+  },
+  postCount: {
+    fontSize: 16,
+    color: '#888',
+    fontWeight: '500',
   },
   buttonContainer: {
     marginBottom: 16,
