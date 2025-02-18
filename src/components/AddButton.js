@@ -14,6 +14,8 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   const [selectedCollection, setSelectedCollection] = useState('Unsorted'); // Default collection
   const [newCollectionName, setNewCollectionName] = useState('');
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
+  const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
+
 
   // Automatically open the modal and pre-fill the URL for Instagram and TikTok
   useEffect(() => {
@@ -42,6 +44,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setImage(null);
     setImageUrl('');
     setIsFabMenuVisible(false);
+    setIsAddingNewCollection(false);
   };
   
 
@@ -153,13 +156,45 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               {/* Dropdown to select collection */}
               <Picker
                 selectedValue={selectedCollection}
-                onValueChange={(itemValue) => setSelectedCollection(itemValue)}
+                onValueChange={(itemValue) => {
+                  if (itemValue === 'new') {
+                    setIsAddingNewCollection(true);
+                  } else {
+                    setSelectedCollection(itemValue);
+                  }
+                }}
                 style={styles.input}
               >
                 {collections.map((collection) => (
                   <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
                 ))}
+                <Picker.Item label="+ Add New Collection" value="new" />
               </Picker>
+
+              {/* Show Input Field When Adding New Collection */}
+              {isAddingNewCollection && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="Enter Collection Name"
+                    value={newCollectionName}
+                    onChangeText={setNewCollectionName}
+                  />
+                  <Button
+                    title="✓"
+                    onPress={() => {
+                      if (newCollectionName.trim()) {
+                        handleAddCollection(newCollectionName, '');
+                        setSelectedCollection(newCollectionName); // Select the new collection
+                        setIsAddingNewCollection(false);
+                        setNewCollectionName('');
+                      } else {
+                        Alert.alert('Error', 'Collection name cannot be empty');
+                      }
+                    }}
+                  />
+                </View>
+              )}
 
               <Button title="Quick Add" onPress={handleAddPost} />
               <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
