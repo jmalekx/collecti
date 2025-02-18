@@ -3,7 +3,7 @@ import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Ale
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 
-const AddButton = ({ onAddPost, sharedUrl, platform, collections = [] }) => {
+const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
@@ -55,7 +55,6 @@ const AddButton = ({ onAddPost, sharedUrl, platform, collections = [] }) => {
       alert('You cannot name a collection "Unsorted" as it is the default collection.');
       return;
     }
-
     onAddCollection(newCollectionName, newCollectionDescription);
     setIsAddCollectionModalVisible(false);
     setNewCollectionName('');

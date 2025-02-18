@@ -127,10 +127,10 @@ const Collections = ({ navigation }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-
+  
       // Refresh the collections list and update stats
       await fetchCollections();
-
+  
       Alert.alert('Success', 'Collection created successfully');
     } catch (error) {
       console.error('Error adding collection: ', error);
