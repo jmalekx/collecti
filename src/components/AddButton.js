@@ -28,13 +28,14 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       Alert.alert('Error', 'Please select an image or paste an image URL');
       return;
     }
-
+  
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
     const collectionToUse = selectedCollection || 'Unsorted';
-
-    onAddPost(notes, tags, imageToUse, collectionToUse);
-
-    // Reset modal and form fields
+  
+    // Ensure platform is 'gallery' if not defined
+    const platformToUse = platform || 'gallery';
+    onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
+  
     setIsModalVisible(false);
     setNotes('');
     setTags('');
@@ -42,6 +43,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setImageUrl('');
     setIsFabMenuVisible(false);
   };
+  
 
   const handleAddCollection = () => {
     const trimmedName = newCollectionName.trim().toLowerCase();

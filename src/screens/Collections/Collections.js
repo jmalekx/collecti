@@ -72,15 +72,18 @@ const Collections = ({ navigation }) => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
       const querySnapshot = await getDocs(q);
-
+  
       let userCollections = await Promise.all(querySnapshot.docs.map(async (doc) => {
         const collectionData = doc.data();
-
-        // Fetch posts count and thumbnail
+  
+        // Fetch posts
         const postsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts'));
         const postsSnapshot = await getDocs(postsQuery);
         const posts = postsSnapshot.docs.map((postDoc) => postDoc.data());
-
+  
+        // Sort posts by createdAt (most recent first)
+        posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
         return {
           id: doc.id,
           name: collectionData.name,
@@ -88,16 +91,19 @@ const Collections = ({ navigation }) => {
           createdAt: collectionData.createdAt || new Date().toISOString(),
           postCount: posts.length,
           items: posts,
-          thumbnail: posts.length > 0 ? posts[0].thumbnail : DEFAULT_THUMBNAIL,
+          thumbnail: posts.length > 0 ? posts[0].thumbnail : DEFAULT_THUMBNAIL, // Use the most recent post's thumbnail
           isPinned: collectionData.isPinned || false,
         };
       }));
-
+  
       // Ensure 'Unsorted' collection exists
       const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
       const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
       const unsortedPosts = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-
+  
+      // Sort unsorted posts
+      unsortedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
       let unsortedCollection = {
         id: 'Unsorted',
         name: 'Unsorted',
@@ -105,19 +111,19 @@ const Collections = ({ navigation }) => {
         createdAt: new Date().toISOString(),
         postCount: unsortedPosts.length,
         items: unsortedPosts,
-        thumbnail: unsortedPosts.length > 0 ? unsortedPosts[0].thumbnail : DEFAULT_THUMBNAIL,
+        thumbnail: unsortedPosts.length > 0 ? unsortedPosts[0].thumbnail : DEFAULT_THUMBNAIL, // Use the most recent post's thumbnail
         isPinned: true,
       };
-
+  
       // Combine 'Unsorted' with other collections
       const allCollections = [unsortedCollection, ...userCollections.filter(col => col.id !== 'Unsorted')];
-
+  
       setCollections(allCollections);
     } catch (error) {
       console.error('Error fetching collections: ', error);
     }
   };
-
+  
   const handleAddCollection = async (collectionName, collectionDescription) => {
     try {
       const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
@@ -138,39 +144,39 @@ const Collections = ({ navigation }) => {
     }
   };
 
-  const handleAddPost = async (notes, tags, image, selectedCollection) => {
+  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     try {
       let thumbnail = image || DEFAULT_THUMBNAIL;
-
-      // If the platform is Instagram, generate the embed URL
-      if (platform === 'instagram') {
-        const postId = image.split('/')[4]; // Extract the post ID from the URL
-        thumbnail = `https://www.instagram.com/p/${postId}/embed`; // Use the embed URL as the thumbnail
+  
+      // Check if platform is Instagram and generate embed URL
+      if (postPlatform === 'instagram' && image.includes('instagram.com')) {
+        const postId = image.split('/')[4]; // Extract post ID
+        thumbnail = `https://www.instagram.com/p/${postId}/embed`;
       }
-
+  
       const postData = {
         notes,
         tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
         image, // Use the image passed from AddButton
+        platform: postPlatform, // Ensure platform is explicitly stored
         createdAt: new Date().toISOString(),
-        thumbnail, // Use the embed URL for Instagram, otherwise use the image or default thumbnail
+        thumbnail, // Use embed URL for Instagram, otherwise use default
       };
-
-      // Add a new document to the selected collection's 'posts' subcollection
+  
       await addDoc(
         collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
         postData
       );
-
-      // Refresh the collections list and update stats
+  
       await fetchCollections();
-
+  
       Alert.alert('Success', 'Post added successfully');
     } catch (error) {
-      console.error('Error adding post: ', error);
+      console.error('Error adding post:', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
+  
 
   // Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>

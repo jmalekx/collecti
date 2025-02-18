@@ -9,7 +9,7 @@ import AddButton from '../../components/AddButton';
 const HomePage = () => {
   const { shareIntent } = useShareIntentContext();
   const [url, setUrl] = useState(null);
-  const [platform, setPlatform] = useState(null);
+  const [platform, setPlatform] = useState('gallery');
   const [userId, setUserId] = useState(null);
   const [collections, setCollections] = useState([]);
 
@@ -64,32 +64,45 @@ const HomePage = () => {
     } else if (url.includes('tiktok.com')) {
       setPlatform('tiktok');
     } else {
-      setPlatform(null);
+      setPlatform('gallery');
     }
   };
 
-  const handleAddPost = async (notes, tags, image, selectedCollection) => {
+  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
+    console.log('Adding post with platform:', postPlatform); // Debug log
+  
+    if (!postPlatform) {
+      console.error("Error: platform is undefined");
+      Alert.alert('Error', 'Platform is not set correctly');
+      return;
+    }
+  
     try {
       const postData = {
-        notes,
-        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
-        image: image || url, // Use the shared URL if no image is provided
+        notes: notes || '', 
+        tags: tags ? tags.split(',').map(tag => tag.trim()) : [], // Ensure it's an array
+        image: image || url || '', // Fallback to an empty string if missing
+        platform: postPlatform || 'gallery',  // Ensure platform is always set
         createdAt: new Date().toISOString(),
-        thumbnail: image || url || DEFAULT_THUMBNAIL, // Use the image or shared URL as thumbnail
+        thumbnail: image || url || DEFAULT_THUMBNAIL, 
       };
-
-      // Add a new document to the selected collection's 'posts' subcollection
+  
+      console.log("Post Data before sending:", postData); // Debugging log
+  
       await addDoc(
         collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
         postData
       );
-
+  
       Alert.alert('Success', 'Post added successfully');
     } catch (error) {
       console.error('Error adding post: ', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
+  
+  
+
 
   return (
     <View style={styles.container}>
