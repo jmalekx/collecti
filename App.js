@@ -12,6 +12,7 @@ import Collections from './src/screens/Collections';
 import CollectionDetails from './src/screens/Collections/CollectionDetails';
 import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/UserSettings/EditProfile';
+import EditCollection from './src/screens/Collections/EditCollection';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -55,13 +56,19 @@ export default function App() {
           />
         )}
         <Stack.Screen
-          name="EditProfile"  // Add the EditProfile screen here
+          name="EditProfile"
           component={EditProfile}
           options={{ headerShown: true, title: 'Edit Profile' }}
         />
         <Stack.Screen 
           name="CollectionDetails" 
-          component={CollectionDetails} />
+          component={CollectionDetails}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="EditCollection" 
+          component={EditCollection}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

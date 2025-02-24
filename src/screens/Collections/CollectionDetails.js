@@ -5,16 +5,16 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  Button,
   Alert,
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import { WebView } from 'react-native-webview'; // Correct import
+import { WebView } from 'react-native-webview';
 import { collection, doc, getDocs, getDoc, deleteDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
-import { MaterialIcons } from '@expo/vector-icons'; // For the 3-dots icon
+import { MaterialIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 const CollectionDetails = ({ route, navigation }) => {
   const { collectionId } = route.params; // Get the collectionId from route params
@@ -28,13 +28,13 @@ const CollectionDetails = ({ route, navigation }) => {
   // Get the current user ID
   const userId = getAuth().currentUser?.uid;
 
-  useEffect(() => {
+  // Fetch collection details and posts
+  const fetchData = async () => {
     if (userId && collectionId) {
-      fetchCollectionDetails();
-      fetchPosts();
+      await fetchCollectionDetails();
+      await fetchPosts();
     }
-  }, [userId, collectionId]);
-
+  }
   // Fetch collection details (name and description)
   const fetchCollectionDetails = async () => {
     try {
@@ -65,6 +65,13 @@ const CollectionDetails = ({ route, navigation }) => {
       console.error('Error fetching posts: ', error);
     }
   };
+
+  // Refetch data when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [collectionId, userId])
+  );
 
   // Delete collection with confirmation
   const deleteCollection = async () => {
@@ -155,20 +162,25 @@ const CollectionDetails = ({ route, navigation }) => {
     <View style={styles.container}>
       {/* Collection Header */}
       <View style={styles.header}>
-        <Text style={styles.collectionName}>{collectionName}</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.collectionName}>{collectionName}</Text>
+          <View style={styles.headerIcons}>
+            {/* Edit Button */}
+            <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
+              <MaterialIcons name="edit" size={24} color="#000" style={styles.icon} />
+            </TouchableOpacity>
+            {/* Delete Button */}
+            {collectionName !== "Unsorted" && (
+              <TouchableOpacity onPress={deleteCollection}>
+                <MaterialIcons name="delete" size={24} color="red" style={styles.icon} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
         <View style={styles.headerBottom}>
           <Text style={styles.collectionDescription}>{collectionDescription}</Text>
           <Text style={styles.postCount}>{posts.length} posts</Text>
         </View>
-      </View>
-
-      {/* Edit and Delete Buttons */}
-      <View style={styles.buttonContainer}>
-        <Button title="Edit Collection" onPress={() => navigation.navigate('EditCollection', { collectionId })} />
-         {/* Only show the delete button if it's NOT the "Unsorted Collection" */}
-        {collectionName !== "Unsorted" && (
-          <Button title="Delete Collection" onPress={deleteCollection} color="red" />
-        )}
       </View>
 
       {/* Posts List */}
@@ -237,6 +249,18 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 16,
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    marginLeft: 16, // Add spacing between icons
+  },
   headerBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -257,11 +281,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#888',
     fontWeight: '500',
-  },
-  buttonContainer: {
-    marginBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   postCard: {
     marginBottom: 16,
