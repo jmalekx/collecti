@@ -35,6 +35,18 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     }
   }, [sharedUrl, platform]);
 
+  const resetModalStates = () => {
+    setImage(null);
+    setImageUrl('');
+    setNotes('');
+    setTags('');
+    setSelectedCollection('Unsorted');
+    setNewCollectionName('');
+    setNewCollectionDescription('');
+    setIsAddingNewCollection(false);
+    setPendingNewCollection(null);
+  };
+
   const handleAddPost = () => {
     if (!image && !imageUrl) {
       toast.show("Please select and image or paste an Image URL", {type: "warning"});
@@ -123,8 +135,10 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
           animationType="slide"
           transparent={true}
           visible={isAddCollectionModalVisible}
-          onRequestClose={() => setIsAddCollectionModalVisible(false)}
-        >
+          onRequestClose={() => {
+            resetModalStates();
+            setIsAddCollectionModalVisible(false);
+        }}>
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Add New Collection</Text>
@@ -241,13 +255,28 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       {/* FAB Menu Options */}
       {isFabMenuVisible && (
         <View style={styles.fabMenu}>
-          <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsModalVisible(true); setIsFabMenuVisible(false); }}>
-            <Text style={styles.fabMenuText}>Add New Post</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.fabMenuItem} onPress={() => { setIsAddCollectionModalVisible(true); setIsFabMenuVisible(false); }}>
-            <Text style={styles.fabMenuText}>Add New Collection</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          style={styles.fabMenuItem} 
+          onPress={() => { 
+            resetModalStates();
+            setIsModalVisible(true); 
+            setIsFabMenuVisible(false); 
+          }}
+        >
+          <Text style={styles.fabMenuText}>Add New Post</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.fabMenuItem} 
+          onPress={() => { 
+            resetModalStates();
+            setIsAddCollectionModalVisible(true); 
+            setIsFabMenuVisible(false); 
+          }}
+        >
+          <Text style={styles.fabMenuText}>Add New Collection</Text>
+        </TouchableOpacity>
+      </View>
+     
       )}
     </View>
   );
