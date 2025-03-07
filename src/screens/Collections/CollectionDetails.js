@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  TextInput,
   FlatList,
   StyleSheet,
   Image,
@@ -17,6 +18,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; 
 
 const CollectionDetails = ({ route, navigation }) => {
+  const [searchQuery, setSearchQuery] = useState('');
   const { collectionId } = route.params; // Get the collectionId from route params
   const [posts, setPosts] = useState([]);
   const [collectionName, setCollectionName] = useState('');
@@ -35,6 +37,13 @@ const CollectionDetails = ({ route, navigation }) => {
       await fetchPosts();
     }
   }
+
+  // Add the filtering logic before the return statement
+  const filteredPosts = posts.filter((post) => 
+    post.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+  
   // Fetch collection details (name and description)
   const fetchCollectionDetails = async () => {
     try {
@@ -165,11 +174,9 @@ const CollectionDetails = ({ route, navigation }) => {
         <View style={styles.headerTop}>
           <Text style={styles.collectionName}>{collectionName}</Text>
           <View style={styles.headerIcons}>
-            {/* Edit Button */}
             <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
               <MaterialIcons name="edit" size={24} color="#000" style={styles.icon} />
             </TouchableOpacity>
-            {/* Delete Button */}
             {collectionName !== "Unsorted" && (
               <TouchableOpacity onPress={deleteCollection}>
                 <MaterialIcons name="delete" size={24} color="red" style={styles.icon} />
@@ -183,12 +190,20 @@ const CollectionDetails = ({ route, navigation }) => {
         </View>
       </View>
 
+      {/* Add Search Bar */}
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Search posts..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
+
       {/* Posts List */}
       <FlatList
-        data={posts}
+        data={filteredPosts}
         keyExtractor={(item) => item.id}
-        numColumns={numColumns} // Use the state to dynamically control columns
-        key={numColumns} // Force a re-render when numColumns changes
+        numColumns={numColumns}
+        key={numColumns}
         renderItem={({ item }) => (
           <View style={styles.postCard}>
             {/* 3-Dots Button */}
@@ -325,6 +340,14 @@ const styles = StyleSheet.create({
   postTags: {
     fontSize: 12,
     color: '#888',
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+    fontSize: 16,
   },
   menuModal: {
     flex: 1,
