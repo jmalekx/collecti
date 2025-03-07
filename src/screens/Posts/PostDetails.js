@@ -86,11 +86,11 @@ const PostDetails = ({ route, navigation }) => {
         ))}
       </View>
 
-      {post?.platform && (
+      {post?.platform && post.platform !== 'gallery' && (
         <TouchableOpacity style={styles.platformButton} onPress={handlePlatformLink}>
-          <Text style={styles.platformButtonText}>
+            <Text style={styles.platformButtonText}>
             View on {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
-          </Text>
+            </Text>
         </TouchableOpacity>
       )}
     </View>

@@ -220,7 +220,7 @@ const CollectionDetails = ({ route, navigation }) => {
               collectionId: collectionId
             })}
           >
-            {/* 3-Dots Button */}
+            {/* 3-Dots Button
             <TouchableOpacity
               style={styles.menuButton}
               onPress={(e) => {
@@ -229,7 +229,7 @@ const CollectionDetails = ({ route, navigation }) => {
               }}
             >
               <MaterialIcons name="more-vert" size={24} color="#000" />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
       
             {/* Post Content */}
             {renderPostContent(item)}

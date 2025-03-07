@@ -57,7 +57,13 @@ const EditPost = ({ route, navigation }) => {
       });
 
       toast.show("Post updated successfully!", { type: "success" });
-      navigation.goBack();
+      
+      // Navigate back and refresh the post details
+      navigation.navigate('PostDetails', {
+        postId,
+        collectionId,
+        timestamp: Date.now() // Force refresh
+      });
     } catch (error) {
       console.error('Error updating post:', error);
       toast.show("Failed to update post", { type: "error" });
