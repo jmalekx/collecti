@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Alert, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { collection, doc, getDoc, addDoc, query, getDocs } from 'firebase/firestore';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
-import { useFocusEffect } from '@react-navigation/native';
+import { WebView } from 'react-native-webview';
+import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
-import { WebView } from 'react-native-webview'; // Import WebView
-
-const DEFAULT_THUMBNAIL = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
-const DEFAULT_PROFILE_PICTURE = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
+import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
+import { collection, addDoc } from 'firebase/firestore';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
     <Image
-      source={{ uri: profilePicture || DEFAULT_PROFILE_PICTURE }}
+      source={{ uri: profilePicture }}
       style={styles.profilePicture}
       onError={(e) => console.log('Failed to load profile picture:', e.nativeEvent.error)}
     />
@@ -23,120 +21,33 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 );
 
 const Collections = ({ navigation }) => {
-  const [collections, setCollections] = useState([]);
+  const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
-  const [username, setUsername] = useState('Loading...');
-  const [stats, setStats] = useState('Loading...');
-  const [profilePicture, setProfilePicture] = useState('');
   const userId = FIREBASE_AUTH.currentUser?.uid;
 
-  useEffect(() => {
-    if (userId) {
-      fetchUserProfile();
-      fetchCollections();
-    }
-  }, [userId]);
+  // Derived values from userProfile and collections
+  const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email;
+  const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (userId) {
-        fetchUserProfile();
-        fetchCollections();
-      }
-    }, [userId])
+  // Calculate stats directly from collections
+  const stats = `${collections.length} collections | ${
+    collections.reduce((sum, collection) => sum + collection.items.length, 0)
+  } posts`;
+
+  // Filter collections based on search query
+  const filteredCollections = collections.filter((collection) =>
+    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Recalculate stats whenever collections change
-  useEffect(() => {
-    const collectionsCount = collections.length;
-    const totalPosts = collections.reduce((sum, collection) => sum + collection.items.length, 0);
-    setStats(`${collectionsCount} collections | ${totalPosts} posts`);
-  }, [collections]);
-
-  const fetchUserProfile = async () => {
-    try {
-      const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUsername(userData.username || FIREBASE_AUTH.currentUser.email);
-        setProfilePicture(userData.profilePicture || DEFAULT_PROFILE_PICTURE);
-      } else {
-        console.error('User document does not exist!');
-      }
-    } catch (error) {
-      console.error('Error fetching user profile: ', error);
-    }
-  };
-
-  const fetchCollections = async () => {
-    try {
-      const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
-      const querySnapshot = await getDocs(q);
-  
-      let userCollections = await Promise.all(querySnapshot.docs.map(async (doc) => {
-        const collectionData = doc.data();
-  
-        // Fetch posts
-        const postsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts'));
-        const postsSnapshot = await getDocs(postsQuery);
-        const posts = postsSnapshot.docs.map((postDoc) => postDoc.data());
-  
-        // Sort posts by createdAt (most recent first)
-        posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-        return {
-          id: doc.id,
-          name: collectionData.name,
-          description: collectionData.description || '',
-          createdAt: collectionData.createdAt || new Date().toISOString(),
-          postCount: posts.length,
-          items: posts,
-          thumbnail: posts.length > 0 ? posts[0].thumbnail : DEFAULT_THUMBNAIL, // Use the most recent post's thumbnail
-          isPinned: collectionData.isPinned || false,
-        };
-      }));
-  
-      // Ensure 'Unsorted' collection exists
-      const unsortedPostsQuery = query(collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts'));
-      const unsortedPostsSnapshot = await getDocs(unsortedPostsQuery);
-      const unsortedPosts = unsortedPostsSnapshot.docs.map((doc) => doc.data());
-  
-      // Sort unsorted posts
-      unsortedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  
-      let unsortedCollection = {
-        id: 'Unsorted',
-        name: 'Unsorted',
-        description: 'Posts not yet assigned to a collection',
-        createdAt: new Date().toISOString(),
-        postCount: unsortedPosts.length,
-        items: unsortedPosts,
-        thumbnail: unsortedPosts.length > 0 ? unsortedPosts[0].thumbnail : DEFAULT_THUMBNAIL, // Use the most recent post's thumbnail
-        isPinned: true,
-      };
-  
-      // Combine 'Unsorted' with other collections
-      const allCollections = [unsortedCollection, ...userCollections.filter(col => col.id !== 'Unsorted')];
-  
-      setCollections(allCollections);
-    } catch (error) {
-      console.error('Error fetching collections: ', error);
-    }
-  };
-  
   const handleAddCollection = async (collectionName, collectionDescription) => {
     try {
-      const newCollectionRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
         name: collectionName,
         description: collectionDescription,
         createdAt: new Date().toISOString(),
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-  
-      // Refresh the collections list and update stats
-      await fetchCollections();
-  
       Alert.alert('Success', 'Collection created successfully');
     } catch (error) {
       console.error('Error adding collection: ', error);
@@ -147,43 +58,36 @@ const Collections = ({ navigation }) => {
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     try {
       let thumbnail = image || DEFAULT_THUMBNAIL;
-  
+
       // Check if platform is Instagram and generate embed URL
       if (postPlatform === 'instagram' && image.includes('instagram.com')) {
         const postId = image.split('/')[4]; // Extract post ID
         thumbnail = `https://www.instagram.com/p/${postId}/embed`;
       }
-  
+
       const postData = {
         notes,
-        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
-        image, // Use the image passed from AddButton
-        platform: postPlatform, // Ensure platform is explicitly stored
+        tags: tags.split(',').map((tag) => tag.trim()), // Convert tags string to array
+        image,
+        platform: postPlatform,
         createdAt: new Date().toISOString(),
-        thumbnail, // Use embed URL for Instagram, otherwise use default
+        thumbnail,
       };
-  
+
       await addDoc(
         collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
         postData
       );
-  
+
       await fetchCollections();
-  
+
       Alert.alert('Success', 'Post added successfully');
     } catch (error) {
       console.error('Error adding post:', error);
       Alert.alert('Error', 'Failed to add post');
     }
   };
-  
 
-  // Filter collections based on search query
-  const filteredCollections = collections.filter((collection) =>
-    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Render thumbnail or WebView for Instagram posts
   const renderThumbnail = (thumbnail) => {
     if (thumbnail.includes('instagram.com')) {
       const postId = thumbnail.split('/')[4]; // Extract the post ID from the URL
