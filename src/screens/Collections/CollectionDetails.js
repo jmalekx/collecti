@@ -204,6 +204,14 @@ const CollectionDetails = ({ route, navigation }) => {
         keyExtractor={(item) => item.id}
         numColumns={numColumns}
         key={numColumns}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <MaterialIcons name="post-add" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>
+              This collection is empty! Start adding posts to keep things organized.
+            </Text>
+          </View>
+        )}
         renderItem={({ item }) => (
           <View style={styles.postCard}>
             {/* 3-Dots Button */}
@@ -368,6 +376,36 @@ const styles = StyleSheet.create({
   },
   menuText: {
     fontSize: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  emptyImage: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    textAlign: 'center',
+    color: '#666',
+  },
+  fallbackContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+    padding: 10,
+    height: 150,
+  },
+  fallbackText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
 });
 
