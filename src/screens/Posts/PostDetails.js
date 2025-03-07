@@ -24,6 +24,11 @@ const formatDate = (dateString) => {
     });
   };
   
+const formatPlatform = (platform) => {
+    if (!platform) return 'Gallery';
+    return platform.charAt(0).toUpperCase() + platform.slice(1);
+}; 
+
 const PostDetails = ({ route, navigation }) => {
   const { collectionId, postId } = route.params;
   const [post, setPost] = useState(null);
@@ -49,7 +54,7 @@ const PostDetails = ({ route, navigation }) => {
       setLoading(false);
     }
   };
-  
+
   useFocusEffect(
     React.useCallback(() => {
       fetchPost();
@@ -90,11 +95,16 @@ const PostDetails = ({ route, navigation }) => {
 
       <Text style={styles.notes}>{post?.notes}</Text>
       {/* Add date display */}
+      <View style={styles.metaContainer}>
         {post?.createdAt && (
-        <Text style={styles.dateText}>
+            <Text style={styles.dateText}>
             Saved on {formatDate(post.createdAt)}
-        </Text>
+            </Text>
         )}
+        <Text style={styles.platformText}>
+            From {formatPlatform(post?.platform)}
+        </Text>
+     </View>
 
       <View style={styles.tagsContainer}>
         {post?.tags?.map((tag, index) => (
@@ -156,21 +166,21 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     color: '#666',
   },
-  platformButton: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  platformButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+  metaContainer: {
+    marginBottom: 16,
+    borderLeftWidth: 3,
+    borderLeftColor: '#007AFF',
+    paddingLeft: 12,
   },
   dateText: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 16,
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
+  platformText: {
+    fontSize: 14,
+    color: '#666',
     fontStyle: 'italic',
   },
 });
