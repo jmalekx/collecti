@@ -213,19 +213,28 @@ const CollectionDetails = ({ route, navigation }) => {
           </View>
         )}
         renderItem={({ item }) => (
-          <View style={styles.postCard}>
+          <TouchableOpacity
+            style={styles.postCard}
+            onPress={() => navigation.navigate('PostDetails', { 
+              postId: item.id,
+              collectionId: collectionId
+            })}
+          >
             {/* 3-Dots Button */}
             <TouchableOpacity
               style={styles.menuButton}
-              onPress={() => openMenu(item)}
+              onPress={(e) => {
+                e.stopPropagation(); // Prevent triggering the parent onPress
+                openMenu(item);
+              }}
             >
               <MaterialIcons name="more-vert" size={24} color="#000" />
             </TouchableOpacity>
-
+      
             {/* Post Content */}
             {renderPostContent(item)}
             <Text style={styles.postTitle}>{item.notes}</Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
 

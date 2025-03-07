@@ -9,11 +9,12 @@ import SignIn from './src/screens/SignIn';
 import HomePage from './src/screens/HomePage';
 import Collections from './src/screens/Collections';
 import CollectionDetails from './src/screens/Collections/CollectionDetails';
+import EditPost from './src/screens/Posts/EditPost';
+import PostDetails from './src/screens/Posts/PostDetails';
 import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/UserSettings/EditProfile';
 import EditCollection from './src/screens/Collections/EditCollection';
 import { ToastProvider } from 'react-native-toast-notifications';
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -72,6 +73,16 @@ export default function App() {
           <Stack.Screen 
             name="EditCollection" 
             component={EditCollection}
+          />
+           <Stack.Screen 
+            name="PostDetails" 
+            component={PostDetails}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen 
+            name="EditPost" 
+            component={EditPost}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
