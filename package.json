@@ -32,6 +32,7 @@
     "react-native-render-html": "^6.3.4",
     "react-native-safe-area-context": "^5.1.0",
     "react-native-screens": "^4.5.0",
+    "react-native-toast-notifications": "^3.4.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-webview": "^13.13.2"
   },

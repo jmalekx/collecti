@@ -6,6 +6,7 @@ import AddButton from '../../components/AddButton';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
 import { collection, addDoc } from 'firebase/firestore';
+import { useToast } from 'react-native-toast-notifications';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -21,6 +22,7 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 );
 
 const Collections = ({ navigation }) => {
+  const toast = useToast();
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
   const userId = FIREBASE_AUTH.currentUser?.uid;
@@ -48,10 +50,14 @@ const Collections = ({ navigation }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-      Alert.alert('Success', 'Collection created successfully');
+      toast.show("Collection created successfully", {
+        type: "success",
+      });
     } catch (error) {
       console.error('Error adding collection: ', error);
-      Alert.alert('Error', 'Failed to create collection');
+      toast.show("Failed to create collection", {
+        type: "danger",
+      });
     }
   };
 

@@ -13,6 +13,7 @@ import CollectionDetails from './src/screens/Collections/CollectionDetails';
 import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/UserSettings/EditProfile';
 import EditCollection from './src/screens/Collections/EditCollection';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,36 +41,41 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="SignIn">
-        {user ? (
+    <ToastProvider
+      placement="top"
+      duration={4000}
+      offsetTop={75}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="SignIn">
+          {user ? (
+            <Stack.Screen
+              name="Inside"
+              component={InsideLayout}
+              options={{ headerShown: false }}
+            />
+          ) : (
+            <Stack.Screen
+              name="SignIn"
+              component={SignIn}
+              options={{ headerShown: false }}
+            />
+          )}
           <Stack.Screen
-            name="Inside"
-            component={InsideLayout}
+            name="EditProfile"
+            component={EditProfile}
+            options={{ headerShown: true, title: 'Edit Profile' }}
+          />
+          <Stack.Screen 
+            name="CollectionDetails" 
+            component={CollectionDetails}
             options={{ headerShown: false }}
           />
-        ) : (
-          <Stack.Screen
-            name="SignIn"
-            component={SignIn}
-            options={{ headerShown: false }}
+          <Stack.Screen 
+            name="EditCollection" 
+            component={EditCollection}
           />
-        )}
-        <Stack.Screen
-          name="EditProfile"
-          component={EditProfile}
-          options={{ headerShown: true, title: 'Edit Profile' }}
-        />
-        <Stack.Screen 
-          name="CollectionDetails" 
-          component={CollectionDetails}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen 
-          name="EditCollection" 
-          component={EditCollection}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ToastProvider>
   );
 }

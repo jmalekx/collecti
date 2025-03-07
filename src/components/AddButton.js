@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
+import { useToast } from "react-native-toast-notifications";
+import { useIsFocused } from '@react-navigation/native';
 
 const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
+  const toast = useToast();
+  const isScreenFocused = useIsFocused();
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddCollectionModalVisible, setIsAddCollectionModalVisible] = useState(false);
@@ -17,6 +21,11 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
   const [pendingNewCollection, setPendingNewCollection] = useState(null);
 
+  useEffect(() => {
+    if (!isScreenFocused) {
+      setIsFabMenuVisible(false);
+    }
+  }, [isScreenFocused]);
 
   // Automatically open the modal and pre-fill the URL for Instagram and TikTok
   useEffect(() => {
@@ -28,7 +37,9 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      Alert.alert('Error', 'Please select an image or paste an image URL');
+      toast.show("Please select and image or paste an Image URL", {
+        type: "warning",
+      });
       return;
     }
   
@@ -48,25 +59,24 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setIsAddingNewCollection(false);
   };
   
-
   const handleAddCollection = (name, description) => {
     const trimmedName = name.trim().toLowerCase();
     
     if (!trimmedName) {
-      Alert.alert('Error', 'Collection name cannot be empty!');
+      toast.show("Collection name cannot be empty!", {type: "warning"});
       return;
     }
 
     if (trimmedName === 'unsorted') {
-      Alert.alert('Error', 'Cannot use "Unsorted" as a collection name');
+      toast.show('Cannot use "Unsorted" as a collection name', {type: "warning"});
       return;
     }
 
     // Call parent function to add collection
     onAddCollection(trimmedName, description);
-    
     // Store the pending collection name
     setPendingNewCollection(trimmedName);
+    setIsAddCollectionModalVisible(false);
   };
 
     // Add this useEffect to handle the new collection selection
@@ -83,7 +93,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     // Modify the checkmark button's onPress handler
     const handleQuickAddCollection = () => {
       if (!newCollectionName.trim()) {
-        Alert.alert('Error', 'Collection name cannot be empty');
+        toast.show("Collection name cannot be empty", {type: "warning"});
         return;
       }
       
@@ -135,7 +145,10 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                 onChangeText={setNewCollectionDescription}
               />
 
-              <Button title="Create Collection" onPress={handleAddCollection} />
+              <Button 
+              title="Create Collection" 
+              onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)} 
+              />
               <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
             </View>
           </View>
