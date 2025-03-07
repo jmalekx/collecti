@@ -9,6 +9,7 @@ export const useUserData = () => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user profile
   useEffect(() => {
     if (!userId) return;
 
@@ -26,41 +27,64 @@ export const useUserData = () => {
     fetchUserProfile();
   }, [userId]);
 
+  // Fetch collections and posts
   useEffect(() => {
     if (!userId) return;
 
     const collectionsRef = collection(FIREBASE_DB, 'users', userId, 'collections');
+    
     const unsubscribe = onSnapshot(collectionsRef, async (querySnapshot) => {
       try {
+        // Get all regular collections (excluding Unsorted)
         const collectionsData = await Promise.all(
-          querySnapshot.docs.map(async (doc) => {
-            const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts');
-            const postsSnapshot = await getDocs(postsRef);
-            const posts = postsSnapshot.docs.map(postDoc => postDoc.data());
-            
-            return {
-              id: doc.id,
-              ...doc.data(),
-              items: posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
-              thumbnail: posts[0]?.thumbnail || DEFAULT_THUMBNAIL,
-            };
-          })
+          querySnapshot.docs
+            .filter(doc => doc.id !== 'Unsorted') // Filter out Unsorted collection
+            .map(async (doc) => {
+              const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', doc.id, 'posts');
+              const postsSnapshot = await getDocs(postsRef);
+              const posts = postsSnapshot.docs.map(postDoc => ({
+                id: postDoc.id,
+                ...postDoc.data()
+              }));
+              
+              // Sort posts by creation date
+              const sortedPosts = posts.sort((a, b) => 
+                new Date(b.createdAt) - new Date(a.createdAt)
+              );
+
+              return {
+                id: doc.id,
+                ...doc.data(),
+                items: sortedPosts,
+                thumbnail: sortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
+              };
+            })
         );
 
-        // Handle Unsorted collection
+        // Fetch Unsorted collection separately
         const unsortedPostsRef = collection(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted', 'posts');
         const unsortedSnapshot = await getDocs(unsortedPostsRef);
-        const unsortedPosts = unsortedSnapshot.docs.map(postDoc => postDoc.data());
+        const unsortedPosts = unsortedSnapshot.docs.map(postDoc => ({
+          id: postDoc.id,
+          ...postDoc.data()
+        }));
         
+        // Sort unsorted posts
+        const sortedUnsortedPosts = unsortedPosts.sort((a, b) => 
+          new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        // Create Unsorted collection object
         const unsortedCollection = {
           id: 'Unsorted',
           name: 'Unsorted',
           description: 'Posts not yet assigned to a collection',
-          items: unsortedPosts,
-          thumbnail: unsortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
+          items: sortedUnsortedPosts,
+          thumbnail: sortedUnsortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
           isPinned: true,
         };
 
+        // Combine collections with Unsorted at the beginning
         setCollections([unsortedCollection, ...collectionsData]);
         setLoading(false);
       } catch (error) {
