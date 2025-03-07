@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';

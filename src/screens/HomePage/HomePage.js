@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
 import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
+import { useToast } from 'react-native-toast-notifications';
 
 const HomePage = () => {
+  const toast = useToast();
   const { shareIntent } = useShareIntentContext();
   const [url, setUrl] = useState(null);
   const [platform, setPlatform] = useState('gallery');
@@ -73,7 +75,7 @@ const HomePage = () => {
   
     if (!postPlatform) {
       console.error("Error: platform is undefined");
-      Alert.alert('Error', 'Platform is not set correctly');
+      toast.show("Platform is not set correctly", {type: "warning",});
       return;
     }
   
@@ -94,10 +96,10 @@ const HomePage = () => {
         postData
       );
   
-      Alert.alert('Success', 'Post added successfully');
+      toast.show("Post added successfully", {type: "success",});
     } catch (error) {
       console.error('Error adding post: ', error);
-      Alert.alert('Error', 'Failed to add post');
+      toast.show("Failed to add post", {type: "danger",});
     }
   };
   

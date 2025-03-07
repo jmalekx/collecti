@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Alert, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
@@ -50,14 +50,10 @@ const Collections = ({ navigation }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-      toast.show("Collection created successfully", {
-        type: "success",
-      });
+      toast.show("Collection created successfully", {type: "success",});
     } catch (error) {
       console.error('Error adding collection: ', error);
-      toast.show("Failed to create collection", {
-        type: "danger",
-      });
+      toast.show("Failed to create collection", {type: "danger"});
     }
   };
 
@@ -87,10 +83,10 @@ const Collections = ({ navigation }) => {
 
       await fetchCollections();
 
-      Alert.alert('Success', 'Post added successfully');
+      toast.show("Post added successfully", {type: "success",});
     } catch (error) {
       console.error('Error adding post:', error);
-      Alert.alert('Error', 'Failed to add post');
+      toast.show("Failed to add post", {type: "danger",});
     }
   };
 

@@ -37,9 +37,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      toast.show("Please select and image or paste an Image URL", {
-        type: "warning",
-      });
+      toast.show("Please select and image or paste an Image URL", {type: "warning"});
       return;
     }
   

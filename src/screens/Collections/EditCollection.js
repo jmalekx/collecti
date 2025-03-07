@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import { doc, updateDoc, getDoc} from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
+import { useToast } from 'react-native-toast-notifications';
 
 const EditCollection = ({ route, navigation }) => {
+  const toast = useToast();
   const { collectionId } = route.params; // Get the collectionId from route params
   const [collectionName, setCollectionName] = useState('');
   const [collectionDescription, setCollectionDescription] = useState('');
@@ -33,7 +35,7 @@ const EditCollection = ({ route, navigation }) => {
   // Save the updated collection details
   const saveChanges = async () => {
     if (!collectionName.trim()) {
-      Alert.alert('Error', 'Collection name cannot be empty');
+      toast.show("Collection name cannot be empty", {type: "warning",});
       return;
     }
 
@@ -43,11 +45,11 @@ const EditCollection = ({ route, navigation }) => {
         name: collectionName,
         description: collectionDescription,
       });
-      Alert.alert('Success', 'Collection updated successfully');
+      toast.show("Collection updated successfully", {type: "success",});
       navigation.goBack(); // Navigate back to the previous screen
     } catch (error) {
       console.error('Error updating collection: ', error);
-      Alert.alert('Error', 'Failed to update collection');
+      toast.show("Failed to update collection ", {type: "danger",});
     }
   };
 

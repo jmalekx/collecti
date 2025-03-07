@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView} from 'react-native';
-import { doc, setDoc, addDoc, collection } from 'firebase/firestore';
+import { View, Button, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView} from 'react-native';
+import { doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import Logo from '../../../assets/images/tmplogo.png';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { useToast } from 'react-native-toast-notifications';
 
 const SignIn = () => {
+    const toast = useToast();
     const {height} = useWindowDimensions();
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ const SignIn = () => {
             console.log(response);
         } catch (error) {
             console.log(error);
-            alert('login failed');
+            toast.show("Login failed", {type: "danger",});
         } finally {
             setLoading(false);
         }
@@ -57,10 +58,10 @@ const SignIn = () => {
             isPinned: true,
           });
       
-          alert('Sign-up successful!');
+          toast.show("Sign up successful", {type: "success",});
         } catch (error) {
           console.log(error);
-          alert('Sign-up failed');
+          toast.show("Sign up failed", {type: "danger",});
         } finally {
           setLoading(false);
         }
