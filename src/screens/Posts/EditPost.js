@@ -55,15 +55,12 @@ const EditPost = ({ route, navigation }) => {
         tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
         updatedAt: new Date().toISOString(),
       });
-
+  
       toast.show("Post updated successfully!", { type: "success" });
       
-      // Navigate back and refresh the post details
-      navigation.navigate('PostDetails', {
-        postId,
-        collectionId,
-        timestamp: Date.now() // Force refresh
-      });
+      // Simply go back instead of explicitly navigating
+      navigation.goBack();
+  
     } catch (error) {
       console.error('Error updating post:', error);
       toast.show("Failed to update post", { type: "error" });

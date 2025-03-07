@@ -14,6 +14,15 @@ import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+  
 const PostDetails = ({ route, navigation }) => {
   const { collectionId, postId } = route.params;
   const [post, setPost] = useState(null);
@@ -77,6 +86,12 @@ const PostDetails = ({ route, navigation }) => {
       )}
 
       <Text style={styles.notes}>{post?.notes}</Text>
+      {/* Add date display */}
+        {post?.createdAt && (
+        <Text style={styles.dateText}>
+            Saved on {formatDate(post.createdAt)}
+        </Text>
+        )}
 
       <View style={styles.tagsContainer}>
         {post?.tags?.map((tag, index) => (
@@ -148,6 +163,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+    fontStyle: 'italic',
   },
 });
 
