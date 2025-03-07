@@ -5,7 +5,7 @@ import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
@@ -32,9 +32,8 @@ const Collections = ({ navigation }) => {
   const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
   // Calculate stats directly from collections
-  const stats = `${collections.length} collections | ${
-    collections.reduce((sum, collection) => sum + collection.items.length, 0)
-  } posts`;
+  const stats = `${collections.length} collections | ${collections.reduce((sum, collection) => sum + collection.items.length, 0)
+    } posts`;
 
   // Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>
@@ -50,10 +49,10 @@ const Collections = ({ navigation }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-      toast.show("Collection created successfully", {type: "success",});
+      toast.show("Collection created successfully", { type: "success", });
     } catch (error) {
       console.error('Error adding collection: ', error);
-      toast.show("Failed to create collection", {type: "danger"});
+      toast.show("Failed to create collection", { type: "danger" });
     }
   };
 
@@ -76,17 +75,31 @@ const Collections = ({ navigation }) => {
         thumbnail,
       };
 
-      await addDoc(
-        collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
-        postData
+      const postsRef = collection(
+        FIREBASE_DB,
+        'users',
+        userId,
+        'collections',
+        selectedCollection,
+        'posts'
       );
 
-      await fetchCollections();
+      await addDoc(postsRef, postData);
 
-      toast.show("Post added successfully", {type: "success",});
+      // Update collection thumbnail if this is the first post
+      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', selectedCollection);
+      const collectionDoc = await getDoc(collectionRef);
+      if (!collectionDoc.data()?.thumbnail) {
+        await updateDoc(collectionRef, { thumbnail });
+      }
+      toast.show("Post added successfully", { type: "success" });
+
+      // No need to explicitly call fetchCollections since useUserData hook
+      // will automatically update via its real-time listener
+
     } catch (error) {
-      console.error('Error adding post:', error);
-      toast.show("Failed to add post", {type: "danger",});
+      console.error('Error adding post: ', error);
+      toast.show("Failed to add post", { type: "danger" });
     }
   };
 

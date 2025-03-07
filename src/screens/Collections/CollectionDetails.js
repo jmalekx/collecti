@@ -15,7 +15,7 @@ import { collection, doc, getDocs, getDoc, deleteDoc } from 'firebase/firestore'
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native'; 
+import { useFocusEffect } from '@react-navigation/native';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,11 +39,11 @@ const CollectionDetails = ({ route, navigation }) => {
   }
 
   // Add the filtering logic before the return statement
-  const filteredPosts = posts.filter((post) => 
+  const filteredPosts = posts.filter((post) =>
     post.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
-  
+
   // Fetch collection details (name and description)
   const fetchCollectionDetails = async () => {
     try {
@@ -215,7 +215,7 @@ const CollectionDetails = ({ route, navigation }) => {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.postCard}
-            onPress={() => navigation.navigate('PostDetails', { 
+            onPress={() => navigation.navigate('PostDetails', {
               postId: item.id,
               collectionId: collectionId
             })}
@@ -230,7 +230,7 @@ const CollectionDetails = ({ route, navigation }) => {
             >
               <MaterialIcons name="more-vert" size={24} color="#000" />
             </TouchableOpacity> */}
-      
+
             {/* Post Content */}
             {renderPostContent(item)}
             <Text style={styles.postTitle}>{item.notes}</Text>

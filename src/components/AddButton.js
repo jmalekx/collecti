@@ -49,17 +49,17 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      toast.show("Please select and image or paste an Image URL", {type: "warning"});
+      toast.show("Please select and image or paste an Image URL", { type: "warning" });
       return;
     }
-  
+
     const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
     const collectionToUse = selectedCollection || 'Unsorted';
-  
+
     // Ensure platform is 'gallery' if not defined
     const platformToUse = platform || 'gallery';
     onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
-  
+
     setIsModalVisible(false);
     setNotes('');
     setTags('');
@@ -68,17 +68,17 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setIsFabMenuVisible(false);
     setIsAddingNewCollection(false);
   };
-  
+
   const handleAddCollection = (name, description) => {
     const trimmedName = name.trim().toLowerCase();
-    
+
     if (!trimmedName) {
-      toast.show("Collection name cannot be empty!", {type: "warning"});
+      toast.show("Collection name cannot be empty!", { type: "warning" });
       return;
     }
 
     if (trimmedName === 'unsorted') {
-      toast.show('Cannot use "Unsorted" as a collection name', {type: "warning"});
+      toast.show('Cannot use "Unsorted" as a collection name', { type: "warning" });
       return;
     }
 
@@ -89,28 +89,28 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setIsAddCollectionModalVisible(false);
   };
 
-    // Add this useEffect to handle the new collection selection
-    useEffect(() => {
-      if (pendingNewCollection && collections.length > 0) {
-        const newCollection = collections.find(c => c.name.toLowerCase() === pendingNewCollection.toLowerCase());
-        if (newCollection) {
-          setSelectedCollection(newCollection.id);
-          setPendingNewCollection(null);
-        }
+  // Add this useEffect to handle the new collection selection
+  useEffect(() => {
+    if (pendingNewCollection && collections.length > 0) {
+      const newCollection = collections.find(c => c.name.toLowerCase() === pendingNewCollection.toLowerCase());
+      if (newCollection) {
+        setSelectedCollection(newCollection.id);
+        setPendingNewCollection(null);
       }
-    }, [collections, pendingNewCollection]);
-  
-    // Modify the checkmark button's onPress handler
-    const handleQuickAddCollection = () => {
-      if (!newCollectionName.trim()) {
-        toast.show("Collection name cannot be empty", {type: "warning"});
-        return;
-      }
-      
-      handleAddCollection(newCollectionName, '');
-      setIsAddingNewCollection(false);
-      setNewCollectionName('');
-    };
+    }
+  }, [collections, pendingNewCollection]);
+
+  // Modify the checkmark button's onPress handler
+  const handleQuickAddCollection = () => {
+    if (!newCollectionName.trim()) {
+      toast.show("Collection name cannot be empty", { type: "warning" });
+      return;
+    }
+
+    handleAddCollection(newCollectionName, '');
+    setIsAddingNewCollection(false);
+    setNewCollectionName('');
+  };
 
   const handleImagePicker = () => {
     launchImageLibrary(
@@ -138,7 +138,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
           onRequestClose={() => {
             resetModalStates();
             setIsAddCollectionModalVisible(false);
-        }}>
+          }}>
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTitle}>Add New Collection</Text>
@@ -157,9 +157,9 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                 onChangeText={setNewCollectionDescription}
               />
 
-              <Button 
-              title="Create Collection" 
-              onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)} 
+              <Button
+                title="Create Collection"
+                onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)}
               />
               <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
             </View>
@@ -221,21 +221,21 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                 <Picker.Item label="+ Add New Collection" value="new" />
               </Picker>
 
-               {/* Modify the Picker's add new collection section */}
-                {isAddingNewCollection && (
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                    <TextInput
-                      style={[styles.input, { flex: 1 }]}
-                      placeholder="Enter Collection Name"
-                      value={newCollectionName}
-                      onChangeText={setNewCollectionName}
-                    />
-                    <Button
-                      title="✓"
-                      onPress={handleQuickAddCollection}  // Use the new handler
-                    />
-                  </View>
-                )}
+              {/* Modify the Picker's add new collection section */}
+              {isAddingNewCollection && (
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
+                  <TextInput
+                    style={[styles.input, { flex: 1 }]}
+                    placeholder="Enter Collection Name"
+                    value={newCollectionName}
+                    onChangeText={setNewCollectionName}
+                  />
+                  <Button
+                    title="✓"
+                    onPress={handleQuickAddCollection}  // Use the new handler
+                  />
+                </View>
+              )}
 
               <Button title="Quick Add" onPress={handleAddPost} />
               <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
@@ -255,28 +255,28 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       {/* FAB Menu Options */}
       {isFabMenuVisible && (
         <View style={styles.fabMenu}>
-        <TouchableOpacity 
-          style={styles.fabMenuItem} 
-          onPress={() => { 
-            resetModalStates();
-            setIsModalVisible(true); 
-            setIsFabMenuVisible(false); 
-          }}
-        >
-          <Text style={styles.fabMenuText}>Add New Post</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.fabMenuItem} 
-          onPress={() => { 
-            resetModalStates();
-            setIsAddCollectionModalVisible(true); 
-            setIsFabMenuVisible(false); 
-          }}
-        >
-          <Text style={styles.fabMenuText}>Add New Collection</Text>
-        </TouchableOpacity>
-      </View>
-     
+          <TouchableOpacity
+            style={styles.fabMenuItem}
+            onPress={() => {
+              resetModalStates();
+              setIsModalVisible(true);
+              setIsFabMenuVisible(false);
+            }}
+          >
+            <Text style={styles.fabMenuText}>Add New Post</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.fabMenuItem}
+            onPress={() => {
+              resetModalStates();
+              setIsAddCollectionModalVisible(true);
+              setIsFabMenuVisible(false);
+            }}
+          >
+            <Text style={styles.fabMenuText}>Add New Collection</Text>
+          </TouchableOpacity>
+        </View>
+
       )}
     </View>
   );

@@ -65,22 +65,22 @@ export default function App() {
             component={EditProfile}
             options={{ headerShown: true, title: 'Edit Profile' }}
           />
-          <Stack.Screen 
-            name="CollectionDetails" 
+          <Stack.Screen
+            name="CollectionDetails"
             component={CollectionDetails}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-            name="EditCollection" 
+          <Stack.Screen
+            name="EditCollection"
             component={EditCollection}
           />
-           <Stack.Screen 
-            name="PostDetails" 
+          <Stack.Screen
+            name="PostDetails"
             component={PostDetails}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-            name="EditPost" 
+          <Stack.Screen
+            name="EditPost"
             component={EditPost}
             options={{ headerShown: false }}
           />
