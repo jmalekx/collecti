@@ -13,6 +13,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
+import { useFocusEffect } from '@react-navigation/native';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -30,28 +31,30 @@ const PostDetails = ({ route, navigation }) => {
   const userId = getAuth().currentUser?.uid;
   const toast = useToast();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-        const postDoc = await getDoc(postRef);
-        
-        if (postDoc.exists()) {
-          setPost({ id: postDoc.id, ...postDoc.data() });
-        } else {
-          toast.show("Post not found", { type: "danger" });
-          navigation.goBack();
-        }
-      } catch (error) {
-        console.error('Error fetching post:', error);
-        toast.show("Failed to load post", { type: "danger" });
-      } finally {
-        setLoading(false);
+  const fetchPost = async () => {
+    try {
+      const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
+      const postDoc = await getDoc(postRef);
+      
+      if (postDoc.exists()) {
+        setPost({ id: postDoc.id, ...postDoc.data() });
+      } else {
+        toast.show("Post not found", { type: "danger" });
+        navigation.goBack();
       }
-    };
-
-    fetchPost();
-  }, [collectionId, postId]);
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      toast.show("Failed to load post", { type: "danger" });
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchPost();
+    }, [collectionId, postId])
+  );
 
   const handlePlatformLink = () => {
     if (post?.platform === 'instagram' && post?.image) {
