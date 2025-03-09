@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
+import ProgressBar from "../../components/ProgressBar";
+import commonStyles from "../../commonStyles";
 
 export default function Screen4({ navigation }) {
     const completeOnboarding = async () => {
@@ -42,6 +44,7 @@ export default function Screen4({ navigation }) {
 
   return (
     <View style={styles.container}>
+        <ProgressBar currentStep={1} totalSteps={4} />      
       <Text style={styles.title}>What would you like to extract?</Text>
       <Text style={styles.subtitle}>
         We selected some common extracts for you, but you can always change it later.
@@ -77,24 +80,7 @@ export default function Screen4({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F9F6F2",
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#666",
-    marginBottom: 20,
-  },
+    ...commonStyles,
   optionsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -110,20 +96,5 @@ const styles = StyleSheet.create({
   optionText: {
     color: "#D54B4B",
     fontWeight: "bold",
-  },
-  button: {
-    backgroundColor: "black",
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  skipText: {
-    marginTop: 15,
-    color: "#666",
   },
 });

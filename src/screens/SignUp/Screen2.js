@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import ProgressBar from '../../components/ProgressBar';
 
 const Screen2 = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* <OnboardingProgress currentStep={1} /> */}
+      <ProgressBar currentStep={2} totalSteps={4} />
       <Text style={styles.title}>Welcome to Collecti!</Text>
       <Text style={styles.description}>Let's set up your profile</Text>
       <Button 

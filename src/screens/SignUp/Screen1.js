@@ -1,16 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import ProgressBar from '../../components/ProgressBar';
 
 const Screen1 = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* <OnboardingProgress currentStep={1} /> */}
+      <ProgressBar currentStep={1} totalSteps={4} />
       <Text style={styles.title}>Welcome to Collecti!</Text>
       <Text style={styles.description}>Let's set up your profile</Text>
-      <Button 
-        title="Next" 
-        onPress={() => navigation.navigate('Screen2')} 
-      />
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={() => navigation.navigate('Screen2')}
+      >
+        <Text style={styles.buttonText}>Next</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -19,22 +22,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F9F6F2',
     padding: 20,
-    backgroundColor: '#FFF3E2',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 20,
     marginBottom: 10,
-    textAlign: 'center',
   },
   description: {
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center',
-    marginBottom: 30,
     color: '#666',
-  }
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: 'black',
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default Screen1;
