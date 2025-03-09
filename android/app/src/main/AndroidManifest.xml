@@ -1,4 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.jmalekx.collecti">
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
@@ -34,19 +34,21 @@
         android:theme="@style/Theme.App.SplashScreen"
         android:exported="true">
         
+      <!-- Launcher Intent Filter -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
       
+      <!-- Deep Link Intent Filter -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="collecti" android:host="oauth" />
-        <data android:scheme="pinterest" android:host="oauth" />
       </intent-filter>
       
+      <!-- Share Intent Filters -->
       <intent-filter>
         <action android:name="android.intent.action.SEND"/>
         <data android:mimeType="text/*"/>

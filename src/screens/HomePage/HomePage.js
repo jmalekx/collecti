@@ -85,6 +85,7 @@ const HomePage = () => {
     }
   };
 
+
   const fetchCollections = async (userId) => {
     try {
       const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
