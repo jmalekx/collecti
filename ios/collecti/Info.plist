@@ -49,12 +49,12 @@
 	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>collecti</string>
-			</array>
-		</dict>
+	<dict>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>collecti</string>
+		</array>
+	</dict>
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

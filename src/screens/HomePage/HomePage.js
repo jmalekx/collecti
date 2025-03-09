@@ -9,11 +9,6 @@ import { useToast } from 'react-native-toast-notifications';
 import { PinterestService } from '../../services/pinterest/PinterestSerivce';
 import { PINTEREST_CONFIG } from '../../services/pinterest/pinterestConfig';
 
-Linking.addEventListener('url', ({ url }) => {
-  console.log('Received deep link:', url);
-});
-
-
 const HomePage = () => {
   const toast = useToast();
   const { shareIntent } = useShareIntentContext();
