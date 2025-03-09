@@ -18,7 +18,7 @@ const SignUp = ({ navigation }) => {
             toast.show("Passwords don't match", {type: "warning"});
             return;
         }
-
+    
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
@@ -26,7 +26,7 @@ const SignUp = ({ navigation }) => {
             const defaultPfp = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
             const defaultThumbnail = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
         
-            // Init profile
+            // Init profile with isNewUser flag
             const userRef = doc(FIREBASE_DB, 'users', user.uid);
             await setDoc(userRef, {
                 email: user.email,
@@ -36,6 +36,7 @@ const SignUp = ({ navigation }) => {
                 createdAt: new Date(),
                 collections: 1,
                 posts: 0,
+                isNewUser: true // This ensures user goes to onboarding
             });
         
             // Create 'Unsorted' collection
@@ -50,6 +51,7 @@ const SignUp = ({ navigation }) => {
             });
         
             toast.show("Sign up successful", {type: "success"});
+            navigation.navigate('Screen1');
         } catch (error) {
             console.log(error);
             toast.show("Sign up failed", {type: "danger"});

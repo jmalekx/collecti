@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { FIREBASE_AUTH } from './FirebaseConfig';
+import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
+import { getDoc, doc } from 'firebase/firestore';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -37,10 +38,16 @@ function InsideLayout() {
 
 export default function App() {
   const [user, setUser] = useState(null);
+  const [isOnboarding, setIsOnboarding] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      console.log('user', user);
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+      if (user) {
+        // Check if user needs onboarding
+        const userDoc = await getDoc(doc(FIREBASE_DB, 'users', user.uid));
+        const isNewUser = userDoc.data()?.isNewUser ?? true;
+        setIsOnboarding(isNewUser);
+      }
       setUser(user);
     });
 
@@ -48,55 +55,42 @@ export default function App() {
   }, []);
 
   return (
-    <ToastProvider
-      placement="top"
-      duration={4000}
-      offsetTop={75}>
+    <ToastProvider placement="top" duration={4000} offsetTop={75}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="SignIn">
           {user ? (
-            <Stack.Screen
-              name="Inside"
-              component={InsideLayout}
-              options={{ headerShown: false }}
-            />
+            <>
+              {/* Always include the Inside screen in the stack */}
+              <Stack.Screen name="Inside" component={InsideLayout} options={{ headerShown: false }} />
+              
+              {/* Conditionally render onboarding screens */}
+              {isOnboarding && (
+                <>
+                  <Stack.Screen name="Screen1" component={Screen1} options={{ headerShown: false }} />
+                  <Stack.Screen name="Screen2" component={Screen2} options={{ headerShown: false }} />
+                  <Stack.Screen name="Screen3" component={Screen3} options={{ headerShown: false }} />
+                  <Stack.Screen name="Screen4" component={Screen4} options={{ headerShown: false }} />
+                </>
+              )}
+            </>
           ) : (
             <>
-            <Stack.Screen
-              name="SignIn"
-              component={SignIn}
-              options={{ headerShown: false }}
-            />
-                      <Stack.Screen
-              name="SignUp"
-              component={SignUp}
-            />
+              <Stack.Screen
+                name="SignIn"
+                component={SignIn}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="SignUp" 
+                component={SignUp} 
+              />
             </>
           )}
-          <Stack.Screen
-            name="EditProfile"
-            component={EditProfile}
-            options={{ headerShown: true, title: 'Edit Profile' }}
-          />
-          <Stack.Screen
-            name="CollectionDetails"
-            component={CollectionDetails}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditCollection"
-            component={EditCollection}
-          />
-          <Stack.Screen
-            name="PostDetails"
-            component={PostDetails}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="EditPost"
-            component={EditPost}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
+          <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+          <Stack.Screen name="EditCollection" component={EditCollection} />
+          <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+          <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>

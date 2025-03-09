@@ -1,7 +1,45 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 
-export default function OnboardingStep1({ navigation }) {
+export default function Screen4({ navigation }) {
+    const completeOnboarding = async () => {
+      try {
+        const user = FIREBASE_AUTH.currentUser;
+        if (user) {
+          const userRef = doc(FIREBASE_DB, 'users', user.uid);
+          
+          // First check if the document exists
+          const userDoc = await getDoc(userRef);
+          
+          if (userDoc.exists()) {
+            // Update existing document
+            await updateDoc(userRef, {
+              isNewUser: false
+            });
+          } else {
+            // Create new document if it doesn't exist
+            await setDoc(userRef, {
+              email: user.email,
+              username: user.email.split('@')[0],
+              profilePicture: 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg',
+              bio: '',
+              createdAt: new Date(),
+              collections: 1,
+              posts: 0,
+              isNewUser: false
+            });
+          }
+          
+          // Navigate to Inside stack
+          navigation.navigate('Inside');
+        }
+      } catch (error) {
+        console.error('Error completing onboarding:', error);
+      }
+    };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>What would you like to extract?</Text>
@@ -9,7 +47,6 @@ export default function OnboardingStep1({ navigation }) {
         We selected some common extracts for you, but you can always change it later.
       </Text>
 
-      {/* Example of selectable categories */}
       <View style={styles.optionsContainer}>
         <TouchableOpacity style={styles.option}>
           <Text style={styles.optionText}>📖 Recipes</Text>
@@ -25,15 +62,14 @@ export default function OnboardingStep1({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Navigation Buttons */}
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Step2")}
+        onPress={completeOnboarding}
       >
         <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Step4")}>
+      <TouchableOpacity onPress={completeOnboarding}>
         <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
     </View>
