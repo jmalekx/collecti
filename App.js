@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import SignIn from './src/screens/SignIn';
+import SignUp from './src/screens/SignUp/SignUp';
 import HomePage from './src/screens/HomePage';
 import Collections from './src/screens/Collections';
 import CollectionDetails from './src/screens/Collections/CollectionDetails';
@@ -54,11 +55,17 @@ export default function App() {
               options={{ headerShown: false }}
             />
           ) : (
+            <>
             <Stack.Screen
               name="SignIn"
               component={SignIn}
               options={{ headerShown: false }}
             />
+                      <Stack.Screen
+              name="SignUp"
+              component={SignUp}
+            />
+            </>
           )}
           <Stack.Screen
             name="EditProfile"
