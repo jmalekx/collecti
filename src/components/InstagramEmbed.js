@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   retryText: {
-    color: 'white',
+    color:'white',
     fontWeight: '500',
   }
 });
