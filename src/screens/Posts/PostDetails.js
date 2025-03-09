@@ -164,6 +164,20 @@ const PostDetails = ({ route, navigation }) => {
               </View>
             );
           }
+
+        if (post.platform === 'pinterest') {
+        return (
+            <View>
+            <Image 
+                source={{ uri: post.image }} 
+                style={styles.thumbnail}
+            />
+            <TouchableOpacity onPress={() => Linking.openURL(post.image)}>
+                <Text style={styles.linkText}>Open in Pinterest</Text>
+            </TouchableOpacity>
+            </View>
+            );
+        }
       
           return (
             <Image 
