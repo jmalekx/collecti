@@ -4,6 +4,7 @@ import { FIREBASE_AUTH } from './FirebaseConfig';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 import SignIn from './src/screens/SignIn';
 import SignUp from './src/screens/SignUp/SignUp';
@@ -15,7 +16,12 @@ import PostDetails from './src/screens/Posts/PostDetails';
 import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/UserSettings/EditProfile';
 import EditCollection from './src/screens/Collections/EditCollection';
-import { ToastProvider } from 'react-native-toast-notifications';
+
+import Screen1 from './src/screens/SignUp/Screen1';
+import Screen2 from './src/screens/SignUp/Screen2';
+import Screen3 from './src/screens/SignUp/Screen3';
+import Screen4 from './src/screens/SignUp/Screen4';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
