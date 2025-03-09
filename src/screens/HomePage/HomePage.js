@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Linking, Platform } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
 import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
+import { PinterestService } from '../../services/pinterest/PinterestSerivce';
+import { PINTEREST_CONFIG } from '../../services/pinterest/pinterestConfig';
+
+Linking.addEventListener('url', ({ url }) => {
+  console.log('Received deep link:', url);
+});
 
 const HomePage = () => {
   const toast = useToast();
@@ -14,6 +20,7 @@ const HomePage = () => {
   const [platform, setPlatform] = useState('gallery');
   const [userId, setUserId] = useState(null);
   const [collections, setCollections] = useState([]);
+  const [pinterestConnected, setPinterestConnected] = useState(false);
 
   useEffect(() => {
     console.log("Share Intent Data:", shareIntent);
@@ -31,7 +38,63 @@ const HomePage = () => {
       setUserId(auth.currentUser.uid);
       fetchCollections(auth.currentUser.uid); // Fetch collections when user is authenticated
     }
+
+    const handleUrl = async ({ url }) => {
+      if (url.includes('collecti://oauth')) {
+        const code = url.split('code=')[1]?.split('&')[0];
+        if (code) {
+          try {
+            const tokenData = await PinterestService.getAccessToken(code);
+            // Store the access token securely
+            await AsyncStorage.setItem('pinterest_token', tokenData.access_token);
+            setPinterestConnected(true);
+            toast.show("Pinterest connected successfully!", { type: "success" });
+          } catch (error) {
+            console.error('Pinterest auth error:', error);
+            toast.show("Failed to connect Pinterest", { type: "error" });
+          }
+        }
+      }
+    };
+
+    Linking.addEventListener('url', handleUrl);
+    return () => {
+      Linking.removeAllListeners('url');
+    };
+
   }, [shareIntent]);
+  
+  const handlePinterestAuth = async () => {
+    try {
+      console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
+      
+      const params = new URLSearchParams({
+        client_id: PINTEREST_CONFIG.CLIENT_ID,
+        redirect_uri: PINTEREST_CONFIG.REDIRECT_URI,
+        response_type: 'code',
+        scope: PINTEREST_CONFIG.SCOPE
+      });
+  
+      const pinterestUrl = `pinterest://oauth?${params.toString()}`;
+      
+      console.log('[Pinterest OAuth Debug] Attempting to open URL:', pinterestUrl);
+      
+      const canOpenPinterest = await Linking.canOpenURL(pinterestUrl);
+      console.log('[Pinterest OAuth Debug] Can open Pinterest app:', canOpenPinterest);
+      
+      if (canOpenPinterest) {
+        console.log('[Pinterest OAuth Debug] Opening Pinterest app...');
+        await Linking.openURL(pinterestUrl);
+      } else {
+        console.log('[Pinterest OAuth Debug] Pinterest app not available, falling back to web');
+        const webAuthUrl = `https://www.pinterest.com/oauth/?${params.toString()}`;
+        console.log('[Pinterest OAuth Debug] Opening web URL:', webAuthUrl);
+        await Linking.openURL(webAuthUrl);
+      }
+    } catch (error) {
+      console.error('[Pinterest OAuth Debug] Error:', error);
+    }
+  };
 
   const fetchCollections = async (userId) => {
     try {
@@ -108,6 +171,7 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
+
       {/* AddButton Component */}
       <AddButton
         onAddPost={handleAddPost}
@@ -115,6 +179,15 @@ const HomePage = () => {
         platform={platform} // Pass the detected platform to AddButton
         collections={collections} // Pass the collections array
       />
+
+      <TouchableOpacity 
+        style={styles.pinterestButton}
+        onPress={handlePinterestAuth}>
+        <Text style={styles.pinterestButtonText}>
+          {pinterestConnected ? 'Pinterest Connected' : 'Connect Pinterest'}
+        </Text>
+      </TouchableOpacity>
+
     </View>
   );
 };
@@ -125,6 +198,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  pinterestButton: {
+    backgroundColor: '#E60023',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  pinterestButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });
 
 export default function App() {
