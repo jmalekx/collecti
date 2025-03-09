@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Linking, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text, Linking } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
 import { collection, query, getDocs, addDoc } from 'firebase/firestore';
@@ -8,6 +8,7 @@ import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
 import { PinterestService } from '../../services/pinterest/PinterestSerivce';
 import { PINTEREST_CONFIG } from '../../services/pinterest/pinterestConfig';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomePage = () => {
   const toast = useToast();
@@ -59,7 +60,7 @@ const HomePage = () => {
     };
 
   }, [shareIntent]);
-  
+
   const handlePinterestAuth = async () => {
     try {
       console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
@@ -79,7 +80,6 @@ const HomePage = () => {
       toast.show("Failed to open Pinterest authorization", { type: "error" });
     }
   };
-
 
   const fetchCollections = async (userId) => {
     try {
@@ -130,32 +130,25 @@ const HomePage = () => {
     try {
       const postData = {
         notes: notes || '', 
-        tags: tags ? tags.split(',').map(tag => tag.trim()) : [], // Ensure it's an array
-        image: image || url || '', // Fallback to an empty string if missing
-        platform: postPlatform || 'gallery',  // Ensure platform is always set
+        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
+        image: image || '', // Store the original URL
+        platform: postPlatform,
         createdAt: new Date().toISOString(),
-        thumbnail: image || url || DEFAULT_THUMBNAIL, 
+        thumbnail: image || '', // Store the embed URL or image URL as thumbnail
       };
-  
-      console.log("Post Data before sending:", postData); // Debugging log
-  
-      await addDoc(
-        collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts'),
-        postData
-      );
-  
-      toast.show("Post added successfully", {type: "success",});
+
+      const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts');
+      await addDoc(postsRef, postData);
+      toast.show("Post added successfully", { type: "success" });
     } catch (error) {
-      console.error('Error adding post: ', error);
-      toast.show("Failed to add post", {type: "danger",});
+      console.error('Error adding post:', error);
+      toast.show("Failed to add post", { type: "danger" });
     }
   };
-  
+
   return (
     <View style={styles.container}>
-      {/* AddButton Component */}
-      <AddButton
-        onAddPost={handleAddPost}
+      <AddButton 
         sharedUrl={url} // Pass the shared URL to AddButton
         platform={platform} // Pass the detected platform to AddButton
         collections={collections} // Pass the collections array
@@ -192,10 +185,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function App() {
-  return (
-    <ShareIntentProvider>
-      <HomePage />
-    </ShareIntentProvider>
-  );
-};
+export default HomePage;

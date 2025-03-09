@@ -20,10 +20,38 @@
     ],
     "scheme": "collecti",
     "ios": {
-      "bundleIdentifier": "com.jmalekx.collecti"
+      "bundleIdentifier": "com.jmalekx.collecti",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "collecti"
+            ]
+          }
+        ]
+      }
     },
     "android": {
-      "package": "com.jmalekx.collecti"
+      "package": "com.jmalekx.collecti",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "collecti"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     }
   }
 }
