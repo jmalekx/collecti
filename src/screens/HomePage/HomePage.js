@@ -68,31 +68,32 @@ const HomePage = () => {
     try {
       console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
       
-      const params = new URLSearchParams({
-        client_id: PINTEREST_CONFIG.CLIENT_ID,
-        redirect_uri: PINTEREST_CONFIG.REDIRECT_URI,
-        response_type: 'code',
-        scope: PINTEREST_CONFIG.SCOPE
-      });
+      // Create auth parameters
+      const authParams = 
+        `?client_id=${PINTEREST_CONFIG.CLIENT_ID}`
+        + `&redirect_uri=${encodeURIComponent(PINTEREST_CONFIG.REDIRECT_URI)}`
+        + `&response_type=code`
+        + `&scope=${PINTEREST_CONFIG.SCOPE}`;
   
-      const pinterestUrl = `pinterest://oauth?${params.toString()}`;
-      
-      console.log('[Pinterest OAuth Debug] Attempting to open URL:', pinterestUrl);
-      
-      const canOpenPinterest = await Linking.canOpenURL(pinterestUrl);
-      console.log('[Pinterest OAuth Debug] Can open Pinterest app:', canOpenPinterest);
-      
+      // Pinterest app URL using their custom scheme
+      const pinterestAppUrl = `pinterest://oauth${authParams}`;
+      console.log('[Pinterest OAuth Debug] Checking Pinterest app URL:', pinterestAppUrl);
+  
+      const canOpenPinterest = await Linking.canOpenURL(pinterestAppUrl);
+  
       if (canOpenPinterest) {
-        console.log('[Pinterest OAuth Debug] Opening Pinterest app...');
-        await Linking.openURL(pinterestUrl);
+        console.log('[Pinterest OAuth Debug] Opening in Pinterest app');
+        await Linking.openURL(pinterestAppUrl);
       } else {
+        // Fallback to web if app isn't installed
         console.log('[Pinterest OAuth Debug] Pinterest app not available, falling back to web');
-        const webAuthUrl = `https://www.pinterest.com/oauth/?${params.toString()}`;
-        console.log('[Pinterest OAuth Debug] Opening web URL:', webAuthUrl);
+        const webAuthUrl = `https://www.pinterest.com/oauth${authParams}`;
         await Linking.openURL(webAuthUrl);
       }
+  
     } catch (error) {
       console.error('[Pinterest OAuth Debug] Error:', error);
+      toast.show("Failed to open Pinterest", { type: "error" });
     }
   };
 

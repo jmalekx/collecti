@@ -43,8 +43,8 @@
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
-        <data android:scheme="collecti" android:host="oauth" android:pathPattern="/pinterest"/>
-        <data android:scheme="pinterest" />
+        <data android:scheme="collecti" android:host="oauth" />
+        <data android:scheme="pinterest" android:host="oauth" />
       </intent-filter>
       
       <intent-filter>
