@@ -7,6 +7,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
+import InstagramEmbed from '../../components/InstagramEmbed';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -105,17 +106,7 @@ const Collections = ({ navigation }) => {
 
   const renderThumbnail = (thumbnail) => {
     if (thumbnail.includes('instagram.com')) {
-      const postId = thumbnail.split('/')[4]; // Extract the post ID from the URL
-      const embedUrl = `https://www.instagram.com/p/${postId}/embed`;
-
-      return (
-        <WebView
-          source={{ uri: embedUrl }}
-          style={styles.webview}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-        />
-      );
+      return <InstagramEmbed url={thumbnail} />;
     } else {
       return (
         <Image
@@ -217,16 +208,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   collectionCard: {
-    width: '48%', // Ensure it fits within 2 columns
+    width: '48%',
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 16, // Space between rows
+    marginBottom: 16,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    overflow: 'hidden', 
   },
   collectionName: {
     fontSize: 16,
@@ -241,12 +233,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   thumbnail: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  webview: {
     width: 100,
     height: 100,
     borderRadius: 8,

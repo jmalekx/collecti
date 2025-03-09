@@ -1,3 +1,4 @@
+// In the renderPostContent or handlePlatformLink section, update how you check for Instagram content
 import React, { useState, useEffect } from 'react';
 import {
     View,
@@ -6,7 +7,7 @@ import {
     TouchableOpacity,
     Linking,
     ActivityIndicator,
-    Image // Import Image from React Native
+    Image
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { doc, getDoc, deleteDoc, getDocs, collection, updateDoc } from 'firebase/firestore';
@@ -16,6 +17,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { DEFAULT_THUMBNAIL } from '../../constants';
+import InstagramEmbed from '../../components/InstagramEmbed';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -142,6 +144,19 @@ const PostDetails = ({ route, navigation }) => {
         }
     };
 
+    const renderPostContent = () => {
+        // Add this line to debug
+        console.log("Post data:", post?.platform, post?.image);
+        
+        if (post?.image && post.image.includes('instagram.com')) {
+            // Simplified check, removed platform condition
+            return <InstagramEmbed url={post.image} style={styles.thumbnail} />;
+        } else if (post?.image) {
+            return <Image source={{ uri: post.image }} style={styles.thumbnail} />;
+        }
+        return null;
+    };
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -172,13 +187,10 @@ const PostDetails = ({ route, navigation }) => {
                 </View>
             </View>
 
-            {/* Display image if it exists */}
-            {post?.image && (
-                <Image source={{ uri: post.image }} style={styles.thumbnail} />
-            )}
+            {/* Use the renderPostContent function instead of conditional rendering */}
+            {renderPostContent()}
 
             <Text style={styles.notes}>{post?.notes}</Text>
-            {/* Add date display */}
             <View style={styles.metaContainer}>
                 {post?.createdAt && (
                     <Text style={styles.dateText}>
@@ -273,6 +285,16 @@ const styles = StyleSheet.create({
     },
     headerButton: {
         padding: 4,
+    },
+    platformButton: {
+        backgroundColor: '#007AFF',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    platformButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
     },
 });
 
