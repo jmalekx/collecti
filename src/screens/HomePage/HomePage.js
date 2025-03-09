@@ -6,9 +6,7 @@ import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
-import { PinterestService } from '../../services/pinterest/PinterestSerivce';
-import { PINTEREST_CONFIG } from '../../services/pinterest/pinterestConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import pinterestService from '../../services/pinterest/pinterestService';
 
 const HomePage = () => {
   const toast = useToast();
@@ -36,45 +34,70 @@ const HomePage = () => {
       fetchCollections(auth.currentUser.uid); // Fetch collections when user is authenticated
     }
 
-    const handleUrl = async ({ url }) => {
-      if (url.includes('collecti://oauth')) {
-        const code = url.split('code=')[1]?.split('&')[0];
-        if (code) {
-          try {
-            const tokenData = await PinterestService.getAccessToken(code);
-            // Store the access token securely
-            await AsyncStorage.setItem('pinterest_token', tokenData.access_token);
-            setPinterestConnected(true);
-            toast.show("Pinterest connected successfully!", { type: "success" });
-          } catch (error) {
-            console.error('Pinterest auth error:', error);
-            toast.show("Failed to connect Pinterest", { type: "error" });
-          }
-        }
-      }
+    // Check if already authenticated with Pinterest
+    checkPinterestAuth();
+
+    // Set up the URL event listener for deep linking
+    const urlEventListener = (event) => {
+      handleDeepLink(event.url);
     };
 
-    Linking.addEventListener('url', handleUrl);
+    Linking.addEventListener('url', urlEventListener);
+
+    // Check for any initial URL (app opened through deep link)
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        handleDeepLink(url);
+      }
+    });
+
     return () => {
       Linking.removeAllListeners('url');
     };
-
   }, [shareIntent]);
+
+  const checkPinterestAuth = async () => {
+    try {
+      const isAuthenticated = await pinterestService.isAuthenticated();
+      setPinterestConnected(isAuthenticated);
+      if (isAuthenticated) {
+        console.log('User is already authenticated with Pinterest');
+      }
+    } catch (error) {
+      console.error('Error checking Pinterest auth status:', error);
+    }
+  };
+
+  const handleDeepLink = async (url) => {
+    console.log('[Pinterest OAuth Debug] Received deep link:', url);
+    
+    if (url && url.includes('collecti://oauth/')) {
+      try {
+        console.log('[Pinterest OAuth Debug] Processing OAuth redirect URL');
+        const result = await pinterestService.handleRedirect(url);
+        
+        if (result.success) {
+          console.log('[Pinterest OAuth Debug] Authentication successful');
+          setPinterestConnected(true);
+          toast.show("Pinterest connected successfully!", { type: "success" });
+        }
+      } catch (error) {
+        console.error('[Pinterest OAuth Debug] Error handling redirect:', error);
+        toast.show("Failed to connect Pinterest", { type: "error" });
+      }
+    }
+  };
 
   const handlePinterestAuth = async () => {
     try {
       console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
       
-      const webAuthUrl = `https://www.pinterest.com/oauth/?` +
-        `client_id=${PINTEREST_CONFIG.CLIENT_ID}&` +
-        `redirect_uri=${encodeURIComponent(PINTEREST_CONFIG.REDIRECT_URI)}&` +
-        `response_type=code&` +
-        `scope=${PINTEREST_CONFIG.SCOPE}&` +
-        `force_web=true`; // Add this parameter to force web flow
-        
-      console.log('[Pinterest OAuth Debug] Opening web auth URL:', webAuthUrl);
-      await Linking.openURL(webAuthUrl);
+      // Use the Pinterest service to get the authorization URL
+      const authUrl = pinterestService.getAuthorizationUrl();
+      console.log('[Pinterest OAuth Debug] Opening auth URL:', authUrl);
       
+      // Open the authorization URL in the device's browser
+      await Linking.openURL(authUrl);
     } catch (error) {
       console.error('[Pinterest OAuth Debug] Error:', error);
       toast.show("Failed to open Pinterest authorization", { type: "error" });
@@ -146,6 +169,17 @@ const HomePage = () => {
     }
   };
 
+  const handlePinterestDisconnect = async () => {
+    try {
+      await pinterestService.logout();
+      setPinterestConnected(false);
+      toast.show("Pinterest disconnected", { type: "success" });
+    } catch (error) {
+      console.error('Error disconnecting Pinterest:', error);
+      toast.show("Failed to disconnect Pinterest", { type: "error" });
+    }
+  };
+
   return (
     <View style={styles.container}>
       <AddButton 
@@ -155,10 +189,13 @@ const HomePage = () => {
       />
 
       <TouchableOpacity 
-        style={styles.pinterestButton}
-        onPress={handlePinterestAuth}>
+        style={[
+          styles.pinterestButton, 
+          pinterestConnected ? styles.pinterestConnected : {}
+        ]}
+        onPress={pinterestConnected ? handlePinterestDisconnect : handlePinterestAuth}>
         <Text style={styles.pinterestButtonText}>
-          {pinterestConnected ? 'Pinterest Connected' : 'Connect Pinterest'}
+          {pinterestConnected ? 'Disconnect Pinterest' : 'Connect Pinterest'}
         </Text>
       </TouchableOpacity>
     </View>
@@ -177,6 +214,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 16,
+  },
+  pinterestConnected: {
+    backgroundColor: '#666',
   },
   pinterestButtonText: {
     color: '#fff',
