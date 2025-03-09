@@ -31,19 +31,28 @@ class PinterestService {
    */
   async handleRedirect(url) {
     try {
-      // Extract the authorization code from the URL
       const authCode = this.extractCodeFromUrl(url);
-      
       if (!authCode) {
         throw new Error('No authorization code found in redirect URL');
       }
       
-      // Exchange the authorization code for access and refresh tokens
-      return await this.exchangeCodeForToken(authCode);
+      const result = await this.exchangeCodeForToken(authCode);
+      // Add debug logging
+      console.log('[Pinterest Debug] Access Token:', result.accessToken);
+      return result;
     } catch (error) {
       console.error('Error handling redirect:', error);
       throw error;
     }
+  }
+  
+  async getCurrentToken() {
+    await this.loadTokens(); // Ensure tokens are loaded
+    return {
+      accessToken: this.accessToken,
+      expiresAt: new Date(this.expiresAt).toLocaleString(),
+      isExpired: this.isTokenExpired()
+    };
   }
 
   /**

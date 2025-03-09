@@ -84,12 +84,15 @@ const HomePage = () => {
         const result = await pinterestService.handleRedirect(url);
         
         if (result.success) {
-          console.log('[Pinterest OAuth Debug] Authentication successful');
+          // Add token debug info
+          const tokenInfo = await pinterestService.getCurrentToken();
+          console.log('[Pinterest OAuth Debug] Token Info:', tokenInfo);
+          
           setPinterestConnected(true);
           toast.show("Pinterest connected successfully!", { type: "success" });
         }
       } catch (error) {
-        console.error('[Pinterest OAuth Debug] Error handling redirect:', error);
+        console.error('[Pinterest OAuth Debug] Error:', error);
         toast.show("Failed to connect Pinterest", { type: "error" });
       }
     }
