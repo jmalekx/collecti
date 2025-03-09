@@ -16,6 +16,7 @@ import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import InstagramEmbed from '../../components/InstagramEmbed';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -146,17 +147,8 @@ const CollectionDetails = ({ route, navigation }) => {
   // Render post content based on the platform
   const renderPostContent = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
-      // Render Instagram posts as WebView embeds
-      return (
-        <WebView
-          source={{ uri: `https://www.instagram.com/p/${post.thumbnail.split('/')[4]}/embed` }}
-          style={styles.webview}
-          javaScriptEnabled={true}
-          domStorageEnabled={true}
-        />
-      );
+      return <InstagramEmbed url={post.thumbnail} />;
     } else {
-      // Render other posts as images
       return (
         <Image
           source={{ uri: post.thumbnail }}
