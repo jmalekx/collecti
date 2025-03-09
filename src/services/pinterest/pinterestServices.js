@@ -1,4 +1,4 @@
-import { PINTEREST_CONFIG } from './pinterestConfig';
+import { PINTEREST_CONFIG } from './pinterestConfigs';
 import axios from 'axios';
 import { encode as base64Encode } from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
