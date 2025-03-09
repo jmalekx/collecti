@@ -6,7 +6,6 @@ import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
-import pinterestService from '../../services/pinterest/pinterestServices';
 
 const HomePage = () => {
   const toast = useToast();
@@ -41,9 +40,6 @@ const HomePage = () => {
       fetchCollections(auth.currentUser.uid); // Fetch collections when user is authenticated
     }
 
-    // Check if already authenticated with Pinterest
-    checkPinterestAuth();
-
     // Set up the URL event listener for deep linking
     const urlEventListener = (event) => {
       handleDeepLink(event.url);
@@ -62,57 +58,6 @@ const HomePage = () => {
       Linking.removeAllListeners('url');
     };
   }, [shareIntent]);
-
-  const checkPinterestAuth = async () => {
-    try {
-      const isAuthenticated = await pinterestService.isAuthenticated();
-      setPinterestConnected(isAuthenticated);
-      if (isAuthenticated) {
-        console.log('User is already authenticated with Pinterest');
-      }
-    } catch (error) {
-      console.error('Error checking Pinterest auth status:', error);
-    }
-  };
-
-  const handleDeepLink = async (url) => {
-    console.log('[Pinterest OAuth Debug] Received deep link:', url);
-    
-    if (url && url.includes('collecti://oauth/')) {
-      try {
-        console.log('[Pinterest OAuth Debug] Processing OAuth redirect URL');
-        const result = await pinterestService.handleRedirect(url);
-        
-        if (result.success) {
-          // Add token debug info
-          const tokenInfo = await pinterestService.getCurrentToken();
-          console.log('[Pinterest OAuth Debug] Token Info:', tokenInfo);
-          
-          setPinterestConnected(true);
-          toast.show("Pinterest connected successfully!", { type: "success" });
-        }
-      } catch (error) {
-        console.error('[Pinterest OAuth Debug] Error:', error);
-        toast.show("Failed to connect Pinterest", { type: "error" });
-      }
-    }
-  };
-
-  const handlePinterestAuth = async () => {
-    try {
-      console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
-      
-      // Use the Pinterest service to get the authorization URL
-      const authUrl = pinterestService.getAuthorizationUrl();
-      console.log('[Pinterest OAuth Debug] Opening auth URL:', authUrl);
-      
-      // Open the authorization URL in the device's browser
-      await Linking.openURL(authUrl);
-    } catch (error) {
-      console.error('[Pinterest OAuth Debug] Error:', error);
-      toast.show("Failed to open Pinterest authorization", { type: "error" });
-    }
-  };
 
   const fetchCollections = async (userId) => {
     try {
@@ -157,17 +102,6 @@ const HomePage = () => {
     console.log("Final platform value:", platform);
   };
 
-  const handlePinterestPin = async (url) => {
-    try {
-      console.log('Processing Pinterest pin:', url);
-      // Any Pinterest-specific handling that doesn't involve setting modal state
-    } catch (error) {
-      console.error('Error processing Pinterest pin:', error);
-      toast.show("Failed to process Pinterest pin", { type: "error" });
-    }
-  };
-  
-
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     console.log('Adding post with platform:', postPlatform); // Debug log
   
@@ -196,17 +130,6 @@ const HomePage = () => {
     }
   };
 
-  const handlePinterestDisconnect = async () => {
-    try {
-      await pinterestService.logout();
-      setPinterestConnected(false);
-      toast.show("Pinterest disconnected", { type: "success" });
-    } catch (error) {
-      console.error('Error disconnecting Pinterest:', error);
-      toast.show("Failed to disconnect Pinterest", { type: "error" });
-    }
-  };
-
   return (
     <View style={styles.container}>
       <AddButton 
@@ -216,16 +139,6 @@ const HomePage = () => {
         onAddPost={handleAddPost}
       />
 
-      <TouchableOpacity 
-        style={[
-          styles.pinterestButton, 
-          pinterestConnected ? styles.pinterestConnected : {}
-        ]}
-        onPress={pinterestConnected ? handlePinterestDisconnect : handlePinterestAuth}>
-        <Text style={styles.pinterestButtonText}>
-          {pinterestConnected ? 'Disconnect Pinterest' : 'Connect Pinterest'}
-        </Text>
-      </TouchableOpacity>
     </View>
   );
 };
