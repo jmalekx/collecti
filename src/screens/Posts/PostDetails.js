@@ -142,6 +142,9 @@ const PostDetails = ({ route, navigation }) => {
     const handlePlatformLink = () => {
         if (post?.platform === 'instagram' && post?.image) {
             Linking.openURL(post.image);
+        } else if (post?.platform === 'tiktok' && post?.image) {
+            const tiktokUrl = post.image.split('?')[0]; // Remove any query parameters
+            Linking.openURL(tiktokUrl);
         }
     };
 

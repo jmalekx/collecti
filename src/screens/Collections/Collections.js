@@ -7,6 +7,7 @@ import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
 import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
+import TikTokEmbed from '../../components/TiktokEmbed';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -133,6 +134,13 @@ const Collections = ({ navigation }) => {
             style={styles.instagramEmbed}
           />
         </View>
+      );
+    } else if (thumbnail && thumbnail.includes('tiktok.com')) {
+      return (
+        <TikTokEmbed 
+          url={thumbnail} 
+          style={styles.instagramEmbed}
+        />
       );
     } else {
       return (
