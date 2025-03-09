@@ -17,6 +17,7 @@ import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import InstagramEmbed from '../../components/InstagramEmbed';
+import TikTokEmbed from '../../components/TiktokEmbed';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -148,6 +149,8 @@ const CollectionDetails = ({ route, navigation }) => {
   const renderPostContent = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
       return <InstagramEmbed url={post.thumbnail} />;
+    } else if (post.thumbnail.includes('tiktok.com')) {
+      return <TikTokEmbed url={post.thumbnail} />;
     } else {
       return (
         <Image

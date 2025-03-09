@@ -1,9 +1,8 @@
-// TikTokEmbed.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import WebView from 'react-native-webview';
 
-const TikTokEmbed = ({ url }) => {
+const TikTokEmbed = ({ url, style }) => {
   const [embedCode, setEmbedCode] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,11 +11,10 @@ const TikTokEmbed = ({ url }) => {
       try {
         const response = await fetch(`https://www.tiktok.com/oembed?url=${url}`);
         const data = await response.json();
-        setEmbedCode(data.html);  // Set the embed HTML from the API response
+        setEmbedCode(data.html);
         setLoading(false);
       } catch (error) {
         console.error("Failed to fetch TikTok embed code:", error);
-        Alert.alert("Error", "Failed to load TikTok video.");
         setLoading(false);
       }
     };
@@ -27,7 +25,11 @@ const TikTokEmbed = ({ url }) => {
   }, [url]);
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
   }
 
   if (!embedCode) {
@@ -35,7 +37,7 @@ const TikTokEmbed = ({ url }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <WebView
         originWhitelist={['*']}
         source={{ html: embedCode }}
@@ -49,13 +51,21 @@ const TikTokEmbed = ({ url }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 16,
+    width: '100%',
+    height: 150, // Match the height from CollectionDetails
+    borderRadius: 8,
+    marginBottom: 8,
+    overflow: 'hidden',
     backgroundColor: '#fff',
   },
   webview: {
     width: '100%',
-    height: 400,  // Adjust height as needed
+    height: '100%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
