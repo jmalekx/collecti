@@ -14,7 +14,6 @@ const HomePage = () => {
   const [platform, setPlatform] = useState('gallery');
   const [userId, setUserId] = useState(null);
   const [collections, setCollections] = useState([]);
-  const [pinterestConnected, setPinterestConnected] = useState(false);
 
   useEffect(() => {
     console.log("==== SHARE INTENT DEBUG ====");

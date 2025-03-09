@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import ProgressBar from '../../components/ProgressBar';
 import { useToast } from 'react-native-toast-notifications';
 
+//selecting platforms you wish to collect from
 const Screen2 = ({ navigation }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const toast = useToast();

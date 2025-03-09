@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import ProgressBar from '../../components/ProgressBar';
 
+//picture and introduction to collecti and what its about
 const Screen1 = ({ navigation }) => {
   return (
     <View style={styles.container}>

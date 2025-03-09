@@ -5,6 +5,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import ProgressBar from "../../components/ProgressBar";
 import commonStyles from "../../commonStyles";
 
+//what collections would you like (creation of empty presets if user desires)
 export default function Screen4({ navigation }) {
     const completeOnboarding = async () => {
       try {
@@ -45,23 +46,35 @@ export default function Screen4({ navigation }) {
   return (
     <View style={styles.container}>
         <ProgressBar currentStep={1} totalSteps={4} />      
-      <Text style={styles.title}>What would you like to extract?</Text>
+      <Text style={styles.title}>What would you like to collect?</Text>
       <Text style={styles.subtitle}>
-        We selected some common extracts for you, but you can always change it later.
+        We selected some common collections for you, but you can always change or add your own later.
       </Text>
 
       <View style={styles.optionsContainer}>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>📖 Recipes</Text>
+          <Text style={styles.optionText}>📖 recipes</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>🎬 Films and Shows</Text>
+          <Text style={styles.optionText}>💅🏻 nails</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>🍽 Restaurants</Text>
+          <Text style={styles.optionText}>✈️ travel</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>📚 Books</Text>
+          <Text style={styles.optionText}>👗 fashion</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>💄 beauty</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>🏋️ fitness</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>🧶 crafts</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option}>
+          <Text style={styles.optionText}>🎨 art</Text>
         </TouchableOpacity>
       </View>
 
