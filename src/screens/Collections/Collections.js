@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { View, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
-import { WebView } from 'react-native-webview';
 import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
 
@@ -60,20 +59,40 @@ const Collections = ({ navigation }) => {
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     try {
       let thumbnail = image || DEFAULT_THUMBNAIL;
+      let originalUrl = image;
 
       // Check if platform is Instagram and generate embed URL
       if (postPlatform === 'instagram' && image.includes('instagram.com')) {
-        const postId = image.split('/')[4]; // Extract post ID
-        thumbnail = `https://www.instagram.com/p/${postId}/embed`;
+        // Extract post ID following the same pattern as in InstagramEmbed.js
+        let postId;
+        
+        if (image.includes('/p/')) {
+          // Format: https://www.instagram.com/p/ABC123/
+          const parts = image.split('/');
+          const pIndex = parts.indexOf('p');
+          if (pIndex !== -1 && parts.length > pIndex + 1) {
+            postId = parts[pIndex + 1];
+          }
+        } else if (image.includes('instagram.com')) {
+          // Try to extract from any Instagram URL
+          const match = image.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
+          postId = match ? match[1] : null;
+        }
+        
+        if (postId) {
+          // Clean up the post ID (remove any trailing slashes or parameters)
+          postId = postId.split('?')[0].split('/')[0];
+          thumbnail = `https://www.instagram.com/p/${postId}/embed`;
+        }
       }
 
       const postData = {
         notes,
         tags: tags.split(',').map((tag) => tag.trim()), // Convert tags string to array
-        image,
+        image: originalUrl, // Store the original URL
         platform: postPlatform,
         createdAt: new Date().toISOString(),
-        thumbnail,
+        thumbnail, // Store the embed URL or image URL as thumbnail
       };
 
       const postsRef = collection(
@@ -90,7 +109,7 @@ const Collections = ({ navigation }) => {
       // Update collection thumbnail if this is the first post
       const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', selectedCollection);
       const collectionDoc = await getDoc(collectionRef);
-      if (!collectionDoc.data()?.thumbnail) {
+      if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
         await updateDoc(collectionRef, { thumbnail });
       }
       toast.show("Post added successfully", { type: "success" });
@@ -104,9 +123,17 @@ const Collections = ({ navigation }) => {
     }
   };
 
+  // Improved renderThumbnail function to match CollectionDetails approach
   const renderThumbnail = (thumbnail) => {
-    if (thumbnail.includes('instagram.com')) {
-      return <InstagramEmbed url={thumbnail} />;
+    if (thumbnail && thumbnail.includes('instagram.com')) {
+      return (
+        <View style={styles.instagramContainer}>
+          <InstagramEmbed 
+            url={thumbnail} 
+            style={styles.instagramEmbed}
+          />
+        </View>
+      );
     } else {
       return (
         <Image
@@ -223,19 +250,33 @@ const styles = StyleSheet.create({
   collectionName: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginTop: 8,
   },
   collectionStats: {
     fontSize: 12,
     color: '#555',
   },
   addButtonContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
   },
   thumbnail: {
     width: 100,
     height: 100,
     borderRadius: 8,
     marginBottom: 8,
+  },
+  instagramContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+    overflow: 'hidden',
+  },
+  instagramEmbed: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
   },
 });
