@@ -18,6 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Alert } from 'react-native';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
+import TikTokEmbed from '../../components/TiktokEmbed';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -145,17 +146,30 @@ const PostDetails = ({ route, navigation }) => {
     };
 
     const renderPostContent = () => {
-        // Add this line to debug
-        console.log("Post data:", post?.platform, post?.image);
-        
-        if (post?.image && post.image.includes('instagram.com')) {
-            // Simplified check, removed platform condition
-            return <InstagramEmbed url={post.image} style={styles.thumbnail} />;
-        } else if (post?.image) {
-            return <Image source={{ uri: post.image }} style={styles.thumbnail} />;
-        }
-        return null;
-    };
+        if (post.platform === 'instagram' && post.image.includes('instagram.com')) {
+            return (
+              <View>
+                <InstagramEmbed url={post.image} style={styles.thumbnail} />
+              </View>
+            );
+          }
+      
+          if (post.platform === 'tiktok' && post.image.includes('tiktok.com')) {
+            return (
+              <View style={styles.embedContainer}>
+                <TikTokEmbed url={post.image} style={styles.thumbnail} />
+              </View>
+            );
+          }
+      
+          return (
+            <Image 
+              source={{ uri: post.image }} 
+              style={styles.thumbnail}
+              resizeMode="contain"
+            />
+          );
+        };
 
     if (loading) {
         return (
