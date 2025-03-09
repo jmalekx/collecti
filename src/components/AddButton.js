@@ -4,6 +4,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native';
+import pinterestService from '../services/pinterest/pinterestServices';
 
 const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
   const toast = useToast();
@@ -27,9 +28,14 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     }
   }, [isScreenFocused]);
 
-  // Automatically open the modal and pre-fill the URL for Instagram and TikTok
+  // Automatically open the modal and pre-fill the URL for Instagram, TikTok, and Pinterest
   useEffect(() => {
-    if (sharedUrl && (platform === 'instagram' || platform === 'tiktok')) {
+    console.log("==== ADD BUTTON EFFECT ====");
+    console.log("sharedUrl:", sharedUrl);
+    console.log("platform:", platform);
+    console.log("Should open modal:", Boolean(sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')));
+    
+    if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')) {
       setImageUrl(sharedUrl); // Pre-fill the image URL field with the shared URL
       setIsModalVisible(true); // Open the "Add New Post" modal
     }
@@ -46,6 +52,29 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setIsAddingNewCollection(false);
     setPendingNewCollection(null);
   };
+
+  const fetchPinterestData = async (url) => {
+    try {
+      if (platform === 'pinterest' && url) {
+        // Extract pin ID from URL
+        const pinId = url.match(/pin\/(\d+)/)?.[1];
+        if (pinId) {
+          const pinData = await pinterestService.fetchPinData(pinId);
+          setImageUrl(pinData.image);
+          setNotes(pinData.description || '');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching Pinterest data:', error);
+      toast.show("Failed to fetch Pinterest data", { type: "warning" });
+    }
+  };
+
+  useEffect(() => {
+    if (isModalVisible && platform === 'pinterest' && sharedUrl) {
+      fetchPinterestData(sharedUrl);
+    }
+  }, [isModalVisible, platform, sharedUrl]);
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {

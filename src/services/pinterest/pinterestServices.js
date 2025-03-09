@@ -266,6 +266,44 @@ class PinterestService {
     }
     return !!this.accessToken && !this.isTokenExpired();
   }
+
+async fetchPinData(pinId) {
+  try {
+    const endpoint = `/pins/${pinId}`;
+    const response = await this.apiRequest(endpoint);
+    
+    return {
+      image: response.media.images.original.url,
+      description: response.description,
+      url: `https://pinterest.com/pin/${pinId}`
+    };
+  } catch (error) {
+    console.error('Error fetching pin data:', error);
+    throw error;
+  }
+}
+
+async apiRequest(endpoint, method = 'GET', data = null) {
+  try {
+    const accessToken = await this.getAccessToken();
+    
+    const response = await axios({
+      method,
+      url: `${this.config.API_URL}${endpoint}`,
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      },
+      data: method !== 'GET' ? data : undefined,
+      params: method === 'GET' ? data : undefined
+    });
+    
+    return response.data;
+  } catch (error) {
+    console.error('API request error:', error.response?.data || error.message);
+    throw error;
+  }
+}
+  
 }
 
 // Create a singleton instance

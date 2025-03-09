@@ -6,7 +6,7 @@ import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
-import pinterestService from '../../services/pinterest/pinterestService';
+import pinterestService from '../../services/pinterest/pinterestServices';
 
 const HomePage = () => {
   const toast = useToast();
@@ -18,15 +18,22 @@ const HomePage = () => {
   const [pinterestConnected, setPinterestConnected] = useState(false);
 
   useEffect(() => {
+    console.log("==== SHARE INTENT DEBUG ====");
     console.log("Share Intent Data:", shareIntent);
+    console.log("Share Intent Type:", typeof shareIntent);
+    
     const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
+    console.log("Extracted URL:", extractedUrl);
+    
     if (extractedUrl) {
-      console.log("Valid URL found:", extractedUrl);
-      setUrl(extractedUrl); // Set the URL if found
-      detectPlatform(extractedUrl); // Detect the platform
+      console.log("URL detected, setting URL state:", extractedUrl);
+      setUrl(extractedUrl);
+      console.log("Detecting platform for URL:", extractedUrl);
+      detectPlatform(extractedUrl);
     } else {
-      console.log("No valid URL found.");
+      console.log("No valid URL found in share intent.");
     }
+    
 
     const auth = getAuth();
     if (auth.currentUser) {
@@ -121,6 +128,7 @@ const HomePage = () => {
 
   const detectPlatform = (url) => {
     if (url.includes('instagram.com')) {
+      console.log("Platform detected: Instagram");
       setPlatform('instagram');
       // Extract the actual Instagram post URL from the intent URL
       const intentUrl = new URL(url);
@@ -133,13 +141,29 @@ const HomePage = () => {
         }
       }
     } else if (url.includes('pinterest.com')) {
+      console.log("Platform detected: Pinterest");
       setPlatform('pinterest');
+      console.log("Platform state set to Pinterest");
     } else if (url.includes('tiktok.com')) {
+      console.log("Platform detected: TikTok");
       setPlatform('tiktok');
     } else {
+      console.log("Platform detected: gallery (default)");
       setPlatform('gallery');
     }
+    console.log("Final platform value:", platform);
   };
+
+  const handlePinterestPin = async (url) => {
+    try {
+      console.log('Processing Pinterest pin:', url);
+      // Any Pinterest-specific handling that doesn't involve setting modal state
+    } catch (error) {
+      console.error('Error processing Pinterest pin:', error);
+      toast.show("Failed to process Pinterest pin", { type: "error" });
+    }
+  };
+  
 
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     console.log('Adding post with platform:', postPlatform); // Debug log
@@ -186,6 +210,7 @@ const HomePage = () => {
         sharedUrl={url} // Pass the shared URL to AddButton
         platform={platform} // Pass the detected platform to AddButton
         collections={collections} // Pass the collections array
+        onAddPost={handleAddPost}
       />
 
       <TouchableOpacity 
@@ -225,4 +250,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default HomePage;
+export default function App() {
+  return (
+    <ShareIntentProvider>
+      <HomePage />
+    </ShareIntentProvider>
+  );
+}

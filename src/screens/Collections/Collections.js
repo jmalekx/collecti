@@ -142,6 +142,14 @@ const Collections = ({ navigation }) => {
           style={styles.instagramEmbed}
         />
       );
+    } else if (thumbnail && thumbnail.includes('pinterest.com')) {
+      return (
+        <Image
+          source={{ uri: thumbnail }}
+          style={styles.thumbnail}
+          onError={(e) => console.log('Failed to load Pinterest thumbnail:', e.nativeEvent.error)}
+        />
+      );
     } else {
       return (
         <Image
