@@ -13,6 +13,7 @@ Linking.addEventListener('url', ({ url }) => {
   console.log('Received deep link:', url);
 });
 
+
 const HomePage = () => {
   const toast = useToast();
   const { shareIntent } = useShareIntentContext();
@@ -68,32 +69,19 @@ const HomePage = () => {
     try {
       console.log('[Pinterest OAuth Debug] Starting Pinterest auth...');
       
-      // Create auth parameters
-      const authParams = 
-        `?client_id=${PINTEREST_CONFIG.CLIENT_ID}`
-        + `&redirect_uri=${encodeURIComponent(PINTEREST_CONFIG.REDIRECT_URI)}`
-        + `&response_type=code`
-        + `&scope=${PINTEREST_CONFIG.SCOPE}`;
-  
-      // Pinterest app URL using their custom scheme
-      const pinterestAppUrl = `pinterest://oauth${authParams}`;
-      console.log('[Pinterest OAuth Debug] Checking Pinterest app URL:', pinterestAppUrl);
-  
-      const canOpenPinterest = await Linking.canOpenURL(pinterestAppUrl);
-  
-      if (canOpenPinterest) {
-        console.log('[Pinterest OAuth Debug] Opening in Pinterest app');
-        await Linking.openURL(pinterestAppUrl);
-      } else {
-        // Fallback to web if app isn't installed
-        console.log('[Pinterest OAuth Debug] Pinterest app not available, falling back to web');
-        const webAuthUrl = `https://www.pinterest.com/oauth${authParams}`;
-        await Linking.openURL(webAuthUrl);
-      }
-  
+      const webAuthUrl = `https://www.pinterest.com/oauth/?` +
+        `client_id=${PINTEREST_CONFIG.CLIENT_ID}&` +
+        `redirect_uri=${encodeURIComponent(PINTEREST_CONFIG.REDIRECT_URI)}&` +
+        `response_type=code&` +
+        `scope=${PINTEREST_CONFIG.SCOPE}&` +
+        `force_web=true`; // Add this parameter to force web flow
+        
+      console.log('[Pinterest OAuth Debug] Opening web auth URL:', webAuthUrl);
+      await Linking.openURL(webAuthUrl);
+      
     } catch (error) {
       console.error('[Pinterest OAuth Debug] Error:', error);
-      toast.show("Failed to open Pinterest", { type: "error" });
+      toast.show("Failed to open Pinterest authorization", { type: "error" });
     }
   };
 
@@ -167,12 +155,8 @@ const HomePage = () => {
     }
   };
   
-  
-
-
   return (
     <View style={styles.container}>
-
       {/* AddButton Component */}
       <AddButton
         onAddPost={handleAddPost}
@@ -188,7 +172,6 @@ const HomePage = () => {
           {pinterestConnected ? 'Pinterest Connected' : 'Connect Pinterest'}
         </Text>
       </TouchableOpacity>
-
     </View>
   );
 };
