@@ -1,65 +1,75 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import ProgressBar from "../../components/ProgressBar";
 import commonStyles from "../../commonStyles";
 import { Ionicons } from '@expo/vector-icons';
+import { useToast } from 'react-native-toast-notifications';
 
-//what collections would you like (creation of empty presets if user desires)
 export default function Screen4({ navigation }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
+  const toast = useToast()
 
-    const handleOptionPress = (option) => {
-      if (selectedOptions.includes(option)) {
-          setSelectedOptions(selectedOptions.filter(item => item !== option));
-      } else {
-          setSelectedOptions([...selectedOptions, option]);
-      }
+  const handleOptionPress = (option) => {
+    if (selectedOptions.includes(option)) {
+      setSelectedOptions(selectedOptions.filter(item => item !== option));
+    } else {
+      setSelectedOptions([...selectedOptions, option]);
+    }
   };
 
-    const completeOnboarding = async () => {
-      try {
-        const user = FIREBASE_AUTH.currentUser;
-        if (user) {
-          const userRef = doc(FIREBASE_DB, 'users', user.uid);
-          
-          // First check if the document exists
-          const userDoc = await getDoc(userRef);
-          
-          if (userDoc.exists()) {
-            // Update existing document
-            await updateDoc(userRef, {
-              isNewUser: false
-            });
-          } else {
-            // Create new document if it doesn't exist
-            await setDoc(userRef, {
-              email: user.email,
-              username: user.email.split('@')[0],
-              profilePicture: 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg',
-              bio: '',
-              createdAt: new Date(),
-              collections: 1,
-              posts: 0,
-              isNewUser: false
-            });
-          }
-          
-          // Navigate to Inside stack
-          navigation.navigate('Inside');
+  const createCollection = async (userId, collectionName) => {
+    try {
+      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionName);
+      await setDoc(collectionRef, {
+        name: collectionName,
+        description: '',
+        createdAt: new Date().toISOString(),
+        items: [],
+        thumbnail: '', // Add a default thumbnail if needed
+      });
+    } catch (error) {
+      console.error('Error creating collection:', error);
+      toast.show(`Failed to create collection: ${collectionName}`, { type: 'danger' });
+    }
+  };
+
+  const completeOnboarding = async () => {
+    try {
+      const user = FIREBASE_AUTH.currentUser;
+      if (user) {
+        const userId = user.uid;
+
+        // Create collections for each selected option
+        for (const option of selectedOptions) {
+          await createCollection(userId, option);
         }
-      } catch (error) {
-        console.error('Error completing onboarding:', error);
+
+        // Update user document to mark onboarding as complete
+        const userRef = doc(FIREBASE_DB, 'users', userId);
+        await setDoc(userRef, { isNewUser: false }, { merge: true });
+
+        // Navigate to the next screen
+        navigation.navigate('Inside');
       }
-    };
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      toast.show('Failed to complete onboarding', { type: 'danger' });
+    }
+  };
+
+  const skipOnboarding = () => {
+    // Navigate to the next screen without creating any collections
+    navigation.navigate('Inside');
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
-        <ProgressBar currentStep={4} totalSteps={4} />      
+      <ProgressBar currentStep={4} totalSteps={4} />
       <Text style={styles.title}>What would you like to collect?</Text>
       <Text style={styles.subtitle}>
         We selected some common collections for you, but you can always change or add your own later.
@@ -87,7 +97,7 @@ export default function Screen4({ navigation }) {
         <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={completeOnboarding}>
+      <TouchableOpacity onPress={skipOnboarding}>
         <Text style={styles.skipText}>Skip</Text>
       </TouchableOpacity>
     </View>
@@ -95,8 +105,8 @@ export default function Screen4({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    ...commonStyles,
-    optionSelected: {
-        backgroundColor: '#c0c0c0',
-    },
+  ...commonStyles,
+  optionSelected: {
+    backgroundColor: '#c0c0c0',
+  },
 });
