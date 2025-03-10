@@ -4,6 +4,7 @@ import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import ProgressBar from "../../components/ProgressBar";
 import commonStyles from "../../commonStyles";
+import { Ionicons } from '@expo/vector-icons';
 
 //what collections would you like (creation of empty presets if user desires)
 export default function Screen4({ navigation }) {
@@ -45,6 +46,9 @@ export default function Screen4({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
         <ProgressBar currentStep={1} totalSteps={4} />      
       <Text style={styles.title}>What would you like to collect?</Text>
       <Text style={styles.subtitle}>
@@ -94,20 +98,4 @@ export default function Screen4({ navigation }) {
 
 const styles = StyleSheet.create({
     ...commonStyles,
-  optionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-  option: {
-    backgroundColor: "#FFDCDC",
-    padding: 10,
-    borderRadius: 20,
-    margin: 5,
-  },
-  optionText: {
-    color: "#D54B4B",
-    fontWeight: "bold",
-  },
 });

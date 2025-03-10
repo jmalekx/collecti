@@ -24,6 +24,7 @@ const commonStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
+    marginTop: 20,
   },
   buttonText: {
     color: 'white',
@@ -33,6 +34,42 @@ const commonStyles = StyleSheet.create({
   skipText: {
     marginTop: 15,
     color: '#666',
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+  },
+  option: {
+    backgroundColor: "#FFDCDC",
+    padding: 10,
+    borderRadius: 20,
+    margin: 5,
+  },
+  optionText: {
+    color: "#D54B4B",
+    fontWeight: "bold",
+  },
+  optionSelected: {
+    backgroundColor: '#c0c0c0',
+  },
+  pinterestButton: {
+    backgroundColor: '#E60023',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  pinterestButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 

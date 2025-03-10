@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import ProgressBar from '../../components/ProgressBar';
 import { useToast } from 'react-native-toast-notifications';
+import { Ionicons } from '@expo/vector-icons';
+import commonStyles from "../../commonStyles";
 
 //selecting platforms you wish to collect from
 const Screen2 = ({ navigation }) => {
@@ -16,8 +18,15 @@ const Screen2 = ({ navigation }) => {
     }
   };
 
+  const handleContinue = () => {
+    navigation.navigate('Screen3', {selectedOptions});
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
       <ProgressBar currentStep={2} totalSteps={4} />
       <Text style={styles.title}>Where would you like to collect from?</Text>
       <Text style={styles.description}>Select all that apply</Text>
@@ -35,66 +44,18 @@ const Screen2 = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
-      {/* {selectedOptions.includes('Pinterest') && (
-        <TouchableOpacity 
-          style={styles.pinterestButton}
-          onPress={() => toast.show("Pinterest connection not implemented yet", { type: "info" })}
-        >
-          <Text style={styles.pinterestButtonText}>Connect to Pinterest</Text>
-        </TouchableOpacity>
-      )} */}
-      <Button 
-        title="Continue" 
-        onPress={() => navigation.navigate('Screen3')} 
-      />
+      <TouchableOpacity 
+        style={styles.button} 
+        onPress={handleContinue}
+      >
+        <Text style={styles.buttonText}>Continue</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#FFF3E2',
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  description: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  optionsContainer: {
-    width: '100%',
-  },
-  option: {
-    padding: 15,
-    marginVertical: 5,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  optionSelected: {
-    backgroundColor: '#c0c0c0',
-  },
-  optionText: {
-    fontSize: 16,
-  },
-  pinterestButton: {
-    backgroundColor: '#E60023',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  pinterestButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  ...commonStyles,
 });
 
 export default Screen2;
