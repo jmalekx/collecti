@@ -150,7 +150,7 @@ const CollectionDetails = ({ route, navigation }) => {
     if (post.thumbnail.includes('instagram.com')) {
       return <InstagramEmbed url={post.thumbnail} />;
     } else if (post.thumbnail.includes('tiktok.com')) {
-      return <TikTokEmbed url={post.thumbnail} />;
+      return <TikTokEmbed url={post.thumbnail} scale={0.4} />;
     } else {
       return (
         <Image

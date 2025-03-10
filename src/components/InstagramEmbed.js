@@ -75,6 +75,7 @@ const InstagramEmbed = ({ url, style }) => {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
+        
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         onLoad={() => setLoading(false)}

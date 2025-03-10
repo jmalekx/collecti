@@ -145,6 +145,7 @@ const Collections = ({ navigation }) => {
         <TikTokEmbed 
           url={thumbnail} 
           style={styles.instagramEmbed}
+          scale={0.3}
         />
       );
     } else if (thumbnail && thumbnail.includes('pinterest.com')) {

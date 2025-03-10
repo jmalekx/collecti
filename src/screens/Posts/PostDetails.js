@@ -159,7 +159,7 @@ const PostDetails = ({ route, navigation }) => {
           if (post.platform === 'tiktok' && post.image.includes('tiktok.com')) {
             return (
               <View style={styles.embedContainer}>
-                <TikTokEmbed url={post.image} style={styles.thumbnail} />
+                <TikTokEmbed url={post.image} style={styles.thumbnail} scale={0.48} />
               </View>
             );
           }
