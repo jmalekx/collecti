@@ -137,6 +137,7 @@ const Collections = ({ navigation }) => {
           <InstagramEmbed 
             url={thumbnail} 
             style={styles.instagramEmbed}
+            scale={0.1}
           />
         </View>
       );

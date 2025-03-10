@@ -148,7 +148,7 @@ const CollectionDetails = ({ route, navigation }) => {
   // Render post content based on the platform
   const renderPostContent = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
-      return <InstagramEmbed url={post.thumbnail} />;
+      return <InstagramEmbed url={post.thumbnail} scale={0.42}/>;
     } else if (post.thumbnail.includes('tiktok.com')) {
       return <TikTokEmbed url={post.thumbnail} scale={0.4} />;
     } else {

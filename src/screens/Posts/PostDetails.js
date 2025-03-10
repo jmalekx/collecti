@@ -151,7 +151,7 @@ const PostDetails = ({ route, navigation }) => {
         if (post.platform === 'instagram' && post.image.includes('instagram.com')) {
             return (
               <View>
-                <InstagramEmbed url={post.image} style={styles.thumbnail} />
+                <InstagramEmbed url={post.image} style={styles.thumbnail} scale={0.1}/>
               </View>
             );
           }
@@ -159,7 +159,7 @@ const PostDetails = ({ route, navigation }) => {
           if (post.platform === 'tiktok' && post.image.includes('tiktok.com')) {
             return (
               <View style={styles.embedContainer}>
-                <TikTokEmbed url={post.image} style={styles.thumbnail} scale={0.48} />
+                <TikTokEmbed url={post.image} style={styles.thumbnail} scale={0.64} />
               </View>
             );
           }
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     },
     thumbnail: {
         width: '100%',
-        height: 300,
+        height: 400,
         borderRadius: 12,
         marginBottom: 20,
     },

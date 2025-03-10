@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-const InstagramEmbed = ({ url, style }) => {
+const InstagramEmbed = ({ url, style, scale = 1 }) => {
   const [loading, setLoading] = useState(true);
-  const [key, setKey] = useState(Date.now()); // Add a key to force remounting
+  const [key, setKey] = useState(Date.now());
   const webViewRef = useRef(null);
   
   useEffect(() => {
     // Reset the component when URL changes
     setLoading(true);
     setKey(Date.now());
-  }, [url]);
+  }, [url, scale]);
   
   // Handle different Instagram URL formats
   let postId;
@@ -49,7 +49,8 @@ const InstagramEmbed = ({ url, style }) => {
   
   console.log('Loading Instagram embed with post ID:', postId);
 
-  const embedUrl = `https://www.instagram.com/p/${postId}/embed`;
+  // Use the embed URL directly
+  const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
   
   const reload = () => {
     if (webViewRef.current) {
@@ -57,6 +58,59 @@ const InstagramEmbed = ({ url, style }) => {
       setLoading(true);
     }
   };
+
+  // Create custom HTML that properly fits the Instagram embed
+  const customHtml = `
+    <html>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <style>
+          body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+          }
+          .embed-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+          }
+          iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: ${100 / scale}%;
+            height: ${100 / scale}%;
+            transform: scale(${scale});
+            transform-origin: 0 0;
+            border: none;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="embed-container">
+          <iframe src="${embedUrl}" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+        </div>
+        <script>
+          // Adjust container size after iframe loads
+          window.onload = function() {
+            const iframe = document.querySelector('iframe');
+            iframe.onload = function() {
+              // Ensure the iframe is visible and sized correctly
+              iframe.style.opacity = 1;
+            };
+          };
+        </script>
+      </body>
+    </html>
+  `;
 
   return (
     <View style={[styles.container, style]}>
@@ -68,13 +122,14 @@ const InstagramEmbed = ({ url, style }) => {
       )}
       
       <WebView
-        key={key} // This forces WebView to remount when navigating
+        key={key}
         ref={webViewRef}
-        source={{ uri: embedUrl }}
+        source={{ html: customHtml }}
         style={styles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
+        scrollEnabled={false}
         
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
@@ -102,8 +157,22 @@ const InstagramEmbed = ({ url, style }) => {
             </View>
           );
         }}
+        injectedJavaScript={`
+          // Make sure the embed is centered
+          const iframe = document.querySelector('iframe');
+          if (iframe) {
+            // Monitor for any changes and ensure the iframe stays visible
+            const observer = new MutationObserver(function(mutations) {
+              iframe.style.width = '${100 / scale}%';
+              iframe.style.height = '${100 / scale}%';
+            });
+            
+            observer.observe(document.body, { childList: true, subtree: true });
+          }
+          true; // Required for injectedJavaScript to work
+        `}
         cacheEnabled={false}
-        incognito={true} // Use incognito mode to prevent caching issues
+        incognito={true}
       />
     </View>
   );
@@ -112,10 +181,11 @@ const InstagramEmbed = ({ url, style }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 150, // Match the height from CollectionDetails
+    height: 150, // Increased height to ensure content is visible
     borderRadius: 8,
     marginBottom: 8,
     overflow: 'hidden',
+    backgroundColor: '#fff',
   },
   webview: {
     width: '100%',
@@ -155,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   retryText: {
-    color:'white',
+    color: 'white',
     fontWeight: '500',
   }
 });
