@@ -75,10 +75,15 @@ const Screen3 = ({ route, navigation }) => {
         <View>
           <Text style={styles.title}>Connect to Pinterest</Text>
           <TouchableOpacity 
-            style={styles.pinterestButton}
+            style={[
+              styles.pinterestButton,
+              pinterestConnected && styles.pinterestConnected
+            ]}
             onPress={handlePinterestAuth}
           >
-            <Text style={styles.pinterestButtonText}>Connect to Pinterest</Text>
+            <Text style={styles.pinterestButtonText}>
+              {pinterestConnected ? 'Pinterest Connected' : 'Connect to Pinterest'}
+            </Text>
           </TouchableOpacity>
         </View>
       ) : (
@@ -86,7 +91,7 @@ const Screen3 = ({ route, navigation }) => {
       )}
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate('Screen4')}
+        onPress={() => navigation.navigate('Screen4', { selectedOptions })}
       >
         <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>

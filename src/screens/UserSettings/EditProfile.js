@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import commonStyles from '../../commonStyles';
 
 const EditProfile = ({ navigation }) => {
   const userId = FIREBASE_AUTH.currentUser?.uid;
@@ -53,12 +54,18 @@ const EditProfile = ({ navigation }) => {
         value={username}
         onChangeText={setUsername}
       />
-      <Button title="Save Changes" onPress={handleSaveProfile} />
+      <TouchableOpacity
+      style={styles.button}
+      onPress={handleSaveProfile}
+      >
+        <Text style={styles.buttonText}>Save Changes</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,

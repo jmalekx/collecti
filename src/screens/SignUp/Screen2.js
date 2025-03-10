@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProgressBar from '../../components/ProgressBar';
-import { useToast } from 'react-native-toast-notifications';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from "../../commonStyles";
 
 //selecting platforms you wish to collect from
 const Screen2 = ({ navigation }) => {
   const [selectedOptions, setSelectedOptions] = useState([]);
-  const toast = useToast();
 
   const handleOptionPress = (option) => {
     if (selectedOptions.includes(option)) {

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Button, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { View, TouchableOpacity, Text, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
+import commonStyles from '../../commonStyles';
 
 const SignUp = ({ navigation }) => {
     const toast = useToast();
@@ -91,11 +92,18 @@ const SignUp = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#0000ff"/>
                 ) : (
                     <>
-                        <Button title="Sign Up" onPress={signUp}/>
-                        <Button 
-                            title="Already have an account? Sign In" 
-                            onPress={() => navigation.navigate('SignIn')}
-                        />
+                    <TouchableOpacity
+                    style={styles.button}
+                    onPress={signUp}
+                    >
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('SignIn')}
+                    >
+                    <Text style={styles.buttonText}>Already have an account? Sign In</Text>
+                    </TouchableOpacity>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -104,6 +112,7 @@ const SignUp = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    ...commonStyles,
     root:{
         flex:1,
         alignItems: 'center',

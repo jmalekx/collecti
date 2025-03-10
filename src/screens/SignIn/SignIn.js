@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Button, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView , TouchableOpacity, Text} from 'react-native';
+import { View, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView , TouchableOpacity, Text} from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import Logo from '../../../assets/images/tmplogo.png';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
+import commonStyles from '../../commonStyles';
 
 const SignIn = ({ navigation }) => {
     const toast = useToast();
@@ -50,11 +51,18 @@ const SignIn = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#0000ff"/>
                 ) : (
                     <>
-                        <Button title="Login" onPress={logIn}/>
-                        <Button 
-                            title="Signup" 
-                            onPress={() => navigation.navigate('SignUp')}
-                        />
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={logIn}
+                    >
+                    <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('SignUp')}
+                    >
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -63,6 +71,7 @@ const SignIn = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    ...commonStyles,
     root:{
         flex:1,
         alignItems: 'center',

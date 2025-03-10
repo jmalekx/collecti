@@ -71,6 +71,9 @@ const commonStyles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  pinterestConnected: {
+    backgroundColor: '#666',
+  },
 });
 
 export default commonStyles;

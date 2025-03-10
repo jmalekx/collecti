@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Linking } from 'react-native';
+import { View, StyleSheet, Linking } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
 import { collection, query, getDocs, addDoc } from 'firebase/firestore';

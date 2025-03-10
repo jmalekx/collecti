@@ -1,9 +1,9 @@
-import { View, Text, Button, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { useToast } from 'react-native-toast-notifications';
 import pinterestService from '../../services/pinterest/pinterestServices';
-
+import commonStyles from '../../commonStyles';
 
 const UserSettings = ({ navigation }) => {
   const [pinterestConnected, setPinterestConnected] = useState(false);
@@ -83,33 +83,23 @@ const UserSettings = ({ navigation }) => {
           {pinterestConnected ? 'Disconnect Pinterest' : 'Connect Pinterest'}
         </Text>
       </TouchableOpacity>
-      
-      <Button onPress={() => FIREBASE_AUTH.signOut()} title="Logout"/>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => FIREBASE_AUTH.signOut()}
+      >
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
   },
-  pinterestButton: {
-    backgroundColor: '#E60023',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  pinterestConnected: {
-    backgroundColor: '#666',
-  },
-  pinterestButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  }
 });
 
 export default UserSettings;

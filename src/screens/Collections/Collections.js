@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
@@ -8,6 +8,7 @@ import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import commonStyles from '../../commonStyles';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -18,7 +19,11 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     />
     <Text style={styles.username}>{username}</Text>
     <Text style={styles.stats}>{stats}</Text>
-    <Button title="Edit Profile" onPress={onEditProfile} />
+    <TouchableOpacity 
+    onPress={onEditProfile}
+    style={styles.button}>
+      <Text style={styles.buttonText}>Edit Profile</Text>
+    </TouchableOpacity>
   </View>
 );
 
@@ -213,6 +218,7 @@ const Collections = ({ navigation }) => {
 export default Collections;
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,
