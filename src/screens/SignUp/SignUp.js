@@ -13,8 +13,27 @@ const SignUp = ({ navigation }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH;
+    
+    const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    };
+
+    const validatePassword = (password) => {
+        return password.length >= 6; 
+    };
 
     const signUp = async () => {
+        if (!validateEmail(email)) {
+            toast.show("Invalid email format", {type: "warning"});
+            return;
+        }
+
+        if (!validatePassword(password)) {
+            toast.show("Password must be at least 6 characters long", {type: "warning"});
+            return;
+        }
+
         if (password !== confirmPassword) {
             toast.show("Passwords don't match", {type: "warning"});
             return;
