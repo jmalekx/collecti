@@ -49,7 +49,7 @@ export default function Screen4({ navigation }) {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
-        <ProgressBar currentStep={1} totalSteps={4} />      
+        <ProgressBar currentStep={4} totalSteps={4} />      
       <Text style={styles.title}>What would you like to collect?</Text>
       <Text style={styles.subtitle}>
         We selected some common collections for you, but you can always change or add your own later.
