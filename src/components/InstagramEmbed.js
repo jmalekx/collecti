@@ -5,6 +5,7 @@ import { WebView } from 'react-native-webview';
 const InstagramEmbed = ({ url, style, scale = 1 }) => {
   const [loading, setLoading] = useState(true);
   const [key, setKey] = useState(Date.now());
+  const [initialUrl, setInitialUrl] = useState('');
   const webViewRef = useRef(null);
   
   useEffect(() => {
@@ -52,6 +53,12 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   // Use the embed URL directly
   const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
   
+  useEffect(() => {
+    if (embedUrl) {
+      setInitialUrl(embedUrl);
+    }
+  }, [embedUrl]);
+  
   const reload = () => {
     if (webViewRef.current) {
       webViewRef.current.reload();
@@ -60,6 +67,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   };
 
   // Create custom HTML that properly fits the Instagram embed
+  // Instead of using Instagram's embed URL directly, we'll create a custom viewer
   const customHtml = `
     <html>
       <head>
@@ -81,6 +89,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            pointer-events: none;
           }
           iframe {
             position: absolute;
@@ -91,19 +100,48 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             transform: scale(${scale});
             transform-origin: 0 0;
             border: none;
+            pointer-events: none;
+          }
+          /* Create transparent overlay to intercept all clicks */
+          .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            background-color: transparent;
           }
         </style>
       </head>
       <body>
+        <!-- Transparent overlay to catch all clicks -->
+        <div class="overlay"></div>
+        
         <div class="embed-container">
           <iframe src="${embedUrl}" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
         </div>
+        
         <script>
           // Adjust container size after iframe loads
           window.onload = function() {
             const iframe = document.querySelector('iframe');
+            const overlay = document.querySelector('.overlay');
+            
+            // Intercept all clicks
+            document.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }, true);
+            
+            overlay.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }, true);
+            
             iframe.onload = function() {
-              // Ensure the iframe is visible and sized correctly
               iframe.style.opacity = 1;
             };
           };
@@ -130,6 +168,63 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         domStorageEnabled={true}
         startInLoadingState={true}
         scrollEnabled={false}
+        
+        // The most important part: prevent any navigation away from initial page
+        onShouldStartLoadWithRequest={(request) => {
+          // Only allow the initial load of our custom HTML and the embedded iframe
+          // Check if this is the initial load
+          if (!initialUrl) {
+            return true;
+          }
+          
+          // Always allow about:blank and our custom HTML (data:text/html)
+          if (request.url.startsWith('about:blank') || 
+              request.url.startsWith('data:text/html') ||
+              request.url === initialUrl || 
+              request.url === embedUrl) {
+            return true;
+          }
+          
+          // For any other URL, prevent loading and return to our custom HTML
+          console.log('Blocking navigation to:', request.url);
+          setTimeout(() => {
+            if (webViewRef.current) {
+              webViewRef.current.stopLoading();
+              // Force reload our custom HTML if needed
+              if (webViewRef.current && webViewRef.current.injectJavaScript) {
+                webViewRef.current.injectJavaScript(`
+                  if (window.location.href !== '${embedUrl}' && 
+                      !window.location.href.startsWith('about:blank') && 
+                      !window.location.href.startsWith('data:text/html')) {
+                    window.location.href = 'about:blank';
+                  }
+                  true;
+                `);
+              }
+            }
+          }, 100);
+          
+          return false;
+        }}
+        
+        // Additional navigation blocking
+        onNavigationStateChange={(navState) => {
+          if (initialUrl && 
+              navState.url !== initialUrl && 
+              navState.url !== embedUrl && 
+              !navState.url.startsWith('about:blank') && 
+              !navState.url.startsWith('data:text/html')) {
+            
+            console.log('Detected navigation to:', navState.url);
+            if (webViewRef.current) {
+              webViewRef.current.stopLoading();
+              setTimeout(() => {
+                // Reset to our custom HTML
+                setKey(Date.now()); // Force a complete reload
+              }, 100);
+            }
+          }
+        }}
         
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
@@ -158,17 +253,44 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           );
         }}
         injectedJavaScript={`
-          // Make sure the embed is centered
-          const iframe = document.querySelector('iframe');
-          if (iframe) {
-            // Monitor for any changes and ensure the iframe stays visible
-            const observer = new MutationObserver(function(mutations) {
-              iframe.style.width = '${100 / scale}%';
-              iframe.style.height = '${100 / scale}%';
-            });
-            
-            observer.observe(document.body, { childList: true, subtree: true });
+          // Add click-blocking overlay
+          if (!document.querySelector('.overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }, true);
+            document.body.appendChild(overlay);
           }
+          
+          // Block all clicks
+          document.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }, true);
+          
+          // Make all links non-clickable
+          const disableLinks = function() {
+            const links = document.getElementsByTagName('a');
+            for (let i = 0; i < links.length; i++) {
+              links[i].style.pointerEvents = 'none';
+              links[i].addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+              }, true);
+              links[i].href = 'javascript:void(0)';
+            }
+          };
+          
+          disableLinks();
+          
+          // Run continuously to catch dynamically added links
+          setInterval(disableLinks, 1000);
+          
           true; // Required for injectedJavaScript to work
         `}
         cacheEnabled={false}
@@ -181,7 +303,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 150, // Increased height to ensure content is visible
+    height: 150,
     borderRadius: 8,
     marginBottom: 8,
     overflow: 'hidden',
