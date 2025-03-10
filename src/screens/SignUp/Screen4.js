@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState} from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
@@ -8,6 +8,16 @@ import { Ionicons } from '@expo/vector-icons';
 
 //what collections would you like (creation of empty presets if user desires)
 export default function Screen4({ navigation }) {
+  const [selectedOptions, setSelectedOptions] = useState([]);
+
+    const handleOptionPress = (option) => {
+      if (selectedOptions.includes(option)) {
+          setSelectedOptions(selectedOptions.filter(item => item !== option));
+      } else {
+          setSelectedOptions([...selectedOptions, option]);
+      }
+  };
+
     const completeOnboarding = async () => {
       try {
         const user = FIREBASE_AUTH.currentUser;
@@ -56,30 +66,18 @@ export default function Screen4({ navigation }) {
       </Text>
 
       <View style={styles.optionsContainer}>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>📖 recipes</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>💅🏻 nails</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>✈️ travel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>👗 fashion</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>💄 beauty</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>🏋️ fitness</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>🧶 crafts</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option}>
-          <Text style={styles.optionText}>🎨 art</Text>
-        </TouchableOpacity>
+        {['📖 recipes', '💅🏻 nails', '✈️ travel', '👗 fashion', '💄 beauty', '🏋️ fitness', '🧶 crafts', '🎨 art'].map((option, index) => (
+          <TouchableOpacity
+            key={index}
+            style={[
+              styles.option,
+              selectedOptions.includes(option) && styles.optionSelected
+            ]}
+            onPress={() => handleOptionPress(option)}
+          >
+            <Text style={styles.optionText}>{option}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
       <TouchableOpacity
@@ -98,4 +96,7 @@ export default function Screen4({ navigation }) {
 
 const styles = StyleSheet.create({
     ...commonStyles,
+    optionSelected: {
+        backgroundColor: '#c0c0c0',
+    },
 });

@@ -55,12 +55,6 @@ const SignIn = ({ navigation }) => {
                             title="Signup" 
                             onPress={() => navigation.navigate('SignUp')}
                         />
-                         <TouchableOpacity 
-                            style={styles.testButton} 
-                            onPress={() => navigation.navigate('Screen1')}
-                        >
-                            <Text style={styles.testButtonText}>Test Signup Flow</Text>
-                        </TouchableOpacity>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -89,18 +83,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         marginVertical: 5,
-    },
-    testButton: {
-        backgroundColor: '#007AFF',
-        padding: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-        marginTop: 20,
-    },
-    testButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 16,
     },
 })
 
