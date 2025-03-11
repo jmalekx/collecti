@@ -8,6 +8,7 @@ import commonStyles from '../../commonStyles';
 
 const SignUp = ({ navigation }) => {
     const toast = useToast();
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,6 +25,11 @@ const SignUp = ({ navigation }) => {
     };
 
     const signUp = async () => {
+        if (!username.trim()) {
+            toast.show("Please enter a username", {type: "warning"});
+            return;
+        }
+
         if (!validateEmail(email)) {
             toast.show("Invalid email format", {type: "warning"});
             return;
@@ -49,8 +55,8 @@ const SignUp = ({ navigation }) => {
             // Init profile with isNewUser flag
             const userRef = doc(FIREBASE_DB, 'users', user.uid);
             await setDoc(userRef, {
+                username: username.trim(), // Use the username from input field
                 email: user.email,
-                username: user.email.split('@')[0],
                 profilePicture: defaultPfp,
                 bio: '',
                 createdAt: new Date(),
@@ -83,6 +89,13 @@ const SignUp = ({ navigation }) => {
     return (
         <View style={styles.root}>
             <KeyboardAvoidingView behavior='padding'>
+                <TextInput 
+                    value={username} 
+                    style={styles.input} 
+                    placeholder="Username" 
+                    autoCapitalize="none"
+                    onChangeText={setUsername}
+                />
                 <TextInput 
                     value={email} 
                     style={styles.input} 
