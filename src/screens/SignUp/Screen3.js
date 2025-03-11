@@ -4,6 +4,7 @@ import ProgressBar from '../../components/ProgressBar';
 import PinterestButton from '../../components/PinterestButton';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from "../../commonStyles";
+import { AppText, AppHeading, AppButton} from '../../components/Typography';
 
 const Screen3 = ({ route, navigation }) => {
   const { selectedOptions } = route.params;
@@ -20,14 +21,13 @@ const Screen3 = ({ route, navigation }) => {
           <PinterestButton />
         </View>
       ) : (
-        <Text style={styles.title}>Almost there...</Text>
+        <AppHeading>Almost there...</AppHeading>
       )}
-      <TouchableOpacity 
+      <AppButton 
         style={styles.button}
         onPress={() => navigation.navigate('Screen4', { selectedOptions })}
-      >
-        <Text style={styles.buttonText}>Continue</Text>
-      </TouchableOpacity>
+        title='Continue'
+      />
     </View>
   );
 };

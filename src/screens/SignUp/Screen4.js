@@ -6,6 +6,7 @@ import ProgressBar from "../../components/ProgressBar";
 import commonStyles from "../../commonStyles";
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 export default function Screen4({ navigation }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -70,10 +71,10 @@ export default function Screen4({ navigation }) {
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
       <ProgressBar currentStep={4} totalSteps={4} />
-      <Text style={styles.title}>What would you like to collect?</Text>
-      <Text style={styles.subtitle}>
+      <AppHeading>What would you like to collect?</AppHeading>
+      <AppText>
         We selected some common collections for you, but you can always change or add your own later.
-      </Text>
+      </AppText>
 
       <View style={styles.optionsContainer}>
         {['📖 recipes', '💅🏻 nails', '✈️ travel', '👗 fashion', '💄 beauty', '🏋️ fitness', '🧶 crafts', '🎨 art'].map((option, index) => (
@@ -85,17 +86,16 @@ export default function Screen4({ navigation }) {
             ]}
             onPress={() => handleOptionPress(option)}
           >
-            <Text style={styles.optionText}>{option}</Text>
+            <AppText>{option}</AppText>
           </TouchableOpacity>
         ))}
       </View>
 
-      <TouchableOpacity
+      <AppButton
         style={styles.button}
         onPress={completeOnboarding}
-      >
-        <Text style={styles.buttonText}>Continue</Text>
-      </TouchableOpacity>
+        title='Continue'
+      />
 
       <TouchableOpacity onPress={skipOnboarding}>
         <Text style={styles.skipText}>Skip</Text>

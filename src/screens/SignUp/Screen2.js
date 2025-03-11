@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProgressBar from '../../components/ProgressBar';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from "../../commonStyles";
+import { AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';
 
 //selecting platforms you wish to collect from
 const Screen2 = ({ navigation }) => {
@@ -26,8 +27,8 @@ const Screen2 = ({ navigation }) => {
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
       <ProgressBar currentStep={2} totalSteps={4} />
-      <Text style={styles.title}>Where would you like to collect from?</Text>
-      <Text style={styles.description}>Select all that apply</Text>
+      <AppHeading>Where would you like to collect from?</AppHeading>
+      <AppSmallText>Select all that apply</AppSmallText>
       <View style={styles.optionsContainer}>
         {['Instagram', 'Tiktok', 'Pinterest', 'Youtube', 'My own gallery'].map((option, index) => (
           <TouchableOpacity
@@ -38,16 +39,15 @@ const Screen2 = ({ navigation }) => {
             ]}
             onPress={() => handleOptionPress(option)}
           >
-            <Text style={styles.optionText}>{option}</Text>
+            <AppBoldText style={styles.optionText}>{option}</AppBoldText>
           </TouchableOpacity>
         ))}
       </View>
-      <TouchableOpacity 
+      <AppButton 
         style={styles.button} 
         onPress={handleContinue}
-      >
-        <Text style={styles.buttonText}>Continue</Text>
-      </TouchableOpacity>
+        title='Continue'
+      />
     </View>
   );
 };

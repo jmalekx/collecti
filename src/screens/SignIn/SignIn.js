@@ -5,6 +5,7 @@ import Logo from '../../../assets/images/tmplogo.png';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../../commonStyles';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 const SignIn = ({ navigation }) => {
     const toast = useToast();
@@ -31,14 +32,14 @@ const SignIn = ({ navigation }) => {
         <View style={styles.root}>
             <Image source={Logo} style={[styles.logo, {height: height * 0.45}]} resizeMode='contain'/>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput 
+                <AppTextInput 
                     value={email} 
                     style={styles.input} 
                     placeholder="Email" 
                     autoCapitalize="none" 
                     onChangeText={(text) => setEmail(text)}
                 />
-                <TextInput 
+                <AppTextInput 
                     secureTextEntry={true} 
                     value={password} 
                     style={styles.input} 
@@ -51,18 +52,16 @@ const SignIn = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#0000ff"/>
                 ) : (
                     <>
-                    <TouchableOpacity
+                    <AppButton
                         style={styles.button}
+                        title="Login"
                         onPress={logIn}
-                    >
-                    <Text style={styles.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => navigation.navigate('SignUp')}
-                    >
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                    </TouchableOpacity>
+                    />
+                    <AppButton
+                        style={styles.button}
+                        title="Sign Up"
+                        onPress={() => navigation.navigate('SignUp')}
+                    />
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -82,16 +81,6 @@ const styles = StyleSheet.create({
         width:'75%',
         maxWidth:200,
         height:100,
-    },
-    input: {
-        backgroundColor: 'white',
-        width: 300,
-        height: 50,
-        borderColor: '#e8e8e8',
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        marginVertical: 5,
     },
 })
 

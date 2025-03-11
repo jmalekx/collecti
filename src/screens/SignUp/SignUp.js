@@ -5,6 +5,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../../commonStyles';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 const SignUp = ({ navigation }) => {
     const toast = useToast();
@@ -89,21 +90,21 @@ const SignUp = ({ navigation }) => {
     return (
         <View style={styles.root}>
             <KeyboardAvoidingView behavior='padding'>
-                <TextInput 
+                <AppTextInput 
                     value={username} 
                     style={styles.input} 
                     placeholder="Username" 
                     autoCapitalize="none"
                     onChangeText={setUsername}
                 />
-                <TextInput 
+                <AppTextInput 
                     value={email} 
                     style={styles.input} 
                     placeholder="Email" 
                     autoCapitalize="none" 
                     onChangeText={setEmail}
                 />
-                <TextInput 
+                <AppTextInput 
                     secureTextEntry={true} 
                     value={password} 
                     style={styles.input} 
@@ -111,7 +112,7 @@ const SignUp = ({ navigation }) => {
                     autoCapitalize="none" 
                     onChangeText={setPassword}
                 />
-                <TextInput 
+                <AppTextInput 
                     secureTextEntry={true} 
                     value={confirmPassword} 
                     style={styles.input} 
@@ -124,18 +125,17 @@ const SignUp = ({ navigation }) => {
                     <ActivityIndicator size="large" color="#0000ff"/>
                 ) : (
                     <>
-                    <TouchableOpacity
+                    <AppButton
                     style={styles.button}
+                    title='Sign Up'
                     onPress={signUp}
-                    >
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    />
+           
+                    <AppButton
                     style={styles.button}
                     onPress={() => navigation.navigate('SignIn')}
-                    >
-                    <Text style={styles.buttonText}>Already have an account? Sign In</Text>
-                    </TouchableOpacity>
+                    title='Already have an account? Sign In'
+                    />
                     </>
                 )}
             </KeyboardAvoidingView>

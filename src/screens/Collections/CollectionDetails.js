@@ -18,6 +18,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import commonStyles from '../../commonStyles';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');

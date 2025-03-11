@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
 import { getDoc, doc } from 'firebase/firestore';
@@ -6,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ToastProvider } from 'react-native-toast-notifications';
+import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
 import SignIn from './src/screens/SignIn';
 import SignUp from './src/screens/SignUp/SignUp';
@@ -39,6 +41,10 @@ function InsideLayout() {
 export default function App() {
   const [user, setUser] = useState(null);
   const [isOnboarding, setIsOnboarding] = useState(false);
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_700Bold,
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
@@ -54,6 +60,13 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Show loading screen while fonts are loading - MOVED HERE after all hooks
+  if (!fontsLoaded) {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Loading...</Text>
+    </View>;
+  }
+  
   return (
     <ToastProvider placement="top" duration={4000} offsetTop={75}>
       <NavigationContainer>

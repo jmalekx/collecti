@@ -1,5 +1,10 @@
 import { StyleSheet } from 'react-native';
 
+const typography = {
+  fontRegular: 'Inter_400Regular',
+  fontBold: 'Inter_700Bold',
+};
+
 const commonStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -74,6 +79,41 @@ const commonStyles = StyleSheet.create({
   pinterestConnected: {
     backgroundColor: '#666',
   },
+  textRegular: {
+    fontFamily: typography.fontRegular,
+  },
+  textBold: {
+    fontFamily: typography.fontBold,
+  },
+  textHeading: {
+    fontFamily: typography.fontBold,
+    fontSize: 24,
+  },
+  textSubheading: {
+    fontFamily: typography.fontBold,
+    fontSize: 18,
+  },
+  textBody: {
+    fontFamily: typography.fontRegular,
+    fontSize: 16,
+  },
+  textSmall: {
+    fontFamily: typography.fontRegular,
+    fontSize: 12,
+  },
+  input: {
+    backgroundColor: 'white',
+    width: 300,
+    height: 50,
+    borderColor: '#e8e8e8',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
+    
+},
 });
 
+
+export { typography };
 export default commonStyles;
