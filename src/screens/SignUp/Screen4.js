@@ -7,6 +7,7 @@ import commonStyles from "../../commonStyles";
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 export default function Screen4({ navigation }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
@@ -32,7 +33,7 @@ export default function Screen4({ navigation }) {
       });
     } catch (error) {
       console.error('Error creating collection:', error);
-      toast.show(`Failed to create collection: ${collectionName}`, { type: 'danger' });
+      showToast(toast,`Failed to create collection: ${collectionName}`, { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -56,7 +57,7 @@ export default function Screen4({ navigation }) {
       }
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      toast.show('Failed to complete onboarding', { type: 'danger' });
+      showToast(toast,'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
     }
   };
 

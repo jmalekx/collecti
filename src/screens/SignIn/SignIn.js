@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../../commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const SignIn = ({ navigation }) => {
     const toast = useToast();
@@ -22,7 +23,7 @@ const SignIn = ({ navigation }) => {
             console.log(response);
         } catch (error) {
             console.log(error);
-            toast.show("Login failed", {type: "danger",});
+            showToast(toast,"Login failed", {type: TOAST_TYPES.DANGER});
         } finally {
             setLoading(false);
         }

@@ -6,6 +6,7 @@ import { collection, query, getDocs, addDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import AddButton from '../../components/AddButton';
 import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const HomePage = () => {
   const toast = useToast();
@@ -106,7 +107,7 @@ const HomePage = () => {
   
     if (!postPlatform) {
       console.error("Error: platform is undefined");
-      toast.show("Platform is not set correctly", {type: "warning",});
+      showToast(toast,"Platform is not set correctly", {type: TOAST_TYPES.WARNING});
       return;
     }
   
@@ -122,10 +123,10 @@ const HomePage = () => {
 
       const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts');
       await addDoc(postsRef, postData);
-      toast.show("Post added successfully", { type: "success" });
+      showToast(toast,"Post added successfully", { type: TOAST_TYPES.SUCCESS });
     } catch (error) {
       console.error('Error adding post:', error);
-      toast.show("Failed to add post", { type: "danger" });
+      showToast(toast,"Failed to add post", { type: TOAST_TYPES.DANGER });
     }
   };
 

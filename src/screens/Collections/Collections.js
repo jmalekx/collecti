@@ -9,6 +9,7 @@ import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import commonStyles from '../../commonStyles';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -55,10 +56,10 @@ const Collections = ({ navigation }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-      toast.show("Collection created successfully", { type: "success", });
+      showToast(toast,"Collection created successfully", { type: TOAST_TYPES.SUCCESS, });
     } catch (error) {
       console.error('Error adding collection: ', error);
-      toast.show("Failed to create collection", { type: "danger" });
+      showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -118,14 +119,14 @@ const Collections = ({ navigation }) => {
       if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
         await updateDoc(collectionRef, { thumbnail });
       }
-      toast.show("Post added successfully", { type: "success" });
+      showToast(toast,"Post added successfully", { type: TOAST_TYPES.SUCCESS });
 
       // No need to explicitly call fetchCollections since useUserData hook
       // will automatically update via its real-time listener
 
     } catch (error) {
       console.error('Error adding post: ', error);
-      toast.show("Failed to add post", { type: "danger" });
+      showToast(toast,"Failed to add post", { type: TOAST_TYPES.DANGER });
     }
   };
 

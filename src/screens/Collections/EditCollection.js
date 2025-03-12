@@ -4,6 +4,7 @@ import { doc, updateDoc, getDoc} from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const EditCollection = ({ route, navigation }) => {
   const toast = useToast();
@@ -35,7 +36,7 @@ const EditCollection = ({ route, navigation }) => {
   // Save the updated collection details
   const saveChanges = async () => {
     if (!collectionName.trim()) {
-      toast.show("Collection name cannot be empty", {type: "warning",});
+      showToast(toast, "Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
       return;
     }
 
@@ -45,11 +46,11 @@ const EditCollection = ({ route, navigation }) => {
         name: collectionName,
         description: collectionDescription,
       });
-      toast.show("Collection updated successfully", {type: "success",});
+      showToast(toast,"Collection updated successfully", {type: TOAST_TYPES.SUCCESS,});
       navigation.goBack(); // Navigate back to the previous screen
     } catch (error) {
       console.error('Error updating collection: ', error);
-      toast.show("Failed to update collection ", {type: "danger",});
+      showToast(toast, "Failed to update collection ", {type: TOAST_TYPES.DANGER});
     }
   };
 

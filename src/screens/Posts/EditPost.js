@@ -12,6 +12,7 @@ import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const EditPost = ({ route, navigation }) => {
     const { collectionId, postId } = route.params;
@@ -32,12 +33,12 @@ const EditPost = ({ route, navigation }) => {
                     setNotes(data.notes || '');
                     setTags(data.tags?.join(', ') || '');
                 } else {
-                    toast.show("Post not found", { type: "danger" });
+                   showToast(toast,"Post not found", { type: TOAST_TYPES.DANGER });
                     navigation.goBack();
                 }
             } catch (error) {
                 console.error('Error fetching post:', error);
-                toast.show("Failed to load post", { type: "danger" });
+                showToast("Failed to load post", { type: TOAST_TYPES.DANGER });
             } finally {
                 setLoading(false);
             }
@@ -56,14 +57,14 @@ const EditPost = ({ route, navigation }) => {
                 updatedAt: new Date().toISOString(),
             });
 
-            toast.show("Post updated successfully!", { type: "success" });
+            showToast("Post updated successfully!", { type: TOAST_TYPES.SUCCESS });
 
             // Simply go back instead of explicitly navigating
             navigation.goBack();
 
         } catch (error) {
             console.error('Error updating post:', error);
-            toast.show("Failed to update post", { type: "error" });
+            showToast(toast,"Failed to update post", { type: TOAST_TYPES.DANGER });
         }
     };
 

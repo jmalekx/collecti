@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../../commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const SignUp = ({ navigation }) => {
     const toast = useToast();
@@ -27,22 +28,22 @@ const SignUp = ({ navigation }) => {
 
     const signUp = async () => {
         if (!username.trim()) {
-            toast.show("Please enter a username", {type: "warning"});
+            showToast(toast,"Please enter a username", {type: TOAST_TYPES.WARNING});
             return;
         }
 
         if (!validateEmail(email)) {
-            toast.show("Invalid email format", {type: "warning"});
+            showToast(toast,"Invalid email format", {type: TOAST_TYPES.WARNING});
             return;
         }
 
         if (!validatePassword(password)) {
-            toast.show("Password must be at least 6 characters long", {type: "warning"});
+            showToast(toast,"Password must be at least 6 characters long", {type: TOAST_TYPES.WARNING});
             return;
         }
 
         if (password !== confirmPassword) {
-            toast.show("Passwords don't match", {type: "warning"});
+            showToast(toast,"Passwords don't match", {type: TOAST_TYPES.WARNING});
             return;
         }
     
@@ -77,11 +78,11 @@ const SignUp = ({ navigation }) => {
                 isPinned: true,
             });
         
-            toast.show("Sign up successful", {type: "success"});
+            showToast(toast,"Sign up successful", {type: TOAST_TYPES.SUCCESS});
             navigation.navigate('Screen1');
         } catch (error) {
             console.log(error);
-            toast.show("Sign up failed", {type: "danger"});
+            showToast(toast,"Sign up failed", {type: TOAST_TYPES.DANGER});
         } finally {
             setLoading(false);
         }

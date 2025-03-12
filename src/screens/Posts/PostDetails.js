@@ -18,6 +18,7 @@ import { Alert } from 'react-native';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -48,12 +49,12 @@ const PostDetails = ({ route, navigation }) => {
             if (postDoc.exists()) {
                 setPost({ id: postDoc.id, ...postDoc.data() });
             } else {
-                toast.show("Post not found", { type: "danger" });
+                showToast(toast,"Post not found", { type: TOAST_TYPES.DANGER });
                 navigation.goBack();
             }
         } catch (error) {
             console.error('Error fetching post:', error);
-            toast.show("Failed to load post", { type: "danger" });
+            showToast(toast,"Failed to load post", { type: TOAST_TYPES.DANGER });
         } finally {
             setLoading(false);
         }
@@ -120,11 +121,11 @@ const PostDetails = ({ route, navigation }) => {
                                 lastUpdated: new Date().toISOString() // Add this to trigger collection update
                             });
 
-                            toast.show("Post deleted successfully", { type: "success" });
+                            showToast(toast,"Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
                             navigation.goBack();
                         } catch (error) {
                             console.error('Error deleting post:', error);
-                            toast.show("Failed to delete post", { type: "error" });
+                            showToast(toast,"Failed to delete post", { type: TOAST_TYPES.DANGER });
                         }
                     }
                 }

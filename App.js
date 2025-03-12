@@ -7,6 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ToastProvider } from 'react-native-toast-notifications';
+import { toastConfig } from './src/components/Toasts';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
 import SignIn from './src/screens/SignIn';
@@ -68,7 +69,41 @@ export default function App() {
   }
   
   return (
-    <ToastProvider placement="top" duration={4000} offsetTop={75}>
+    <ToastProvider 
+    placement="top" 
+    duration={4000} 
+    offsetTop={75}
+    renderType={{
+      success: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.success]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.success.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      danger: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.danger]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.danger.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      warning: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.warning]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.warning.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      info: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.info]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.info.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+    }}
+  >
       <NavigationContainer>
         <Stack.Navigator initialRouteName="SignIn">
           {user ? (
