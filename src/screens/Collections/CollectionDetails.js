@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,29 +10,48 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
-import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
+import { Picker } from '@react-native-picker/picker';
+
+// Components
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
-import commonStyles from '../../commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
-import { Picker } from '@react-native-picker/picker';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
-import { useToast } from 'react-native-toast-notifications';
+
+// Services
+import { 
+  getCollection, 
+  getAllCollections, 
+  updateCollection, 
+  deleteCollection as deleteCollectionService,
+  createCollection 
+} from '../../services/collections';
+import { 
+  getCollectionPosts, 
+  deletePost as deletePostService,
+  updateCollectionThumbnail 
+} from '../../services/posts';
+
+// Firebase helpers
+import { getCurrentUserId } from '../../services/firebase';
+import { FIREBASE_DB } from '../../../FirebaseConfig';
+import { collection, doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
+
+// Constants
+import { DEFAULT_THUMBNAIL } from '../../constants';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { collectionId } = route.params; // Get the collectionId from route params
+  const { collectionId } = route.params;
   const [posts, setPosts] = useState([]);
   const [collectionName, setCollectionName] = useState('');
   const [collectionDescription, setCollectionDescription] = useState('');
-  const [selectedPost, setSelectedPost] = useState(null); // Track the selected post for actions
-  const [isMenuVisible, setIsMenuVisible] = useState(false); // Control menu visibility
-  const [numColumns, setNumColumns] = useState(2); // Set the initial number of columns
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [numColumns, setNumColumns] = useState(2);
   
   // Group selection state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
@@ -44,7 +63,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const [collections, setCollections] = useState([]);
   
   // Get the current user ID
-  const userId = getAuth().currentUser?.uid;
+  const userId = getCurrentUserId();
   const toast = useToast();
 
   // Fetch collection details and posts
@@ -56,55 +75,49 @@ const CollectionDetails = ({ route, navigation }) => {
     }
   }
 
-  // Add the filtering logic before the return statement
+  // Filter posts based on search query
   const filteredPosts = posts.filter((post) =>
     post.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  // Fetch collection details (name and description)
+  // Fetch collection details using collection service
   const fetchCollectionDetails = async () => {
     try {
-      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
-      const collectionDoc = await getDoc(collectionRef);
-      if (collectionDoc.exists()) {
-        setCollectionName(collectionDoc.data().name);
-        setCollectionDescription(collectionDoc.data().description || 'No description available');
+      const collectionData = await getCollection(collectionId);
+      if (collectionData) {
+        setCollectionName(collectionData.name);
+        setCollectionDescription(collectionData.description || 'No description available');
       } else {
         console.error('Collection not found');
       }
     } catch (error) {
       console.error('Error fetching collection details: ', error);
+      showToast(toast, "Error fetching collection details", { type: TOAST_TYPES.DANGER });
     }
   };
 
-  // Fetch all collections for the move operation
+  // Fetch all collections for move operation using collections service
   const fetchAllCollections = async () => {
     try {
-      const collectionsRef = collection(FIREBASE_DB, 'users', userId, 'collections');
-      const querySnapshot = await getDocs(collectionsRef);
-      const collectionsData = querySnapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        // Filter out the current collection
-        .filter(coll => coll.id !== collectionId);
-      setCollections(collectionsData);
+      const collectionsData = await getAllCollections();
+      // Filter out the current collection
+      const filteredCollections = collectionsData.filter(coll => coll.id !== collectionId);
+      setCollections(filteredCollections);
     } catch (error) {
       console.error('Error fetching collections: ', error);
+      showToast(toast, "Error fetching collections", { type: TOAST_TYPES.DANGER });
     }
   };
 
-  // Fetch posts for the selected collection
+  // Fetch posts using posts service
   const fetchPosts = async () => {
     try {
-      const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts');
-      const querySnapshot = await getDocs(postsRef);
-      const postsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const postsData = await getCollectionPosts(collectionId);
       setPosts(postsData);
     } catch (error) {
       console.error('Error fetching posts: ', error);
+      showToast(toast, "Error fetching posts", { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -165,7 +178,7 @@ const CollectionDetails = ({ route, navigation }) => {
           onPress: async () => {
             try {
               const deletePromises = selectedPosts.map(postId => 
-                deleteDoc(doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId))
+                deletePostService(collectionId, postId)
               );
               
               await Promise.all(deletePromises);
@@ -175,6 +188,9 @@ const CollectionDetails = ({ route, navigation }) => {
               fetchPosts();
               setIsSelectionMode(false);
               setSelectedPosts([]);
+              
+              // Update collection thumbnail
+              await updateCollectionThumbnail(collectionId);
             } catch (error) {
               console.error('Error deleting posts: ', error);
               showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
@@ -193,17 +209,16 @@ const CollectionDetails = ({ route, navigation }) => {
     }
 
     try {
-      // Create new collection
-      const newCollectionRef = doc(collection(FIREBASE_DB, 'users', userId, 'collections'));
-      await setDoc(newCollectionRef, {
-        name: newCollectionName,
-        description: '',
-        createdAt: new Date().toISOString(),
-        thumbnail: '',
-      });
+      // Create new collection using service
+      const newCollectionData = {
+        name: newCollectionName.trim(),
+        description: ''
+      };
+      
+      const newCollection = await createCollection(newCollectionData);
 
       // Move posts to the new collection
-      await movePostsToCollection(newCollectionRef.id);
+      await movePostsToCollection(newCollection.id);
       
       showToast(toast, `Posts moved to new collection: ${newCollectionName}`, { type: TOAST_TYPES.SUCCESS });
       setNewCollectionName('');
@@ -241,7 +256,8 @@ const CollectionDetails = ({ route, navigation }) => {
       await Promise.all(movePromises);
       
       // Update both collections' thumbnails
-      await updateBothCollectionThumbnails(collectionId, targetCollectionId);
+      await updateCollectionThumbnail(collectionId);
+      await updateCollectionThumbnail(targetCollectionId);
       
       return true;
     } catch (error) {
@@ -249,66 +265,6 @@ const CollectionDetails = ({ route, navigation }) => {
       throw error;
     }
   };
-
-  // Helper function to update thumbnails for both collections
-const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollectionId) => {
-  try {
-    // Update source collection thumbnail
-    const sourcePostsRef = collection(FIREBASE_DB, 'users', userId, 'collections', sourceCollectionId, 'posts');
-    const sourceSnapshot = await getDocs(sourcePostsRef);
-    const sourcePosts = sourceSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    // Sort by date (newest first)
-    const sortedSourcePosts = sourcePosts.sort((a, b) => 
-      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-    );
-    
-    // Update source collection thumbnail
-    const sourceCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', sourceCollectionId);
-    if (sortedSourcePosts.length > 0) {
-      await updateDoc(sourceCollectionRef, {
-        thumbnail: sortedSourcePosts[0].thumbnail,
-        lastUpdated: new Date().toISOString()
-      });
-    } else {
-      await updateDoc(sourceCollectionRef, {
-        thumbnail: DEFAULT_THUMBNAIL,
-        lastUpdated: new Date().toISOString()
-      });
-    }
-    
-    // Update target collection thumbnail
-    const targetPostsRef = collection(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId, 'posts');
-    const targetSnapshot = await getDocs(targetPostsRef);
-    const targetPosts = targetSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }));
-    
-    // Sort by date (newest first)
-    const sortedTargetPosts = targetPosts.sort((a, b) => 
-      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
-    );
-    
-    // Update target collection thumbnail
-    const targetCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId);
-    if (sortedTargetPosts.length > 0) {
-      await updateDoc(targetCollectionRef, {
-        thumbnail: sortedTargetPosts[0].thumbnail,
-        lastUpdated: new Date().toISOString()
-      });
-    }
-    
-    return true;
-  } catch (error) {
-    console.error('Error updating collection thumbnails:', error);
-    throw error;
-  }
-};
-
 
   // Handle move to existing collection
   const handleMoveToExistingCollection = async () => {
@@ -341,11 +297,12 @@ const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollecti
           style: 'destructive',
           onPress: async () => {
             try {
-              const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
-              await deleteDoc(collectionRef);
+              // Use the service to delete the collection
+              await deleteCollectionService(collectionId);
               navigation.goBack(); // Navigate back after deletion
             } catch (error) {
               console.error('Error deleting collection: ', error);
+              showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
             }
           },
         },
@@ -365,12 +322,13 @@ const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollecti
           style: 'destructive',
           onPress: async () => {
             try {
-              const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-              await deleteDoc(postRef);
+              // Use the service to delete the post
+              await deletePostService(collectionId, postId);
               fetchPosts(); // Refresh the posts list
               setIsMenuVisible(false); // Close the menu
             } catch (error) {
               console.error('Error deleting post: ', error);
+              showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
             }
           },
         },
@@ -521,28 +479,35 @@ const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollecti
       >
         <View style={styles.modalBackground}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>Move {selectedPosts.length} Posts</Text>
+            <View style={styles.modalHeader}>
+              <AppHeading style={styles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
+              <TouchableOpacity onPress={() => setIsGroupActionModalVisible(false)}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
             
             {!isAddingNewCollection ? (
               <>
                 <Text style={styles.modalLabel}>Select Target Collection:</Text>
                 {collections.length > 0 ? (
-                  <Picker
-                    selectedValue={selectedTargetCollection}
-                    onValueChange={(itemValue) => {
-                      if (itemValue === 'new') {
-                        setIsAddingNewCollection(true);
-                      } else {
-                        setSelectedTargetCollection(itemValue);
-                      }
-                    }}
-                    style={styles.picker}
-                  >
-                    {collections.map((collection) => (
-                      <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
-                    ))}
-                    <Picker.Item label="+ Create New Collection" value="new" />
-                  </Picker>
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={selectedTargetCollection}
+                      onValueChange={(itemValue) => {
+                        if (itemValue === 'new') {
+                          setIsAddingNewCollection(true);
+                        } else {
+                          setSelectedTargetCollection(itemValue);
+                        }
+                      }}
+                      style={styles.picker}
+                    >
+                      {collections.map((collection) => (
+                        <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
+                      ))}
+                      <Picker.Item label="+ Create New Collection" value="new" />
+                    </Picker>
+                  </View>
                 ) : (
                   <View style={styles.noCollectionsContainer}>
                     <Text style={styles.noCollectionsText}>No other collections available</Text>
@@ -550,27 +515,27 @@ const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollecti
                 )}
                 
                 <View style={styles.buttonRow}>
-                  <TouchableOpacity 
-                    style={[styles.actionButton, styles.cancelButton]} 
+                  <AppButton
+                    style={[styles.actionButton, styles.cancelButton]}
+                    title="Cancel"
                     onPress={() => setIsGroupActionModalVisible(false)}
-                  >
-                    <Text style={styles.actionButtonText}>Cancel</Text>
-                  </TouchableOpacity>
+                    textStyle={styles.buttonText}
+                  />
                   
                   {collections.length > 0 && (
-                    <TouchableOpacity 
-                      style={[styles.actionButton, styles.confirmButton]} 
+                    <AppButton
+                      style={[styles.actionButton, styles.confirmButton]}
+                      title="Move"
                       onPress={handleMoveToExistingCollection}
-                    >
-                      <Text style={styles.actionButtonText}>Move</Text>
-                    </TouchableOpacity>
+                      textStyle={styles.buttonTextWhite}
+                    />
                   )}
                 </View>
               </>
             ) : (
               <>
                 <Text style={styles.modalLabel}>New Collection Name:</Text>
-                <TextInput
+                <AppTextInput
                   style={styles.input}
                   placeholder="Enter Collection Name"
                   value={newCollectionName}
@@ -578,22 +543,22 @@ const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollecti
                 />
                 
                 <View style={styles.buttonRow}>
-                  <TouchableOpacity 
-                    style={[styles.actionButton, styles.cancelButton]} 
+                  <AppButton
+                    style={[styles.actionButton, styles.cancelButton]}
+                    title="Back"
                     onPress={() => {
                       setIsAddingNewCollection(false);
                       setNewCollectionName('');
                     }}
-                  >
-                    <Text style={styles.actionButtonText}>Back</Text>
-                  </TouchableOpacity>
+                    textStyle={styles.buttonText}
+                  />
                   
-                  <TouchableOpacity 
-                    style={[styles.actionButton, styles.confirmButton]} 
+                  <AppButton
+                    style={[styles.actionButton, styles.confirmButton]}
+                    title="Create & Move"
                     onPress={handleCreateCollectionAndMove}
-                  >
-                    <Text style={styles.actionButtonText}>Create & Move</Text>
-                  </TouchableOpacity>
+                    textStyle={styles.buttonTextWhite}
+                  />
                 </View>
               </>
             )}
@@ -654,7 +619,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    marginLeft: 16, // Add spacing between icons
+    marginLeft: 16,
   },
   headerBottom: {
     flexDirection: 'row',
@@ -686,12 +651,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    position: 'relative', // For positioning the 3-dots button
-    width: '48%', // Adjust width for 2 columns
-    margin: '1%', // To create spacing between items
+    position: 'relative',
+    width: '48%',
+    margin: '1%',
   },
   selectedPostCard: {
-    backgroundColor: '#e6f2ff', // Light blue background for selected posts
+    backgroundColor: '#e6f2ff',
     borderWidth: 2,
     borderColor: '#007AFF',
   },
@@ -699,32 +664,23 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 10,
     right: 10,
-    zIndex: 1, // Ensure the button is above other content
+    zIndex: 1,
   },
   thumbnail: {
     width: '100%',
-    height: 150, // Adjust height for 4:3 aspect ratio
+    height: 150,
     borderRadius: 8,
     marginBottom: 8,
   },
   webview: {
     width: '100%',
-    height: 150, // Adjust height for 4:3 aspect ratio
+    height: 150,
     borderRadius: 8,
     marginBottom: 8,
   },
   postTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  postDescription: {
-    fontSize: 14,
-    color: '#555',
-    marginVertical: 8,
-  },
-  postTags: {
-    fontSize: 12,
-    color: '#888',
   },
   searchInput: {
     borderWidth: 1,
@@ -760,29 +716,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  emptyImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
-  },
   emptyText: {
     fontSize: 16,
     textAlign: 'center',
     color: '#666',
-  },
-  fallbackContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 10,
-    height: 150,
-  },
-  fallbackText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
   },
   selectionButton: {
     padding: 8,
@@ -811,7 +748,7 @@ const styles = StyleSheet.create({
   modalContainer: {
     width: '85%',
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -819,20 +756,33 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingBottom: 12,
+  },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 16,
-    textAlign: 'center',
   },
   modalLabel: {
     fontSize: 16,
     marginBottom: 8,
   },
-  picker: {
-    backgroundColor: '#f5f5f5',
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
     borderRadius: 8,
     marginBottom: 16,
+    backgroundColor: '#f9f9f9',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
   },
   input: {
     borderWidth: 1,
@@ -845,6 +795,7 @@ const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginTop: 16,
   },
   actionButton: {
     flex: 1,
@@ -859,10 +810,15 @@ const styles = StyleSheet.create({
   confirmButton: {
     backgroundColor: '#007AFF',
   },
-  actionButtonText: {
+  buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000',
+  },
+  buttonTextWhite: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   noCollectionsContainer: {
     padding: 16,
