@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, Button, StyleSheet } from 'react-native';
+import { 
+  View, 
+  Text, 
+  Modal, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ScrollView
+} from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
 import pinterestService from '../services/pinterest/pinterestServices';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../components/Typography';
 
 const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
   const toast = useToast();
@@ -34,7 +44,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     console.log("sharedUrl:", sharedUrl);
     console.log("platform:", platform);
     console.log("Should open modal:", Boolean(sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')));
-    
+
     if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')) {
       setImageUrl(sharedUrl); // Pre-fill the image URL field with the shared URL
       setIsModalVisible(true); // Open the "Add New Post" modal
@@ -78,7 +88,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      toast.show("Please select and image or paste an Image URL", { type: "warning" });
+      toast.show("Please select an image or paste an Image URL", { type: "warning" });
       return;
     }
 
@@ -170,27 +180,43 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
           }}>
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Add New Collection</Text>
+              <View style={styles.modalHeader}>
+                <AppHeading style={styles.modalTitle}>Create New Collection</AppHeading>
+                <TouchableOpacity onPress={() => setIsAddCollectionModalVisible(false)}>
+                  <MaterialIcons name="close" size={24} color="#000" />
+                </TouchableOpacity>
+              </View>
 
-              <TextInput
+              <AppTextInput
                 style={styles.input}
-                placeholder="Enter Collection Name"
+                placeholder="Collection Name"
                 value={newCollectionName}
                 onChangeText={setNewCollectionName}
               />
 
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Description"
+              <AppTextInput
+                style={[styles.input, styles.textArea]}
+                placeholder="Description (optional)"
                 value={newCollectionDescription}
                 onChangeText={setNewCollectionDescription}
+                multiline={true}
+                numberOfLines={3}
               />
 
-              <Button
-                title="Create Collection"
-                onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)}
-              />
-              <Button title="Cancel" onPress={() => setIsAddCollectionModalVisible(false)} />
+              <View style={styles.buttonRow}>
+                <AppButton
+                  style={[styles.actionButton, styles.cancelButton]}
+                  title="Cancel"
+                  onPress={() => setIsAddCollectionModalVisible(false)}
+                  textStyle={styles.buttonText}
+                />
+                <AppButton
+                  style={[styles.actionButton, styles.confirmButton]}
+                  title="Create Collection"
+                  onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)}
+                  textStyle={styles.buttonTextWhite}
+                />
+              </View>
             </View>
           </View>
         </Modal>
@@ -206,68 +232,107 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
         >
           <View style={styles.modalBackground}>
             <View style={styles.modalContainer}>
-              <Text style={styles.modalTitle}>Add to Collection</Text>
+              <View style={styles.modalHeader}>
+                <AppHeading style={styles.modalTitle}>Add to Collection</AppHeading>
+                <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+                  <MaterialIcons name="close" size={24} color="#000" />
+                </TouchableOpacity>
+              </View>
 
-              {/* Image Upload or URL */}
-              <TouchableOpacity onPress={handleImagePicker} style={styles.uploadButton}>
-                <Text>Upload Image</Text>
-              </TouchableOpacity>
-              <TextInput
-                placeholder="Or paste image URL"
-                value={imageUrl}
-                onChangeText={setImageUrl}
-                style={styles.input}
-              />
-
-              <TextInput
-                placeholder="Enter Notes"
-                value={notes}
-                onChangeText={setNotes}
-                style={styles.input}
-              />
-              <TextInput
-                placeholder="Enter Tags (comma separated)"
-                value={tags}
-                onChangeText={setTags}
-                style={styles.input}
-              />
-
-              {/* Dropdown to select collection */}
-              <Picker
-                selectedValue={selectedCollection}
-                onValueChange={(itemValue) => {
-                  if (itemValue === 'new') {
-                    setIsAddingNewCollection(true);
-                  } else {
-                    setSelectedCollection(itemValue);
-                  }
-                }}
-                style={styles.input}
-              >
-                {collections.map((collection) => (
-                  <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
-                ))}
-                <Picker.Item label="+ Add New Collection" value="new" />
-              </Picker>
-
-              {/* Modify the Picker's add new collection section */}
-              {isAddingNewCollection && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10 }}>
-                  <TextInput
-                    style={[styles.input, { flex: 1 }]}
-                    placeholder="Enter Collection Name"
-                    value={newCollectionName}
-                    onChangeText={setNewCollectionName}
-                  />
-                  <Button
-                    title="✓"
-                    onPress={handleQuickAddCollection}  // Use the new handler
+              <ScrollView style={styles.scrollContainer}>
+                {/* Image Upload or URL */}
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Image</Text>
+                  <TouchableOpacity onPress={handleImagePicker} style={styles.uploadButton}>
+                    <MaterialIcons name="add-photo-alternate" size={24} color="#fff" />
+                    <Text style={styles.uploadButtonText}>Choose Image</Text>
+                  </TouchableOpacity>
+                  
+                  <Text style={styles.orText}>OR</Text>
+                  
+                  <AppTextInput
+                    placeholder="Paste image URL"
+                    value={imageUrl}
+                    onChangeText={setImageUrl}
+                    style={styles.input}
                   />
                 </View>
-              )}
 
-              <Button title="Quick Add" onPress={handleAddPost} />
-              <Button title="Cancel" onPress={() => setIsModalVisible(false)} />
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Details</Text>
+                  <AppTextInput
+                    placeholder="Notes"
+                    value={notes}
+                    onChangeText={setNotes}
+                    style={[styles.input, styles.textArea]}
+                    multiline={true}
+                    numberOfLines={3}
+                  />
+                  
+                  <AppTextInput
+                    placeholder="Tags (comma separated)"
+                    value={tags}
+                    onChangeText={setTags}
+                    style={styles.input}
+                  />
+                </View>
+
+                <View style={styles.section}>
+                  <Text style={styles.sectionTitle}>Select Collection</Text>
+                  {/* Collection selection */}
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={selectedCollection}
+                      onValueChange={(itemValue) => {
+                        if (itemValue === 'new') {
+                          setIsAddingNewCollection(true);
+                        } else {
+                          setSelectedCollection(itemValue);
+                        }
+                      }}
+                      style={styles.picker}
+                    >
+                      {collections.map((collection) => (
+                        <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
+                      ))}
+                      <Picker.Item label="+ Add New Collection" value="new" />
+                    </Picker>
+                  </View>
+
+                  {/* Modify the Picker's add new collection section */}
+                  {isAddingNewCollection && (
+                    <View style={styles.newCollectionContainer}>
+                      <AppTextInput
+                        style={[styles.input, { flex: 1 }]}
+                        placeholder="New Collection Name"
+                        value={newCollectionName}
+                        onChangeText={setNewCollectionName}
+                      />
+                      <TouchableOpacity
+                        style={styles.checkmarkButton}
+                        onPress={handleQuickAddCollection}
+                      >
+                        <MaterialIcons name="check" size={24} color="#fff" />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+              </ScrollView>
+
+              <View style={styles.buttonRow}>
+                <AppButton
+                  style={[styles.actionButton, styles.cancelButton]}
+                  title="Cancel"
+                  onPress={() => setIsModalVisible(false)}
+                  textStyle={styles.buttonText}
+                />
+                <AppButton
+                  style={[styles.actionButton, styles.confirmButton]}
+                  title="Add Post"
+                  onPress={handleAddPost}
+                  textStyle={styles.buttonTextWhite}
+                />
+              </View>
             </View>
           </View>
         </Modal>
@@ -278,7 +343,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
         style={styles.fabButton}
         onPress={() => setIsFabMenuVisible(!isFabMenuVisible)}
       >
-        <Text style={styles.fabButtonText}>+</Text>
+        <MaterialIcons name="add" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* FAB Menu Options */}
@@ -292,8 +357,10 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               setIsFabMenuVisible(false);
             }}
           >
+            <MaterialIcons name="post-add" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Post</Text>
           </TouchableOpacity>
+          
           <TouchableOpacity
             style={styles.fabMenuItem}
             onPress={() => {
@@ -302,10 +369,10 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               setIsFabMenuVisible(false);
             }}
           >
+            <MaterialIcons name="create-new-folder" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Collection</Text>
           </TouchableOpacity>
         </View>
-
       )}
     </View>
   );
@@ -321,67 +388,168 @@ const styles = StyleSheet.create({
   modalContainer: {
     backgroundColor: 'white',
     padding: 20,
-    borderRadius: 10,
-    width: '80%',
+    borderRadius: 16,
+    width: '90%',
+    maxHeight: '80%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingBottom: 12,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+  },
+  scrollContainer: {
+    maxHeight: '70%',
+  },
+  section: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#555',
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
-    marginBottom: 10,
-    padding: 8,
-    borderRadius: 5,
+    borderColor: '#ddd',
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 16,
+    backgroundColor: '#f9f9f9',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+  },
+  newCollectionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  checkmarkButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 8,
+    padding: 12,
+    marginLeft: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   uploadButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    marginBottom: 10,
+    backgroundColor: '#007AFF',
+    padding: 12,
+    marginBottom: 12,
     alignItems: 'center',
-    borderRadius: 5,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  orText: {
+    textAlign: 'center',
+    marginVertical: 8,
+    color: '#666',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  actionButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  cancelButton: {
+    backgroundColor: '#f0f0f0',
+  },
+  confirmButton: {
+    backgroundColor: '#007AFF',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  buttonTextWhite: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
   },
   fabButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,
-    backgroundColor: '#007bff',
+    backgroundColor: '#007AFF',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  fabButtonText: {
-    color: 'white',
-    fontSize: 30,
-    fontWeight: 'bold',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   fabMenu: {
     position: 'absolute',
     bottom: 90,
     right: 20,
     backgroundColor: '#fff',
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: '#eee',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: 5,
+    elevation: 5,
     width: 200,
-    padding: 10,
+    overflow: 'hidden',
   },
   fabMenuItem: {
-    padding: 10,
+    padding: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#eee',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  menuIcon: {
+    marginRight: 12,
   },
   fabMenuText: {
     fontSize: 16,
-    color: '#007bff',
+    color: '#333',
   },
 });
 
