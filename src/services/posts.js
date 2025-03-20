@@ -50,13 +50,7 @@ export const createPost = async (collectionId, postData, userId = getCurrentUser
         
         const docRef = await addDoc(postsRef, newPost);
         
-        // Update collection thumbnail if needed
-        const collectionData = await getDoc(getCollectionRef(collectionId, userId));
-        if (!collectionData.data()?.thumbnail || collectionData.data().thumbnail === DEFAULT_THUMBNAIL) {
-            await updateDoc(getCollectionRef(collectionId, userId), { 
-                thumbnail: postData.thumbnail || DEFAULT_THUMBNAIL 
-            });
-        }
+        await updateCollectionThumbnail(collectionId, userId);
         
         return { id: docRef.id, ...newPost };
     } catch (error) {
@@ -80,31 +74,7 @@ export const updatePost = async (collectionId, postId, updateData, userId = getC
 export const deletePost = async (collectionId, postId, userId = getCurrentUserId()) => {
     try {
         await deleteDoc(getPostRef(collectionId, postId, userId));
-        
-        // Update collection thumbnail if necessary
-        const postsSnapshot = await getDocs(getPostsRef(collectionId, userId));
-        const posts = postsSnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        }));
-        
-        // Sort posts by date to get the most recent one
-        const sortedPosts = posts.sort((a, b) => 
-            new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        
-        // Update the collection document with new thumbnail
-        if (posts.length > 0) {
-            await updateDoc(getCollectionRef(collectionId, userId), {
-                thumbnail: sortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
-                lastUpdated: new Date().toISOString()
-            });
-        } else {
-            await updateDoc(getCollectionRef(collectionId, userId), {
-                thumbnail: DEFAULT_THUMBNAIL,
-                lastUpdated: new Date().toISOString()
-            });
-        }
+        await updateCollectionThumbnail(collectionId, userId);
         
         return true;
     } catch (error) {
@@ -132,4 +102,38 @@ export const subscribeToPosts = (collectionId, callback, userId = getCurrentUser
     );
     
     return unsubscribe;
+};
+
+// Helper function to update collection thumbnail to most recent post
+export const updateCollectionThumbnail = async (collectionId, userId = getCurrentUserId()) => {
+    try {
+        const postsSnapshot = await getDocs(getPostsRef(collectionId, userId));
+        const posts = postsSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        // Sort posts by date to get the most recent one
+        const sortedPosts = posts.sort((a, b) => 
+            new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        );
+        
+        // Update the collection document with new thumbnail
+        if (posts.length > 0) {
+            await updateDoc(getCollectionRef(collectionId, userId), {
+                thumbnail: sortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
+                lastUpdated: new Date().toISOString()
+            });
+        } else {
+            await updateDoc(getCollectionRef(collectionId, userId), {
+                thumbnail: DEFAULT_THUMBNAIL,
+                lastUpdated: new Date().toISOString()
+            });
+        }
+        
+        return true;
+    } catch (error) {
+        console.error('Error updating collection thumbnail:', error);
+        throw error;
+    }
 };

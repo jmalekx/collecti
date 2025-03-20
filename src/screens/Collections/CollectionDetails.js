@@ -11,7 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { collection, doc, getDocs, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, deleteDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -239,12 +239,76 @@ const CollectionDetails = ({ route, navigation }) => {
       });
       
       await Promise.all(movePromises);
+      
+      // Update both collections' thumbnails
+      await updateBothCollectionThumbnails(collectionId, targetCollectionId);
+      
       return true;
     } catch (error) {
       console.error('Error moving posts: ', error);
       throw error;
     }
   };
+
+  // Helper function to update thumbnails for both collections
+const updateBothCollectionThumbnails = async (sourceCollectionId, targetCollectionId) => {
+  try {
+    // Update source collection thumbnail
+    const sourcePostsRef = collection(FIREBASE_DB, 'users', userId, 'collections', sourceCollectionId, 'posts');
+    const sourceSnapshot = await getDocs(sourcePostsRef);
+    const sourcePosts = sourceSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Sort by date (newest first)
+    const sortedSourcePosts = sourcePosts.sort((a, b) => 
+      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
+    
+    // Update source collection thumbnail
+    const sourceCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', sourceCollectionId);
+    if (sortedSourcePosts.length > 0) {
+      await updateDoc(sourceCollectionRef, {
+        thumbnail: sortedSourcePosts[0].thumbnail,
+        lastUpdated: new Date().toISOString()
+      });
+    } else {
+      await updateDoc(sourceCollectionRef, {
+        thumbnail: DEFAULT_THUMBNAIL,
+        lastUpdated: new Date().toISOString()
+      });
+    }
+    
+    // Update target collection thumbnail
+    const targetPostsRef = collection(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId, 'posts');
+    const targetSnapshot = await getDocs(targetPostsRef);
+    const targetPosts = targetSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    
+    // Sort by date (newest first)
+    const sortedTargetPosts = targetPosts.sort((a, b) => 
+      new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+    );
+    
+    // Update target collection thumbnail
+    const targetCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId);
+    if (sortedTargetPosts.length > 0) {
+      await updateDoc(targetCollectionRef, {
+        thumbnail: sortedTargetPosts[0].thumbnail,
+        lastUpdated: new Date().toISOString()
+      });
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error updating collection thumbnails:', error);
+    throw error;
+  }
+};
+
 
   // Handle move to existing collection
   const handleMoveToExistingCollection = async () => {
