@@ -1,53 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Linking } from 'react-native';
+import { View, StyleSheet, Linking, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
-import { collection, query, getDocs, addDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
-import AddButton from '../../components/AddButton';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import AddButton from '../../components/AddButton';
 
-const HomePage = () => {
+// Import services instead of direct Firebase references
+import { getUserProfile } from '../../services/users';
+import { getAllCollections } from '../../services/collections';
+import { createPost } from '../../services/posts';
+import { getCurrentUserId } from '../../services/firebase';
+
+const HomePage = ({ navigation }) => {
   const toast = useToast();
   const { shareIntent } = useShareIntentContext();
   const [url, setUrl] = useState(null);
   const [platform, setPlatform] = useState('gallery');
   const [userId, setUserId] = useState(null);
   const [collections, setCollections] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [userName, setUserName] = useState('');
+  const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
     console.log("==== SHARE INTENT DEBUG ====");
     console.log("Share Intent Data:", shareIntent);
-    console.log("Share Intent Type:", typeof shareIntent);
     
     const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
-    console.log("Extracted URL:", extractedUrl);
     
     if (extractedUrl) {
       console.log("URL detected, setting URL state:", extractedUrl);
       setUrl(extractedUrl);
-      console.log("Detecting platform for URL:", extractedUrl);
       detectPlatform(extractedUrl);
-    } else {
-      console.log("No valid URL found in share intent.");
     }
     
-
-    const auth = getAuth();
-    if (auth.currentUser) {
-      setUserId(auth.currentUser.uid);
-      fetchCollections(auth.currentUser.uid); // Fetch collections when user is authenticated
+    // Use current user ID from service
+    const currentUserId = getCurrentUserId();
+    if (currentUserId) {
+      setUserId(currentUserId);
+      fetchCollections(currentUserId);
+      fetchUserProfile(currentUserId);
     }
 
-    // Set up the URL event listener for deep linking
+    // Set up deep linking
     const urlEventListener = (event) => {
       handleDeepLink(event.url);
     };
 
     Linking.addEventListener('url', urlEventListener);
-
-    // Check for any initial URL (app opened through deep link)
+    
     Linking.getInitialURL().then(url => {
       if (url) {
         handleDeepLink(url);
@@ -59,18 +62,35 @@ const HomePage = () => {
     };
   }, [shareIntent]);
 
+  const fetchUserProfile = async (userId) => {
+    try {
+      // Use the service instead of direct Firestore calls
+      const userProfile = await getUserProfile(userId);
+      
+      if (userProfile) {
+        setUserName(userProfile.username || 'User');
+        setProfileImage(userProfile.profilePicture || null);
+      } else {
+        // Fallback to Auth data if no profile exists
+        const auth = getAuth();
+        setUserName(auth.currentUser?.displayName || 'User');
+        setProfileImage(auth.currentUser?.photoURL || null);
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
+    }
+  };
+
   const fetchCollections = async (userId) => {
     try {
-      const q = query(collection(FIREBASE_DB, 'users', userId, 'collections'));
-      const querySnapshot = await getDocs(q);
-      const collectionsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setCollections(collectionsData); // Update collections state
+      // Use the service instead of direct Firestore calls
+      const collectionsData = await getAllCollections(userId);
+      setCollections(collectionsData);
       console.log("Collections fetched:", collectionsData);
     } catch (error) {
       console.error("Error fetching collections:", error);
+      showToast(toast, "Could not load collections", { type: TOAST_TYPES.WARNING });
     }
   };
 
@@ -103,42 +123,92 @@ const HomePage = () => {
   };
 
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
-    console.log('Adding post with platform:', postPlatform); // Debug log
+    console.log('Adding post with platform:', postPlatform);
   
     if (!postPlatform) {
       console.error("Error: platform is undefined");
-      showToast(toast,"Platform is not set correctly", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Platform is not set correctly", {type: TOAST_TYPES.WARNING});
       return;
     }
   
     try {
-      const postData = {
-        notes: notes || '', 
-        tags: tags.split(',').map(tag => tag.trim()), // Convert tags string to array
-        image: image || '', // Store the original URL
+      // Use the createPost service from your services
+      await createPost(selectedCollection, {
+        notes: notes || '',
+        tags: tags.split(',').map(tag => tag.trim()),
+        originalUrl: image || '',
         platform: postPlatform,
+        thumbnail: image || '',
         createdAt: new Date().toISOString(),
-        thumbnail: image || '', // Store the embed URL or image URL as thumbnail
-      };
-
-      const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', selectedCollection, 'posts');
-      await addDoc(postsRef, postData);
-      showToast(toast,"Post added successfully", { type: TOAST_TYPES.SUCCESS });
+      });
+      
+      showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
+      
+      // Refresh collections after adding a post
+      if (userId) {
+        fetchCollections(userId);
+      }
     } catch (error) {
       console.error('Error adding post:', error);
-      showToast(toast,"Failed to add post", { type: TOAST_TYPES.DANGER });
+      showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
     }
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    // Here you would implement the search functionality
+    console.log("Searching for:", query);
   };
 
   return (
     <View style={styles.container}>
-      <AddButton 
-        sharedUrl={url} // Pass the shared URL to AddButton
-        platform={platform} // Pass the detected platform to AddButton
-        collections={collections} // Pass the collections array
-        onAddPost={handleAddPost}
-      />
+      {/* Header with greeting and profile image */}
+      <View style={styles.header}>
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greeting}>Hello,</Text>
+          <Text style={styles.username}>{userName}</Text>
+        </View>
+        
+        <View style={styles.profileContainer}>
+        {profileImage ? (
+          <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        ) : (
+          <View style={styles.defaultProfileImage}>
+            <Text style={styles.profileInitial}>{userName.charAt(0).toUpperCase()}</Text>
+          </View>
+        )}
+      </View>
+      </View>
 
+      {/* Search bar */}
+      <View style={styles.searchContainer}>
+        <MaterialIcons name="search" size={24} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search collections..."
+          value={searchQuery}
+          onChangeText={handleSearch}
+          placeholderTextColor="#999"
+        />
+      </View>
+      <AddButton
+      sharedUrl={url}
+      platform={platform}
+      collections={collections}
+      onAddPost={handleAddPost}
+      onAddCollection={(name, description) => {
+        // Use the createCollection service here
+        createCollection({ name, description })
+          .then(() => {
+            showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
+            fetchCollections(userId); // Refresh collections
+          })
+          .catch(error => {
+            console.error('Error adding collection:', error);
+            showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
+          });
+      }}
+    />
     </View>
   );
 };
@@ -148,6 +218,67 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingTop: 8,
+  },
+  greetingContainer: {
+    flexDirection: 'column',
+  },
+  greeting: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  username: {
+    fontSize: 18,
+    color: '#666',
+    marginTop: 4,
+  },
+  profileContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+  },
+  defaultProfileImage: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileInitial: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 24,
+    height: 50,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontSize: 16,
+    color: '#333',
   },
   pinterestButton: {
     backgroundColor: '#E60023',

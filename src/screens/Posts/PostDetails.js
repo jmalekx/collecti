@@ -91,54 +91,84 @@ const PostDetails = ({ route, navigation }) => {
         }, [collectionId, postId])
     );
 
-    const handlePlatformLink = () => {
-        if (post?.platform === 'instagram' && post?.image) {
-            Linking.openURL(post.image);
-        } else if (post?.platform === 'tiktok' && post?.image) {
-            const tiktokUrl = post.image.split('?')[0]; // Remove any query parameters
-            Linking.openURL(tiktokUrl);
-        }
-    };
+const handlePlatformLink = () => {
+    if (!post) return;
+    
+    const postUrl = post.image || post.thumbnail || post.originalUrl;
+    
+    if (!postUrl) {
+        showToast(toast, "No URL available to open", { type: TOAST_TYPES.WARNING });
+        return;
+    }
+    
+    if (post.platform === 'instagram') {
+        Linking.openURL(postUrl);
+    } else if (post.platform === 'tiktok') {
+        const tiktokUrl = postUrl.split('?')[0]; // Remove any query parameters
+        Linking.openURL(tiktokUrl);
+    } else if (post.platform === 'pinterest') {
+        Linking.openURL(postUrl);
+    }
+};
 
-    const renderPostContent = () => {
-        if (post.platform === 'instagram' && post.image.includes('instagram.com')) {
-            return (
-              <View>
-                <InstagramEmbed url={post.image} style={styles.thumbnail} scale={0.1}/>
-              </View>
-            );
-          }
-      
-          if (post.platform === 'tiktok' && post.image.includes('tiktok.com')) {
-            return (
-              <View style={styles.embedContainer}>
-                <TikTokEmbed url={post.image} style={styles.thumbnail} scale={0.64} />
-              </View>
-            );
-          }
 
-        if (post.platform === 'pinterest') {
+const renderPostContent = () => {
+    // First check if the post object exists
+    if (!post) return null;
+    
+    // Check for multiple possible URL fields with fallbacks
+    const postUrl = post.image || post.thumbnail || post.originalUrl;
+    
+    if (!postUrl) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>Unable to load content</Text>
+            </View>
+        );
+    }
+    
+    // For Instagram posts
+    if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
         return (
             <View>
-            <Image 
-                source={{ uri: post.image }} 
-                style={styles.thumbnail}
-            />
-            <TouchableOpacity onPress={() => Linking.openURL(post.image)}>
-                <Text style={styles.linkText}>Open in Pinterest</Text>
-            </TouchableOpacity>
+                <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1}/>
             </View>
-            );
-        }
-      
-          return (
-            <Image 
-              source={{ uri: post.image }} 
-              style={styles.thumbnail}
-              resizeMode="contain"
-            />
-          );
-        };
+        );
+    }
+    
+    // For TikTok posts
+    if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
+        return (
+            <View style={styles.embedContainer}>
+                <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
+            </View>
+        );
+    }
+    
+    // For Pinterest posts
+    if (post.platform === 'pinterest') {
+        return (
+            <View>
+                <Image 
+                    source={{ uri: postUrl }} 
+                    style={styles.thumbnail}
+                />
+                <TouchableOpacity onPress={() => Linking.openURL(postUrl)}>
+                    <Text style={styles.linkText}>Open in Pinterest</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+    
+    // Default image rendering
+    return (
+        <Image 
+            source={{ uri: postUrl }} 
+            style={styles.thumbnail}
+            resizeMode="contain"
+        />
+    );
+};
 
     if (loading) {
         return (
@@ -170,7 +200,6 @@ const PostDetails = ({ route, navigation }) => {
                 </View>
             </View>
 
-            {/* Use the renderPostContent function instead of conditional rendering */}
             {renderPostContent()}
 
             <Text style={styles.notes}>{post?.notes}</Text>

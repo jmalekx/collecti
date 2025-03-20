@@ -32,7 +32,7 @@ const Tab = createBottomTabNavigator();
 function InsideLayout() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomePage} />
+      <Tab.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
       <Tab.Screen name="Collections" component={Collections} />
       <Tab.Screen name="Settings" component={UserSettings} />
     </Tab.Navigator>
