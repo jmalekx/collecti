@@ -9,16 +9,15 @@ import {
     Image
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { doc, getDoc, deleteDoc, getDocs, collection, updateDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
-import { Alert } from 'react-native';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import { Alert } from 'react-native';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import { getPost, deletePost } from '../../services/posts';
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -43,18 +42,16 @@ const PostDetails = ({ route, navigation }) => {
 
     const fetchPost = async () => {
         try {
-            const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-            const postDoc = await getDoc(postRef);
-
-            if (postDoc.exists()) {
-                setPost({ id: postDoc.id, ...postDoc.data() });
+            const postData = await getPost(collectionId, postId);
+            if (postData) {
+                setPost(postData);
             } else {
-                showToast(toast,"Post not found", { type: TOAST_TYPES.DANGER });
+                showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
                 navigation.goBack();
             }
         } catch (error) {
             console.error('Error fetching post:', error);
-            showToast(toast,"Failed to load post", { type: TOAST_TYPES.DANGER });
+            showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
         } finally {
             setLoading(false);
         }
@@ -74,58 +71,13 @@ const PostDetails = ({ route, navigation }) => {
                     style: "destructive",
                     onPress: async () => {
                         try {
-                            // Delete the post
-                            const postRef = doc(
-                                FIREBASE_DB,
-                                'users',
-                                userId,
-                                'collections',
-                                collectionId,
-                                'posts',
-                                postId
-                            );
-                            await deleteDoc(postRef);
-
-                            // Get all remaining posts in the collection
-                            const postsRef = collection(
-                                FIREBASE_DB,
-                                'users',
-                                userId,
-                                'collections',
-                                collectionId,
-                                'posts'
-                            );
-                            const postsSnapshot = await getDocs(postsRef);
-                            const posts = postsSnapshot.docs.map(doc => ({
-                                id: doc.id,
-                                ...doc.data()
-                            }));
-
-                            // Sort posts by date to get the most recent one
-                            const sortedPosts = posts.sort((a, b) =>
-                                new Date(b.createdAt) - new Date(a.createdAt)
-                            );
-
-                            // Update collection with new thumbnail
-                            const collectionRef = doc(
-                                FIREBASE_DB,
-                                'users',
-                                userId,
-                                'collections',
-                                collectionId
-                            );
-
-                            // Update the collection document with new thumbnail and post count
-                            await updateDoc(collectionRef, {
-                                thumbnail: sortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL,
-                                lastUpdated: new Date().toISOString() // Add this to trigger collection update
-                            });
-
-                            showToast(toast,"Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
+                            // Use service instead of direct Firebase operations
+                            await deletePost(collectionId, postId);
+                            showToast(toast, "Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
                             navigation.goBack();
                         } catch (error) {
                             console.error('Error deleting post:', error);
-                            showToast(toast,"Failed to delete post", { type: TOAST_TYPES.DANGER });
+                            showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
                         }
                     }
                 }

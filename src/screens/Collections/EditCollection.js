@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import { doc, updateDoc, getDoc} from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import { getCollection, updateCollection } from '../../services/collections';
 
 const EditCollection = ({ route, navigation }) => {
   const toast = useToast();
@@ -19,17 +18,17 @@ const EditCollection = ({ route, navigation }) => {
   useEffect(() => {
     const fetchCollectionDetails = async () => {
       try {
-        const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
-        const collectionDoc = await getDoc(collectionRef);
-        if (collectionDoc.exists()) {
-          setCollectionName(collectionDoc.data().name);
-          setCollectionDescription(collectionDoc.data().description || '');
+        // Use the service
+        const collection = await getCollection(collectionId);
+        if (collection) {
+          setCollectionName(collection.name);
+          setCollectionDescription(collection.description || '');
         }
       } catch (error) {
         console.error('Error fetching collection details: ', error);
       }
     };
-
+    
     fetchCollectionDetails();
   }, [collectionId, userId]);
 
@@ -41,16 +40,17 @@ const EditCollection = ({ route, navigation }) => {
     }
 
     try {
-      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
-      await updateDoc(collectionRef, {
+      // Use the service
+      await updateCollection(collectionId, {
         name: collectionName,
         description: collectionDescription,
       });
-      showToast(toast,"Collection updated successfully", {type: TOAST_TYPES.SUCCESS,});
-      navigation.goBack(); // Navigate back to the previous screen
+      
+      showToast(toast, "Collection updated successfully", {type: TOAST_TYPES.SUCCESS});
+      navigation.goBack();
     } catch (error) {
       console.error('Error updating collection: ', error);
-      showToast(toast, "Failed to update collection ", {type: TOAST_TYPES.DANGER});
+      showToast(toast, "Failed to update collection", {type: TOAST_TYPES.DANGER});
     }
   };
 

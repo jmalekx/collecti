@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { collection, doc, getDoc, onSnapshot, getDocs } from 'firebase/firestore';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../constants';
+import { getUserProfile } from '../services/users';
+import { subscribeToCollections } from '../services/collections';
+import { subscribeToPosts } from '../services/posts';
 
 export const useUserData = () => {
     const userId = FIREBASE_AUTH.currentUser?.uid;
@@ -10,96 +12,85 @@ export const useUserData = () => {
     const [loading, setLoading] = useState(true);
 
     // Fetch user profile
+    // Use service methods instead of direct Firebase operations
     useEffect(() => {
         if (!userId) return;
 
         const fetchUserProfile = async () => {
             try {
-                const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-                if (userDoc.exists()) {
-                    setUserProfile(userDoc.data());
+                const profile = await getUserProfile(userId);
+                if (profile) {
+                    setUserProfile(profile);
                 }
             } catch (error) {
                 console.error('Error fetching user profile: ', error);
             }
         };
 
+
         fetchUserProfile();
     }, [userId]);
 
+    // Subscribe to collections
     useEffect(() => {
         if (!userId) return;
 
-        const collectionsRef = collection(FIREBASE_DB, 'users', userId, 'collections');
-        const unsubscribeCollections = onSnapshot(collectionsRef, (collectionsSnapshot) => {
-            const newCollections = [];
-            const postsUnsubscribes = [];
+        let collectionsUnsubscribe;
+        let postsUnsubscribes = [];
 
-            // Process regular collections
-            collectionsSnapshot.docs.forEach((collDoc) => {
-                if (collDoc.id === 'Unsorted') return;
-
-                const collRef = collDoc.ref;
-                const postsRef = collection(collRef, 'posts');
-                
-                // Set up real-time listener for posts in this collection
-                const unsubscribePosts = onSnapshot(postsRef, (postsSnapshot) => {
-                    const posts = postsSnapshot.docs.map(postDoc => ({
-                        id: postDoc.id,
-                        ...postDoc.data()
-                    }));
-                    const sortedPosts = posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                    setCollections(prev => {
-                        const existing = prev.find(c => c.id === collDoc.id);
-                        const updatedCollection = {
-                            id: collDoc.id,
-                            ...collDoc.data(),
-                            items: sortedPosts,
-                            thumbnail: sortedPosts[0]?.thumbnail || DEFAULT_THUMBNAIL
-                        };
-
-                        if (existing) {
-                            return prev.map(c => c.id === collDoc.id ? updatedCollection : c);
-                        } else {
-                            return [...prev, updatedCollection];
-                        }
-                    });
-                });
-
-                postsUnsubscribes.push(unsubscribePosts);
-            });
-
-            // Handle Unsorted collection
-            const unsortedRef = doc(collectionsRef, 'Unsorted');
-            const unsortedPostsRef = collection(unsortedRef, 'posts');
-            const unsubscribeUnsorted = onSnapshot(unsortedPostsRef, (unsortedSnapshot) => {
-                const unsortedPosts = unsortedSnapshot.docs.map(postDoc => ({
-                    id: postDoc.id,
-                    ...postDoc.data()
+        const setupCollectionsListener = () => {
+            collectionsUnsubscribe = subscribeToCollections((newCollections) => {
+                // Update collections without posts first
+                const collectionsWithoutPosts = newCollections.map(coll => ({
+                    ...coll,
+                    items: []
                 }));
-                const sortedUnsorted = unsortedPosts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                setCollections(prev => {
-                    const others = prev.filter(c => c.id !== 'Unsorted');
-                    return [{
-                        id: 'Unsorted',
-                        name: 'Unsorted',
-                        items: sortedUnsorted,
-                        thumbnail: sortedUnsorted[0]?.thumbnail || DEFAULT_THUMBNAIL
-                    }, ...others];
+                
+                setCollections(collectionsWithoutPosts);
+                
+                // Clean up any existing post subscriptions
+                postsUnsubscribes.forEach(unsub => unsub());
+                postsUnsubscribes = [];
+                
+                // Set up post listeners for each collection
+                newCollections.forEach(collection => {
+                    // Include the Unsorted collection in post subscriptions
+                    const unsubscribe = subscribeToPosts(collection.id, (posts) => {
+                        // When posts update, merge them with the collection
+                        setCollections(prev => {
+                            const updatedCollections = [...prev];
+                            const collIndex = updatedCollections.findIndex(c => c.id === collection.id);
+                            
+                            if (collIndex !== -1) {
+                                updatedCollections[collIndex] = {
+                                    ...updatedCollections[collIndex],
+                                    items: posts
+                                };
+                            }
+                            
+                            return updatedCollections;
+                        });
+                    });
+                    
+                    postsUnsubscribes.push(unsubscribe);
                 });
+                
+                setLoading(false);
             });
+        };
 
-            postsUnsubscribes.push(unsubscribeUnsorted);
-            setLoading(false);
+        setupCollectionsListener();
 
-            // Cleanup posts listeners when collections change
-            return () => postsUnsubscribes.forEach(unsub => unsub());
-        });
-
-        return () => unsubscribeCollections();
+        // Cleanup function
+        return () => {
+            if (collectionsUnsubscribe) collectionsUnsubscribe();
+            postsUnsubscribes.forEach(unsub => unsub());
+        };
     }, [userId]);
 
-    return { userProfile, collections, loading };
+    return {
+        userProfile,
+        collections,
+        loading
+    };
 };
