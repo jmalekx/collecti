@@ -10,6 +10,8 @@ import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import commonStyles from '../../commonStyles';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   <View style={styles.header}>
@@ -28,11 +30,25 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
   </View>
 );
 
-const Collections = ({ navigation }) => {
+const Collections = ({ }) => {
   const toast = useToast();
+  const navigation = useNavigation();
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
   const userId = FIREBASE_AUTH.currentUser?.uid;
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('UserSettings')}
+          style={{ marginRight: 15 }}
+        >
+          <Ionicons name="settings-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   // Derived values from userProfile and collections
   const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email;
