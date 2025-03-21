@@ -387,17 +387,28 @@ const CollectionDetails = ({ route, navigation }) => {
               </>
             ) : (
               <>
-                <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                  <Ionicons name="checkmark-circle-outline" size={24} color="#000" style={styles.icon} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
-                  <Ionicons name="create-outline" size={24} color="#000" style={styles.icon} />
-                </TouchableOpacity>
-                {collectionName !== "Unsorted" && (
+              <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
+                <Ionicons name="checkmark-circle-outline" size={24} color="#000" style={styles.icon} />
+              </TouchableOpacity>
+              {collectionName !== "Unsorted" ? (
+                <>
+                  <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
+                    <Ionicons name="create-outline" size={24} color="#000" style={styles.icon} />
+                  </TouchableOpacity>
                   <TouchableOpacity onPress={deleteCollection}>
                     <Ionicons name="trash" size={24} color="red" style={styles.icon} />
                   </TouchableOpacity>
-                )}
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity disabled={true} style={styles.disabledIcon}>
+                    <Ionicons name="create-outline" size={24} color="#ccc" style={styles.icon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity disabled={true} style={styles.disabledIcon}>
+                    <Ionicons name="trash" size={24} color="#ccc" style={styles.icon} />
+                  </TouchableOpacity>
+                </>
+              )}
               </>
             )}
           </View>
@@ -830,6 +841,9 @@ const styles = StyleSheet.create({
   noCollectionsText: {
     fontSize: 16,
     color: '#666',
+  },
+  disabledIcon: {
+    opacity: 0.4,
   },
 });
 
