@@ -19,7 +19,7 @@ const SearchPage = () => {
         <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Search..."
+          placeholder="Search collections..."
           value={searchQuery}
           onChangeText={handleSearch}
           placeholderTextColor="#999"
