@@ -155,12 +155,6 @@ const HomePage = ({ navigation }) => {
     }
   };
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    // Here you would implement the search functionality
-    console.log("Searching for:", query);
-  };
-
   return (
     <View style={styles.container}>
       {/* Header with greeting and profile image */}
@@ -179,18 +173,6 @@ const HomePage = ({ navigation }) => {
           </View>
         )}
       </View>
-      </View>
-
-      {/* Search bar */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search collections..."
-          value={searchQuery}
-          onChangeText={handleSearch}
-          placeholderTextColor="#999"
-        />
       </View>
       <AddButton
       sharedUrl={url}
