@@ -2,6 +2,7 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from './Toasts';
 
 export const PostForm = ({
     initialNotes = '',
@@ -18,7 +19,7 @@ export const PostForm = ({
 
     const handleSubmit = () => {
         if (!notes.trim()) {
-            toast.show("Notes cannot be empty", { type: "warning" });
+            showToast(toast, "Notes cannot be empty", {type: TOAST_TYPES.WARNING});
             return;
         }
 
