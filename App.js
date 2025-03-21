@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StatusBar } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
 import { getDoc, doc } from 'firebase/firestore';
@@ -69,6 +69,12 @@ export default function App() {
   }
   
   return (
+    <>
+    <StatusBar 
+      barStyle="dark-content" 
+      backgroundColor="#F9F6F2" //CHANGE COLOR LATER
+      translucent={false} 
+    />
     <ToastProvider 
     placement="top" 
     duration={4000} 
@@ -123,18 +129,11 @@ export default function App() {
             </>
           ) : (
             <>
-              <Stack.Screen
-                name="SignIn"
-                component={SignIn}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen 
-                name="SignUp" 
-                component={SignUp} 
-              />
+              <Stack.Screen name="SignIn"component={SignIn} options={{ headerShown: false }}/>
+              <Stack.Screen name="SignUp" component={SignUp} />
             </>
           )}
-          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
+          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true }} />
           <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
           <Stack.Screen name="EditCollection" component={EditCollection} />
           <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
@@ -142,5 +141,6 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>
+    </>
   );
 }

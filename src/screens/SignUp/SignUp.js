@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, TouchableOpacity, Text, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { doc, setDoc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
@@ -16,6 +16,27 @@ const SignUp = ({ navigation }) => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH;
+
+useLayoutEffect(() => {
+    navigation.setOptions({
+        headerTitle: 'Create Account',
+        headerTitleStyle: {
+            fontFamily: 'Inter_700Bold',
+            fontSize: 18,
+        },
+        headerStyle: {
+            backgroundColor: '#F9F6F2', //change color later
+            shadowColor: 'transparent',
+            shadowOffset: { height: 0, width: 0 },
+            shadowOpacity: 0,
+            shadowRadius: 0,
+            elevation: 0,
+            borderBottomWidth: 0,
+        },
+        headerShadowVisible: false,
+        headerTitleAlign: 'center',
+    });
+}, [navigation]);
     
     const validateEmail = (email) => {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
