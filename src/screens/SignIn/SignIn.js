@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView , TouchableOpacity, Text} from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import Logo from '../../../assets/images/tmplogo.png';
+import Logo from '../../images/tmplogo.png';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../../commonStyles';
