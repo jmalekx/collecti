@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 import { Picker } from '@react-native-picker/picker';
@@ -375,27 +375,27 @@ const CollectionDetails = ({ route, navigation }) => {
             {isSelectionMode ? (
               <>
                 <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                  <MaterialIcons name="close" size={24} color="#000" style={styles.icon} />
+                  <Ionicons name="close" size={24} color="#000" style={styles.icon} />
                 </TouchableOpacity>
                 <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
                 <TouchableOpacity onPress={handleGroupMove} style={styles.selectionButton}>
-                  <MaterialIcons name="drive-file-move" size={24} color="#0066cc" style={styles.icon} />
+                  <Ionicons name="move" size={24} color="#0066cc" style={styles.icon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleGroupDelete} style={styles.selectionButton}>
-                  <MaterialIcons name="delete" size={24} color="#FF3B30" style={styles.icon} />
+                  <Ionicons name="trash" size={24} color="#FF3B30" style={styles.icon} />
                 </TouchableOpacity>
               </>
             ) : (
               <>
                 <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                  <MaterialIcons name="select-all" size={24} color="#000" style={styles.icon} />
+                  <Ionicons name="checkmark-circle-outline" size={24} color="#000" style={styles.icon} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
-                  <MaterialIcons name="edit" size={24} color="#000" style={styles.icon} />
+                  <Ionicons name="create-outline" size={24} color="#000" style={styles.icon} />
                 </TouchableOpacity>
                 {collectionName !== "Unsorted" && (
                   <TouchableOpacity onPress={deleteCollection}>
-                    <MaterialIcons name="delete" size={24} color="red" style={styles.icon} />
+                    <Ionicons name="trash" size={24} color="red" style={styles.icon} />
                   </TouchableOpacity>
                 )}
               </>
@@ -455,8 +455,8 @@ const CollectionDetails = ({ route, navigation }) => {
           >
             {isSelectionMode && (
               <View style={styles.checkboxContainer}>
-                <MaterialIcons 
-                  name={selectedPosts.includes(item.id) ? "check-box" : "check-box-outline-blank"} 
+                <Ionicons 
+                  name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
                   size={24} 
                   color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"} 
                 />
@@ -482,7 +482,7 @@ const CollectionDetails = ({ route, navigation }) => {
             <View style={styles.modalHeader}>
               <AppHeading style={styles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
               <TouchableOpacity onPress={() => setIsGroupActionModalVisible(false)}>
-                <MaterialIcons name="close" size={24} color="#000" />
+                <Ionicons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
             

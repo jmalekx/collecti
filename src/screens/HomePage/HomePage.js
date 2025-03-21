@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Linking, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { getAuth } from 'firebase/auth';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import AddButton from '../../components/AddButton';
@@ -182,7 +182,7 @@ const HomePage = ({ navigation }) => {
 
       {/* Search bar */}
       <View style={styles.searchContainer}>
-        <MaterialIcons name="search" size={24} color="#666" style={styles.searchIcon} />
+        <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search collections..."

@@ -12,7 +12,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { useToast } from "react-native-toast-notifications";
 import { useIsFocused } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../components/Typography';
 
@@ -183,7 +183,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               <View style={styles.modalHeader}>
                 <AppHeading style={styles.modalTitle}>Create New Collection</AppHeading>
                 <TouchableOpacity onPress={() => setIsAddCollectionModalVisible(false)}>
-                  <MaterialIcons name="close" size={24} color="#000" />
+                  <Ionicons name="close-outline" size={24} color="#000" />
                 </TouchableOpacity>
               </View>
 
@@ -235,7 +235,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               <View style={styles.modalHeader}>
                 <AppHeading style={styles.modalTitle}>Add to Collection</AppHeading>
                 <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-                  <MaterialIcons name="close" size={24} color="#000" />
+                  <Ionicons name="close-outline" size={24} color="#000" />
                 </TouchableOpacity>
               </View>
 
@@ -244,7 +244,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Image</Text>
                   <TouchableOpacity onPress={handleImagePicker} style={styles.uploadButton}>
-                    <MaterialIcons name="add-photo-alternate" size={24} color="#fff" />
+                    <Ionicons name="images-outline" size={24} color="#fff" />
                     <Text style={styles.uploadButtonText}>Choose Image</Text>
                   </TouchableOpacity>
                   
@@ -312,7 +312,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                         style={styles.checkmarkButton}
                         onPress={handleQuickAddCollection}
                       >
-                        <MaterialIcons name="check" size={24} color="#fff" />
+                        <Ionicons name="checkmark-outline" size={24} color="#fff" />
                       </TouchableOpacity>
                     </View>
                   )}
@@ -343,7 +343,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
         style={styles.fabButton}
         onPress={() => setIsFabMenuVisible(!isFabMenuVisible)}
       >
-        <MaterialIcons name="add" size={30} color="#fff" />
+        <Ionicons name="add-outline" size={30} color="#fff" />
       </TouchableOpacity>
 
       {/* FAB Menu Options */}
@@ -369,7 +369,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
               setIsFabMenuVisible(false);
             }}
           >
-            <MaterialIcons name="create-new-folder" size={24} color="#007bff" style={styles.menuIcon} />
+            <Ionicons name="folder-open" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Collection</Text>
           </TouchableOpacity>
         </View>

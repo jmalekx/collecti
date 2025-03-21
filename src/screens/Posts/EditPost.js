@@ -10,7 +10,7 @@ import {
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
@@ -80,10 +80,10 @@ const EditPost = ({ route, navigation }) => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <MaterialIcons name="close" size={24} color="#000" />
+                    <Ionicons name="close" size={24} color="#000" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSave}>
-                    <MaterialIcons name="check" size={24} color="#000" />
+                    <Ionicons name="checkmark" size={24} color="#000" />
                 </TouchableOpacity>
             </View>
 

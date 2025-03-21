@@ -8,7 +8,7 @@ import {
     ActivityIndicator,
     Image
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
@@ -182,20 +182,20 @@ const renderPostContent = () => {
         <View style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <MaterialIcons name="arrow-back" size={24} color="#007AFF" />
+                    <Ionicons name="chevron-back" size={24} color="#007AFF" />
                 </TouchableOpacity>
                 <View style={styles.headerActions}>
                     <TouchableOpacity
                         onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
                         style={styles.headerButton}
                     >
-                        <MaterialIcons name="edit" size={24} color="#007AFF" />
+                        <Ionicons name="create-outline" size={24} color="#007AFF" />
                     </TouchableOpacity>
                     <TouchableOpacity
                         onPress={handleDelete}
                         style={styles.headerButton}
                     >
-                        <MaterialIcons name="delete" size={24} color="#FF3B30" />
+                        <Ionicons name="trash" size={24} color="#FF3B30" />
                     </TouchableOpacity>
                 </View>
             </View>
