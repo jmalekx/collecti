@@ -18,6 +18,55 @@ import TikTokEmbed from '../../components/TiktokEmbed';
 import { Alert } from 'react-native';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getPost, deletePost } from '../../services/posts';
+import LinkifyIt from 'linkify-it';
+const linkify = LinkifyIt();
+
+const TextWithLinks = ({ text, style }) => {
+    if (!text) return null;
+    
+    const matches = linkify.match(text);
+    if (!matches) {
+        return <Text style={style}>{text}</Text>;
+    }
+
+    const elements = [];
+    let lastIndex = 0;
+
+    matches.forEach((match, i) => {
+        // Add text before the link
+        if (match.index > lastIndex) {
+            elements.push(
+                <Text key={`text-${i}`} style={style}>
+                    {text.substring(lastIndex, match.index)}
+                </Text>
+            );
+        }
+
+        // Add the link
+        elements.push(
+            <Text
+                key={`link-${i}`}
+                style={[style, styles.link]}
+                onPress={() => Linking.openURL(match.url)}
+            >
+                {match.text}
+            </Text>
+        );
+
+        lastIndex = match.lastIndex;
+    });
+
+    // Add text after the last link
+    if (lastIndex < text.length) {
+        elements.push(
+            <Text key={`text-last`} style={style}>
+                {text.substring(lastIndex)}
+            </Text>
+        );
+    }
+
+    return <Text>{elements}</Text>;
+};
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -202,7 +251,7 @@ const renderPostContent = () => {
 
             {renderPostContent()}
 
-            <Text style={styles.notes}>{post?.notes}</Text>
+            <TextWithLinks text={post?.notes} style={styles.notes} />
             <View style={styles.metaContainer}>
                 {post?.createdAt && (
                     <Text style={styles.dateText}>
@@ -307,6 +356,10 @@ const styles = StyleSheet.create({
     platformButtonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    link: {
+        color: '#007AFF',
+        textDecorationLine: 'underline',
     },
 });
 

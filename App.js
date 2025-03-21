@@ -56,8 +56,8 @@ function CollectionsStack() {
 function InsideLayout() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-      <Tab.Screen name="Collecti" component={CollectionsStack} options={{ headerShown: false }} />
+      <Tab.Screen name="HomeScreen" component={HomeStack} options={{ headerShown: false }} />
+      <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
