@@ -9,7 +9,6 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
-import { Ionicons } from '@expo/vector-icons';
 
 import SignIn from './src/screens/SignIn';
 import SignUp from './src/screens/SignUp/SignUp';
@@ -30,11 +29,35 @@ import Screen4 from './src/screens/SignUp/Screen4';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+function HomeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
+      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+function CollectionsStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Collections" component={Collections} options={{ headerShown: true }} />
+      <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
+      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: false }} />
+      <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true }} />
+    </Stack.Navigator>
+  );
+}
+
 function InsideLayout() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
-      <Tab.Screen name="Collections" component={Collections} />
+      <Tab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
+      <Tab.Screen name="Collecti" component={CollectionsStack} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 }
@@ -133,12 +156,6 @@ export default function App() {
               <Stack.Screen name="SignUp" component={SignUp} />
             </>
           )}
-          <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true }} />
-          <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
-          <Stack.Screen name="EditCollection" component={EditCollection} />
-          <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
-          <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
-          <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true }} />
         </Stack.Navigator>
       </NavigationContainer>
     </ToastProvider>
