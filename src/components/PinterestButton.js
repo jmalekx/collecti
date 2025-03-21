@@ -3,6 +3,7 @@ import { TouchableOpacity, Text, StyleSheet, Linking } from 'react-native';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { useToast } from 'react-native-toast-notifications';
 import commonStyles from '../commonStyles';
+import { TOAST_TYPES, showToast } from './Toasts';
 
 const PinterestButton = ({ onConnected, onDisconnected }) => {
   const [pinterestConnected, setPinterestConnected] = useState(false);
@@ -46,14 +47,14 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
         const result = await pinterestService.handleRedirect(url);
         if (result.success) {
           setPinterestConnected(true);
-          toast.show("Pinterest connected successfully!", { type: "success" });
+          showToast(toast,"Pinterest connected successfully!", {type: TOAST_TYPES.SUCCESS});
           if (onConnected) {
             onConnected();
           }
         }
       } catch (error) {
         console.error('Error handling Pinterest redirect:', error);
-        toast.show("Failed to connect Pinterest", { type: "error" });
+        showToast(toast, "Failed to connect Pinterest", {type: TOAST_TYPES.DANGER});
       }
     }
   };
@@ -64,7 +65,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       await Linking.openURL(authUrl);
     } catch (error) {
       console.error('Error starting Pinterest auth:', error);
-      toast.show("Failed to open Pinterest authorization", { type: "error" });
+      showToast(toast,"Failed to open Pinterest authorization", {type: TOAST_TYPES.DANGER});
     }
   };
 
@@ -72,7 +73,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
     try {
       await pinterestService.logout();
       setPinterestConnected(false);
-      toast.show("Pinterest disconnected", { type: "success" });
+      showToast(toast,"Pinterest disconnected", {type: TOAST_TYPES.SUCCESS});
       if (onDisconnected) {
         onDisconnected();
       }

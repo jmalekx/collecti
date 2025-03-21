@@ -15,7 +15,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../components/Typography';
-
+import { showToast, TOAST_TYPES } from '../components/Toasts';
 const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
   const toast = useToast();
   const isScreenFocused = useIsFocused();
@@ -76,7 +76,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       }
     } catch (error) {
       console.error('Error fetching Pinterest data:', error);
-      toast.show("Failed to fetch Pinterest data", { type: "warning" });
+      showToast(toast,"Failed to fetch Pinterest data", {type: TOAST_TYPES.WARNING});
     }
   };
 
@@ -88,7 +88,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      toast.show("Please select an image or paste an Image URL", { type: "warning" });
+      showToast(toast,"Please select an image or paste an Image URL", {type: TOAST_TYPES.WARNING});
       return;
     }
 
@@ -112,12 +112,12 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     const trimmedName = name.trim().toLowerCase();
 
     if (!trimmedName) {
-      toast.show("Collection name cannot be empty!", { type: "warning" });
+      showToast(toast,"Collection name cannot be empty!", {type: TOAST_TYPES.WARNING});
       return;
     }
 
     if (trimmedName === 'unsorted') {
-      toast.show('Cannot use "Unsorted" as a collection name', { type: "warning" });
+      showToast(toast,'Cannot use "Unsorted" as a collection name', {type: TOAST_TYPES.WARNING});
       return;
     }
 
@@ -142,7 +142,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   // Modify the checkmark button's onPress handler
   const handleQuickAddCollection = () => {
     if (!newCollectionName.trim()) {
-      toast.show("Collection name cannot be empty", { type: "warning" });
+      showToast(toast,"Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
       return;
     }
 
