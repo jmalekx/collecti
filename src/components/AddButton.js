@@ -15,8 +15,6 @@ import { useIsFocused } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../components/Typography';
-import { uploadImageToFirebase } from '../services/storage';
-import { showToast, TOAST_TYPES } from '../components/Toasts';
 
 const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
   const toast = useToast();
@@ -78,7 +76,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       }
     } catch (error) {
       console.error('Error fetching Pinterest data:', error);
-      showToast(toast,"Failed to fetch Pinterest data", {type: TOAST_TYPES.WARNING});
+      toast.show("Failed to fetch Pinterest data", { type: "warning" });
     }
   };
 
@@ -88,55 +86,38 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     }
   }, [isModalVisible, platform, sharedUrl]);
 
-  const handleAddPost = async () => {
+  const handleAddPost = () => {
     if (!image && !imageUrl) {
-      showToast(toast,"Please select an image or paste an Image URL", {type: TOAST_TYPES.WARNING});
+      toast.show("Please select an image or paste an Image URL", { type: "warning" });
       return;
     }
-    
-    try {
-      // Determine which image to use (local or URL)
-      let imageToUse = imageUrl;
-      
-      // If local image was selected, upload it to Firebase first
-      if (image) {
-        showToast(toast, "Uploading image...", {type: TOAST_TYPES.INFO});
-        imageToUse = await uploadImageToFirebase(image);
-        if (!imageToUse) {
-          showToast(toast, "Failed to upload image", {type: TOAST_TYPES.DANGER});
-          return;
-        }
-      }
-      
-      const collectionToUse = selectedCollection || 'Unsorted';
-      // Ensure platform is 'gallery' if not defined
-      const platformToUse = platform || 'gallery';
-      
-      onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
-      
-      setIsModalVisible(false);
-      setNotes('');
-      setTags('');
-      setImage(null);
-      setImageUrl('');
-      setIsFabMenuVisible(false);
-      setIsAddingNewCollection(false);
-    } catch (error) {
-      console.error('Error in handleAddPost:', error);
-      showToast(toast, "Failed to add post", {type: TOAST_TYPES.DANGER});
-    }
+
+    const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
+    const collectionToUse = selectedCollection || 'Unsorted';
+
+    // Ensure platform is 'gallery' if not defined
+    const platformToUse = platform || 'gallery';
+    onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
+
+    setIsModalVisible(false);
+    setNotes('');
+    setTags('');
+    setImage(null);
+    setImageUrl('');
+    setIsFabMenuVisible(false);
+    setIsAddingNewCollection(false);
   };
 
   const handleAddCollection = (name, description) => {
     const trimmedName = name.trim().toLowerCase();
 
     if (!trimmedName) {
-      showToast(toast,"Collection name cannot be empty!",{type: TOAST_TYPES.WARNING});
+      toast.show("Collection name cannot be empty!", { type: "warning" });
       return;
     }
 
     if (trimmedName === 'unsorted') {
-      showToast(toast,'Cannot use "Unsorted" as a collection name', {type: TOAST_TYPES.WARNING});
+      toast.show('Cannot use "Unsorted" as a collection name', { type: "warning" });
       return;
     }
 
@@ -161,7 +142,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   // Modify the checkmark button's onPress handler
   const handleQuickAddCollection = () => {
     if (!newCollectionName.trim()) {
-      showToast(toast,"Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
+      toast.show("Collection name cannot be empty", { type: "warning" });
       return;
     }
 
