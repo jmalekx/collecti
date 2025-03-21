@@ -78,7 +78,7 @@ export default function App() {
     <ToastProvider 
     placement="top" 
     duration={4000} 
-    offsetTop={75}
+    offsetTop={20}
     renderType={{
       success: (toast) => (
         <View style={[toastConfig.containerStyle, toastConfig.success]}>
