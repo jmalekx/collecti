@@ -57,7 +57,7 @@ const EditPost = ({ route, navigation }) => {
                 updatedAt: new Date().toISOString(),
             });
 
-            showToast("Post updated successfully!", { type: TOAST_TYPES.SUCCESS });
+            showToast(toast,"Post updated successfully!", { type: TOAST_TYPES.SUCCESS });
 
             // Simply go back instead of explicitly navigating
             navigation.goBack();
