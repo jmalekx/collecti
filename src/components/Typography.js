@@ -38,7 +38,7 @@ export const AppButton = ({ style, textStyle, onPress, title, ...props }) => (
     onPress={onPress} 
     {...props}
   >
-    <Text style={[commonStyles.buttonText, commonStyles.textBold, textStyle]}>
+    <Text style={[commonStyles.buttonText, { fontFamily: typography.fontBold }, textStyle]}>
       {title}
     </Text>
   </TouchableOpacity>
