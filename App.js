@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
 import { ToastProvider } from 'react-native-toast-notifications';
+import { toastConfig } from './src/components/Toasts';
 import { Ionicons } from '@expo/vector-icons';
 
 import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
@@ -50,6 +51,7 @@ function CollectionsStack() {
       <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
       <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
       <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
     </Stack.Navigator>
   );
 }
@@ -59,7 +61,6 @@ function SettingsStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true, title: 'Settings' }} />
-      <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
     </Stack.Navigator>
   );
 }
@@ -137,7 +138,41 @@ export default function App() {
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#F9F6F2" translucent={false} />
-      <ToastProvider placement="top" duration={4000}>
+      <ToastProvider 
+    placement="top" 
+    duration={4000} 
+    offsetTop={20}
+    renderType={{
+      success: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.success]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.success.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      danger: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.danger]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.danger.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      warning: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.warning]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.warning.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+      info: (toast) => (
+        <View style={[toastConfig.containerStyle, toastConfig.info]}>
+          <Text style={[toastConfig.textStyle, { color: toastConfig.info.color }]}>
+            {toast.message}
+          </Text>
+        </View>
+      ),
+    }}
+  >
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SignIn">
             {user ? (
