@@ -32,6 +32,7 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 
 const Collections = ({ }) => {
   const toast = useToast();
+  const navigation = useNavigation();
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
   const userId = FIREBASE_AUTH.currentUser?.uid;
