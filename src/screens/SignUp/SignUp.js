@@ -132,11 +132,12 @@ const SignUp = ({ navigation }) => {
                     onPress={signUp}
                     />
            
-                    <AppButton
-                    style={styles.button}
-                    onPress={() => navigation.navigate('SignIn')}
-                    title='Already have an account? Sign In'
-                    />
+                    <View style={styles.signContainer}>
+                        <AppText>Already have an account? </AppText>
+                        <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                            <AppText style={styles.signLink}>Sign In</AppText>
+                        </TouchableOpacity>
+                    </View>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -150,16 +151,6 @@ const styles = StyleSheet.create({
         flex:1,
         alignItems: 'center',
         padding: 20,
-    },
-    input: {
-        backgroundColor: 'white',
-        width: 300,
-        height: 50,
-        borderColor: '#e8e8e8',
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        marginVertical: 5,
     },
 })
 

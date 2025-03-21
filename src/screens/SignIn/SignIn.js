@@ -32,6 +32,8 @@ const SignIn = ({ navigation }) => {
     return (
         <View style={styles.root}>
             <Image source={Logo} style={[styles.logo, {height: height * 0.45}]} resizeMode='contain'/>
+            <AppHeading style={styles.MainText}>Welcome</AppHeading>
+            <AppText style={styles.MainText}>Please enter your details below</AppText>
             <KeyboardAvoidingView behavior='padding'>
                 <AppTextInput 
                     value={email} 
@@ -58,11 +60,12 @@ const SignIn = ({ navigation }) => {
                         title="Login"
                         onPress={logIn}
                     />
-                    <AppButton
-                        style={styles.button}
-                        title="Sign Up"
-                        onPress={() => navigation.navigate('SignUp')}
-                    />
+                    <View style={styles.signContainer}>
+                        <AppText>Don't have an account? </AppText>
+                        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                            <AppText style={styles.signLink}>Sign Up</AppText>
+                        </TouchableOpacity>
+                    </View>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -75,12 +78,14 @@ const styles = StyleSheet.create({
     root:{
         flex:1,
         alignItems: 'center',
-        padding: 20,
     },
     logo:{
         width:'75%',
         maxWidth:200,
-        height:100,
+    },
+    MainText:{
+        alignSelf:'flex-start',
+        marginLeft:35,
     },
 })
 

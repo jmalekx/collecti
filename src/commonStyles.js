@@ -110,8 +110,15 @@ const commonStyles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 5,
-    
-},
+  },
+  signContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  signLink: {
+      fontFamily: 'Inter_700Bold',
+  }
 });
 
 
