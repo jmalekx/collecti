@@ -369,50 +369,50 @@ const CollectionDetails = ({ route, navigation }) => {
     <View style={styles.container}>
       {/* Collection Header */}
       <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.collectionName}>{collectionName}</Text>
-          <View style={styles.headerIcons}>
-            {isSelectionMode ? (
+      <View style={styles.headerTop}>
+        <Text style={styles.collectionName}>{collectionName}</Text>
+        <View style={styles.headerIcons}>
+          {isSelectionMode ? (
+            <>
+              <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
+                <Ionicons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+              <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
+              <TouchableOpacity onPress={handleGroupMove} style={styles.selectionButton}>
+                <Ionicons name="move" size={22} color="#0066cc" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleGroupDelete} style={styles.selectionButton}>
+                <Ionicons name="trash" size={22} color="#FF3B30" />
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+            <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
+              <Ionicons name="checkmark-circle-outline" size={24} color="#000" />
+            </TouchableOpacity>
+            {collectionName !== "Unsorted" ? (
               <>
-                <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                  <Ionicons name="close" size={24} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
+                  <Ionicons name="create-outline" size={24} color="#000" />
                 </TouchableOpacity>
-                <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
-                <TouchableOpacity onPress={handleGroupMove} style={styles.selectionButton}>
-                  <Ionicons name="move" size={24} color="#0066cc" style={styles.icon} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleGroupDelete} style={styles.selectionButton}>
-                  <Ionicons name="trash" size={24} color="#FF3B30" style={styles.icon} />
+                <TouchableOpacity onPress={deleteCollection} style={styles.selectionButton}>
+                  <Ionicons name="trash" size={24} color="red" />
                 </TouchableOpacity>
               </>
             ) : (
               <>
-              <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                <Ionicons name="checkmark-circle-outline" size={24} color="#000" style={styles.icon} />
-              </TouchableOpacity>
-              {collectionName !== "Unsorted" ? (
-                <>
-                  <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })}>
-                    <Ionicons name="create-outline" size={24} color="#000" style={styles.icon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={deleteCollection}>
-                    <Ionicons name="trash" size={24} color="red" style={styles.icon} />
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  <TouchableOpacity disabled={true} style={styles.disabledIcon}>
-                    <Ionicons name="create-outline" size={24} color="#ccc" style={styles.icon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity disabled={true} style={styles.disabledIcon}>
-                    <Ionicons name="trash" size={24} color="#ccc" style={styles.icon} />
-                  </TouchableOpacity>
-                </>
-              )}
+                <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                  <Ionicons name="create-outline" size={24} color="#ccc" />
+                </TouchableOpacity>
+                <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                  <Ionicons name="trash" size={24} color="#ccc" />
+                </TouchableOpacity>
               </>
             )}
-          </View>
+            </>
+          )}
         </View>
+      </View>
         <View style={styles.headerBottom}>
           <Text style={styles.collectionDescription}>{collectionDescription}</Text>
           <Text style={styles.postCount}>{posts.length} posts</Text>
@@ -844,6 +844,20 @@ const styles = StyleSheet.create({
   },
   disabledIcon: {
     opacity: 0.4,
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+  },
+  icon: {
+    marginLeft: 16,
+  },
+  iconCompact: {
+    marginLeft: 8,
+  },
+  selectionButton: {
+    padding: 6,
   },
 });
 
