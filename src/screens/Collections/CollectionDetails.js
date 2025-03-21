@@ -42,6 +42,7 @@ import { collection, doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 
 // Constants
 import { DEFAULT_THUMBNAIL } from '../../constants';
+import commonStyles from '../../commonStyles';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -420,12 +421,16 @@ const CollectionDetails = ({ route, navigation }) => {
       </View>
 
       {/* Add Search Bar */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search posts..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
+      <View style={commonStyles.searchContainer}>
+        <Ionicons name="search" size={20} color="#777" style={commonStyles.searchIcon} />
+        <TextInput
+          style={commonStyles.searchInput}
+          placeholder="Search posts..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#999"
+        />
+      </View>
 
       {/* Posts List */}
       <FlatList
@@ -612,6 +617,7 @@ const CollectionDetails = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,
@@ -692,14 +698,6 @@ const styles = StyleSheet.create({
   postTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
-    fontSize: 16,
   },
   menuModal: {
     flex: 1,
