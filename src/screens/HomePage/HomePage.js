@@ -12,6 +12,7 @@ import { getUserProfile } from '../../services/users';
 import { getAllCollections } from '../../services/collections';
 import { createPost } from '../../services/posts';
 import { getCurrentUserId } from '../../services/firebase';
+import commonStyles from '../../commonStyles';
 
 const HomePage = ({ navigation }) => {
   const toast = useToast();
@@ -214,6 +215,7 @@ const HomePage = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,
@@ -261,24 +263,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 24,
-    height: 50,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    height: '100%',
-    fontSize: 16,
-    color: '#333',
   },
   pinterestButton: {
     backgroundColor: '#E60023',

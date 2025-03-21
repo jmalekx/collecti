@@ -196,12 +196,16 @@ const Collections = ({ }) => {
       />
 
       {/* Search Bar */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search collections..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
+      <View style={styles.searchContainer}>
+        <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search collections..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#999"
+        />
+      </View>
 
       {/* Collection Grid */}
       <FlatList
@@ -263,14 +267,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888',
     marginVertical: 8,
-  },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
-    fontSize: 16,
   },
   grid: {
     justifyContent: 'space-between',

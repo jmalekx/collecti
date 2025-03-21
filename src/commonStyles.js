@@ -118,7 +118,25 @@ const commonStyles = StyleSheet.create({
   },
   signLink: {
       fontFamily: 'Inter_700Bold',
-  }
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    marginBottom: 24,
+    height: 50,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontSize: 16,
+    color: '#333',
+  },
 });
 
 
