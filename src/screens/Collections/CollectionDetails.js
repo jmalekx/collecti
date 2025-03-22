@@ -46,7 +46,7 @@ import commonStyles from '../../commonStyles';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const { collectionId } = route.params;
+  const { collectionId, ownerId, isExternalCollection } = route.params;
   const [posts, setPosts] = useState([]);
   const [collectionName, setCollectionName] = useState('');
   const [collectionDescription, setCollectionDescription] = useState('');
@@ -64,8 +64,12 @@ const CollectionDetails = ({ route, navigation }) => {
   const [collections, setCollections] = useState([]);
   
   // Get the current user ID
-  const userId = getCurrentUserId();
+  const currentUserId = getCurrentUserId();
+  // Use the owner ID if viewing an external collection, otherwise use current user ID
+  const effectiveUserId = isExternalCollection ? ownerId : currentUserId;
+  const userId = currentUserId; // Use for operations on the user's own collections
   const toast = useToast();
+  const canEditCollection = !isExternalCollection && collectionName !== "Unsorted";
 
   // Fetch collection details and posts
   const fetchData = async () => {
@@ -85,7 +89,7 @@ const CollectionDetails = ({ route, navigation }) => {
   // Fetch collection details using collection service
   const fetchCollectionDetails = async () => {
     try {
-      const collectionData = await getCollection(collectionId);
+      const collectionData = await getCollection(collectionId, effectiveUserId);
       if (collectionData) {
         setCollectionName(collectionData.name);
         setCollectionDescription(collectionData.description || 'No description available');
@@ -114,7 +118,7 @@ const CollectionDetails = ({ route, navigation }) => {
   // Fetch posts using posts service
   const fetchPosts = async () => {
     try {
-      const postsData = await getCollectionPosts(collectionId);
+      const postsData = await getCollectionPosts(collectionId, effectiveUserId);
       setPosts(postsData);
     } catch (error) {
       console.error('Error fetching posts: ', error);
@@ -365,7 +369,6 @@ const CollectionDetails = ({ route, navigation }) => {
       );
     }
   };
-
   return (
     <View style={styles.container}>
       {/* Collection Header */}
@@ -379,19 +382,31 @@ const CollectionDetails = ({ route, navigation }) => {
                 <Ionicons name="close" size={24} color="#000" />
               </TouchableOpacity>
               <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
-              <TouchableOpacity onPress={handleGroupMove} style={styles.selectionButton}>
-                <Ionicons name="move" size={22} color="#0066cc" />
+              <TouchableOpacity 
+                onPress={handleGroupMove} 
+                style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                disabled={isExternalCollection}
+              >
+                <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleGroupDelete} style={styles.selectionButton}>
-                <Ionicons name="trash" size={22} color="#FF3B30" />
+              <TouchableOpacity 
+                onPress={handleGroupDelete} 
+                style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                disabled={isExternalCollection}
+              >
+                <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
               </TouchableOpacity>
             </>
           ) : (
             <>
-            <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-              <Ionicons name="checkmark-circle-outline" size={24} color="#000" />
+            <TouchableOpacity 
+              onPress={toggleSelectionMode} 
+              style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+              disabled={isExternalCollection}
+            >
+              <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
             </TouchableOpacity>
-            {collectionName !== "Unsorted" ? (
+            {canEditCollection ? (
               <>
                 <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
                   <Ionicons name="create-outline" size={24} color="#000" />

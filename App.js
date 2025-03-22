@@ -70,6 +70,10 @@ function SearchStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: true, title: 'Search' }} />
+      <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
