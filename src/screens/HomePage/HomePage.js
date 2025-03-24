@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Linking, Text, TextInput, Image, TouchableOpacity } from 'react-native';
-import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
+import { View, StyleSheet, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { getAuth } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
@@ -8,62 +7,25 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 // Import services instead of direct Firebase references
 import { getUserProfile } from '../../services/users';
-import { getAllCollections } from '../../services/collections';
 import { getCurrentUserId } from '../../services/firebase';
 import commonStyles from '../../commonStyles';
 
-const HomePage = ({ navigation }) => {
+const HomePage = ({ }) => {
   const toast = useToast();
-  const { shareIntent } = useShareIntentContext();
-  const [url, setUrl] = useState(null);
-  const [platform, setPlatform] = useState('gallery');
   const [userId, setUserId] = useState(null);
-  const [collections, setCollections] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
 
   useEffect(() => {
-    console.log("==== SHARE INTENT DEBUG ====");
-    console.log("Share Intent Data:", shareIntent);
-
-    const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
-
-    if (extractedUrl) {
-      console.log("URL detected, setting URL state:", extractedUrl);
-      setUrl(extractedUrl);
-      detectPlatform(extractedUrl);
-    }
-
-    // Use current user ID from service
     const currentUserId = getCurrentUserId();
     if (currentUserId) {
       setUserId(currentUserId);
-      fetchCollections(currentUserId);
       fetchUserProfile(currentUserId);
     }
-
-    // Set up deep linking
-    const urlEventListener = (event) => {
-      handleDeepLink(event.url);
-    };
-
-    Linking.addEventListener('url', urlEventListener);
-
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        handleDeepLink(url);
-      }
-    });
-
-    return () => {
-      Linking.removeAllListeners('url');
-    };
-  }, [shareIntent]);
+  }, []);
 
   const fetchUserProfile = async (userId) => {
     try {
-      // Use the service instead of direct Firestore calls
       const userProfile = await getUserProfile(userId);
 
       if (userProfile) {
@@ -79,46 +41,6 @@ const HomePage = ({ navigation }) => {
       console.error("Error fetching user profile:", error);
       showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
     }
-  };
-
-  const fetchCollections = async (userId) => {
-    try {
-      // Use the service instead of direct Firestore calls
-      const collectionsData = await getAllCollections(userId);
-      setCollections(collectionsData);
-      console.log("Collections fetched:", collectionsData);
-    } catch (error) {
-      console.error("Error fetching collections:", error);
-      showToast(toast, "Could not load collections", { type: TOAST_TYPES.WARNING });
-    }
-  };
-
-  const detectPlatform = (url) => {
-    if (url.includes('instagram.com')) {
-      console.log("Platform detected: Instagram");
-      setPlatform('instagram');
-      // Extract the actual Instagram post URL from the intent URL
-      const intentUrl = new URL(url);
-      const fallbackUrl = intentUrl.searchParams.get('S.browser_fallback_url');
-      if (fallbackUrl) {
-        const decodedUrl = decodeURIComponent(fallbackUrl);
-        const instagramUrl = new URL(decodedUrl).searchParams.get('referrer');
-        if (instagramUrl) {
-          setUrl(instagramUrl);
-        }
-      }
-    } else if (url.includes('pinterest.com')) {
-      console.log("Platform detected: Pinterest");
-      setPlatform('pinterest');
-      console.log("Platform state set to Pinterest");
-    } else if (url.includes('tiktok.com')) {
-      console.log("Platform detected: TikTok");
-      setPlatform('tiktok');
-    } else {
-      console.log("Platform detected: gallery (default)");
-      setPlatform('gallery');
-    }
-    console.log("Final platform value:", platform);
   };
 
   return (
@@ -194,27 +116,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  pinterestButton: {
-    backgroundColor: '#E60023',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  pinterestConnected: {
-    backgroundColor: '#666',
-  },
-  pinterestButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  }
 });
 
-export default function App() {
-  return (
-    <ShareIntentProvider>
-      <HomePage />
-    </ShareIntentProvider>
-  );
-}
+export default HomePage;
