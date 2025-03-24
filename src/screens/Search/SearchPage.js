@@ -139,56 +139,64 @@ const SearchPage = ({ navigation }) => {
       if (loadMore && lastVisible) {
         collectionsQuery = query(
           collectionGroup(FIREBASE_DB, 'collections'),
-          where('name', '>=', normalizedSearchTerm),
-          where('name', '<=', normalizedSearchTerm + '\uf8ff'),
-          orderBy('name'),
+          orderBy('name'),  // Just order by name
           startAfter(lastVisible),
-          limit(BATCH_SIZE)
+          limit(BATCH_SIZE * 5)  // Fetch more to compensate for filtering
         );
       } else {
         collectionsQuery = query(
           collectionGroup(FIREBASE_DB, 'collections'),
-          where('name', '>=', normalizedSearchTerm),
-          where('name', '<=', normalizedSearchTerm + '\uf8ff'),
-          orderBy('name'),
-          limit(BATCH_SIZE)
+          orderBy('name'),  // Just order by name
+          limit(BATCH_SIZE * 5)  // Fetch more to compensate for filtering
         );
       }
 
       const snapshot = await getDocs(collectionsQuery);
+
+      // Filter client-side to find collections containing the search term
+      // This will find matches regardless of where the term appears in the name
+      const filteredDocs = snapshot.docs.filter(doc => {
+        const name = doc.data().name.toLowerCase();
+        return name.includes(normalizedSearchTerm);
+      });
       
-      // Update lastVisible
-      const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-      setLastVisible(lastDoc);
-      
+     // Apply BATCH_SIZE limit to filtered results
+    const paginatedDocs = filteredDocs.slice(0, BATCH_SIZE);
+    
+    // Update lastVisible only if we have results
+    if (paginatedDocs.length > 0) {
+      setLastVisible(paginatedDocs[paginatedDocs.length - 1]);
       // Check if we've reached the end
-      setHasMore(snapshot.docs.length === BATCH_SIZE);
+      setHasMore(filteredDocs.length > BATCH_SIZE);
+    } else {
+      setHasMore(false);
+    }
 
-      const newCollections = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          ownerId: doc.ref.parent.parent.id
-        }))
-        .filter(collection => {
-          if (collection.ownerId === FIREBASE_AUTH.currentUser?.uid) {
-            return true;
-          }
-          return !collection.name.includes('Unsorted');
-        });
-
-      // Append or replace results
-      setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
-    } catch (error) {
-        console.error('Error searching collections:', error);
-      } finally {
-        if (loadMore) {
-          setLoadingMore(false);
-        } else {
-          setLoading(false);
+    const newCollections = paginatedDocs
+      .map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        ownerId: doc.ref.parent.parent.id
+      }))
+      .filter(collection => {
+        if (collection.ownerId === FIREBASE_AUTH.currentUser?.uid) {
+          return true;
         }
-      }
-    };
+        return !collection.name.includes('Unsorted');
+      });
+
+    // Append or replace results
+    setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
+  } catch (error) {
+    console.error('Error searching collections:', error);
+  } finally {
+    if (loadMore) {
+      setLoadingMore(false);
+    } else {
+      setLoading(false);
+    }
+  }
+};
 
   // Handle end reached (infinite scroll)
   const handleLoadMore = React.useCallback(() => {
