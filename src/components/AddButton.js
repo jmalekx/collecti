@@ -55,8 +55,15 @@ const AddButton = ({
 
   // Set default collection if available
   useEffect(() => {
-    if (collections && collections.length > 0 && selectedCollection === 'Unsorted') {
-      setSelectedCollection(collections[0].id);
+    if (collections.length > 0) {
+      // Set Unsorted as default collection if available
+      const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
+      if (unsortedCollection) {
+        setSelectedCollection(unsortedCollection.id);
+      } else {
+        // Otherwise use the first collection
+        setSelectedCollection(collections[0].id);
+      }
     }
   }, [collections]);
 
@@ -80,7 +87,17 @@ const AddButton = ({
     setImageUrl('');
     setNotes('');
     setTags('');
-    setSelectedCollection(collections && collections.length > 0 ? collections[0].id : 'Unsorted');
+    
+    // Find Unsorted collection if it exists
+    const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
+    if (unsortedCollection) {
+      setSelectedCollection(unsortedCollection.id);
+    } else if (collections.length > 0) {
+      setSelectedCollection(collections[0].id);
+    } else {
+      setSelectedCollection('Unsorted'); // Fallback to string if no collections
+    }
+    
     setNewCollectionName('');
     setNewCollectionDescription('');
     setIsAddingNewCollection(false);
@@ -369,7 +386,7 @@ const AddButton = ({
               {activeTab === 'url' && (
                 <View style={styles.urlSection}>
                   <AppTextInput
-                    placeholder="Paste Instagram or TikTok URL"
+                    placeholder="Paste an Image URL here"
                     value={imageUrl}
                     onChangeText={text => {
                       setImageUrl(text);
