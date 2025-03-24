@@ -374,6 +374,12 @@ const CollectionDetails = ({ route, navigation }) => {
       {/* Collection Header */}
       <View style={styles.header}>
       <View style={styles.headerTop}>
+      <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
         <Text style={styles.collectionName}>{collectionName}</Text>
         <View style={styles.headerIcons}>
           {isSelectionMode ? (
@@ -645,6 +651,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    width: '100%',
   },
   headerIcons: {
     flexDirection: 'row',
@@ -660,8 +667,10 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   collectionName: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
+    flex: 1,
+    marginHorizontal: 8,
   },
   collectionDescription: {
     fontSize: 16,
@@ -686,6 +695,11 @@ const styles = StyleSheet.create({
     position: 'relative',
     width: '48%',
     margin: '1%',
+  },
+    
+  backButton: {
+    padding: 8,
+    marginRight: 8,
   },
   selectedPostCard: {
     backgroundColor: '#e6f2ff',
