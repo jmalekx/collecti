@@ -21,6 +21,7 @@
     "axios": "^1.8.2",
     "base-64": "^1.0.0",
     "expo": "~51.0.28",
+    "expo-image-picker": "~15.1.0",
     "expo-share-intent": "^2.5.2",
     "expo-status-bar": "~1.12.1",
     "firebase": "^9.0.0",

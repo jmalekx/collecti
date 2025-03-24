@@ -1,22 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView
+import { 
+  View, 
+  Text, 
+  Modal, 
+  TextInput, 
+  TouchableOpacity, 
+  StyleSheet, 
+  ScrollView,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator
 } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
-import { Picker } from '@react-native-picker/picker';
-import { useToast } from "react-native-toast-notifications";
-import { useIsFocused } from '@react-navigation/native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
+import { useToast } from 'react-native-toast-notifications';
+import { useIsFocused } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
 import pinterestService from '../services/pinterest/pinterestServices';
-import { AppText, AppHeading, AppButton, AppTextInput } from '../components/Typography';
-import { showToast, TOAST_TYPES } from '../components/Toasts';
-const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collections = [] }) => {
+import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
+import { showToast, TOAST_TYPES } from './Toasts';
+import { uploadImageToCloudinary } from '../services/storage';
+
+const AddButton = ({ 
+  onAddPost, 
+  onCreateCollection, 
+  collections = [], 
+  sharedUrl, 
+  platform 
+}) => {
   const toast = useToast();
   const isScreenFocused = useIsFocused();
   const [isFabMenuVisible, setIsFabMenuVisible] = useState(false);
@@ -31,12 +43,22 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   const [newCollectionDescription, setNewCollectionDescription] = useState('');
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
   const [pendingNewCollection, setPendingNewCollection] = useState(null);
+  const [activeTab, setActiveTab] = useState('image'); // 'image' or 'url'
+  const [currentPlatform, setCurrentPlatform] = useState('gallery');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!isScreenFocused) {
       setIsFabMenuVisible(false);
     }
   }, [isScreenFocused]);
+
+  // Set default collection if available
+  useEffect(() => {
+    if (collections && collections.length > 0 && selectedCollection === 'Unsorted') {
+      setSelectedCollection(collections[0].id);
+    }
+  }, [collections]);
 
   // Automatically open the modal and pre-fill the URL for Instagram, TikTok, and Pinterest
   useEffect(() => {
@@ -47,7 +69,9 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
     if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')) {
       setImageUrl(sharedUrl); // Pre-fill the image URL field with the shared URL
-      setIsModalVisible(true); // Open the "Add New Post" modal
+      setCurrentPlatform(platform); // Set the platform
+      setActiveTab('url'); // Switch to URL tab
+      setIsModalVisible(true); // Open the modal
     }
   }, [sharedUrl, platform]);
 
@@ -56,11 +80,13 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     setImageUrl('');
     setNotes('');
     setTags('');
-    setSelectedCollection('Unsorted');
+    setSelectedCollection(collections && collections.length > 0 ? collections[0].id : 'Unsorted');
     setNewCollectionName('');
     setNewCollectionDescription('');
     setIsAddingNewCollection(false);
     setPendingNewCollection(null);
+    setActiveTab('image');
+    setCurrentPlatform('gallery');
   };
 
   const fetchPinterestData = async (url) => {
@@ -76,7 +102,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       }
     } catch (error) {
       console.error('Error fetching Pinterest data:', error);
-      showToast(toast, "Failed to fetch Pinterest data", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Failed to fetch Pinterest data", {type: TOAST_TYPES.WARNING});
     }
   };
 
@@ -86,200 +112,340 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     }
   }, [isModalVisible, platform, sharedUrl]);
 
-  const handleAddPost = () => {
+  const handleAddPost = async () => {
     if (!image && !imageUrl) {
-      showToast(toast, "Please select an image or paste an Image URL", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Please select an image or paste an Image URL", {type: TOAST_TYPES.WARNING});
       return;
     }
-
-    const imageToUse = image ? image : imageUrl || DEFAULT_THUMBNAIL;
-    const collectionToUse = selectedCollection || 'Unsorted';
-
-    // Ensure platform is 'gallery' if not defined
-    const platformToUse = platform || 'gallery';
-    onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
-
-    setIsModalVisible(false);
-    setNotes('');
-    setTags('');
-    setImage(null);
-    setImageUrl('');
-    setIsFabMenuVisible(false);
-    setIsAddingNewCollection(false);
+  
+    // Validate collection
+    if (!selectedCollection) {
+      showToast(toast, "Please select a collection", {type: TOAST_TYPES.WARNING});
+      return;
+    }
+  
+    try {
+      setIsLoading(true);
+      
+      let imageToUse = imageUrl;
+      let platformToUse = currentPlatform;
+      
+      // For image from gallery, upload to Cloudinary
+      if (image) {
+        try {
+          // Upload the image and get back a URL
+          imageToUse = await uploadImageToCloudinary(image);
+          platformToUse = 'gallery';
+        } catch (uploadError) {
+          console.error('Image upload failed:', uploadError);
+          showToast(toast, "Failed to upload image", {type: TOAST_TYPES.DANGER});
+          setIsLoading(false);
+          return;
+        }
+      } else if (imageUrl.includes('instagram.com')) {
+        platformToUse = 'instagram';
+      } else if (imageUrl.includes('tiktok.com')) {
+        platformToUse = 'tiktok';
+      } else if (imageUrl.includes('pinterest.com')) {
+        platformToUse = 'pinterest';
+      }
+      
+      // Add post with the image URL (either from Cloudinary or direct URL)
+      await onAddPost(notes, tags, imageToUse, selectedCollection, platformToUse);
+  
+      // Reset form and close modal
+      resetModalStates();
+      setIsModalVisible(false);
+      setIsFabMenuVisible(false);
+      
+      // REMOVE THIS LINE TO FIX DUPLICATE TOASTS
+      // showToast(toast, "Post added successfully", {type: TOAST_TYPES.SUCCESS});
+    } catch (error) {
+      console.error('Error adding post:', error);
+      showToast(toast, "Failed to add post", {type: TOAST_TYPES.DANGER});
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleAddCollection = (name, description) => {
-    const trimmedName = name.trim().toLowerCase();
+  const handleAddCollection = async (name, description) => {
+    const trimmedName = name.trim();
 
     if (!trimmedName) {
-      showToast(toast, "Collection name cannot be empty!", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Collection name cannot be empty!", {type: TOAST_TYPES.WARNING});
       return;
     }
 
-    if (trimmedName === 'unsorted') {
-      showToast(toast, 'Cannot use "Unsorted" as a collection name', { type: TOAST_TYPES.WARNING });
+    if (trimmedName.toLowerCase() === 'unsorted') {
+      showToast(toast, 'Cannot use "Unsorted" as a collection name', {type: TOAST_TYPES.WARNING});
       return;
     }
 
-    // Call parent function to add collection
-    onAddCollection(trimmedName, description);
-    // Store the pending collection name
-    setPendingNewCollection(trimmedName);
-    setIsAddCollectionModalVisible(false);
+    try {
+      // Call parent function to add collection
+      const collectionId = await onCreateCollection(trimmedName, description);
+      // Store the collection ID
+      setSelectedCollection(collectionId);
+      setIsAddCollectionModalVisible(false);
+      showToast(toast, "Collection created successfully", {type: TOAST_TYPES.SUCCESS});
+      return collectionId;
+    } catch (error) {
+      console.error('Error creating collection:', error);
+      showToast(toast, "Failed to create collection", {type: TOAST_TYPES.DANGER});
+    }
   };
 
-  // Add this useEffect to handle the new collection selection
-  useEffect(() => {
-    if (pendingNewCollection && collections.length > 0) {
-      const newCollection = collections.find(c => c.name.toLowerCase() === pendingNewCollection.toLowerCase());
-      if (newCollection) {
-        setSelectedCollection(newCollection.id);
-        setPendingNewCollection(null);
-      }
-    }
-  }, [collections, pendingNewCollection]);
-
-  // Modify the checkmark button's onPress handler
-  const handleQuickAddCollection = () => {
+  // Handle quick add collection
+  const handleQuickAddCollection = async () => {
     if (!newCollectionName.trim()) {
-      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
       return;
     }
 
-    handleAddCollection(newCollectionName, '');
-    setIsAddingNewCollection(false);
-    setNewCollectionName('');
+    const collectionId = await handleAddCollection(newCollectionName, '');
+    if (collectionId) {
+      setIsAddingNewCollection(false);
+      setNewCollectionName('');
+    }
   };
 
-  const handleImagePicker = () => {
-    launchImageLibrary(
-      { mediaType: 'photo', quality: 1 },
-      (response) => {
-        if (response.didCancel) {
-          console.log('User cancelled image picker');
-        } else if (response.errorCode) {
-          console.log('Image picker error: ', response.errorMessage);
-        } else {
-          setImage(response.assets[0].uri);
-        }
+  const pickImage = async () => {
+    try {
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        showToast(toast, "Permission to access media library is required", {type: TOAST_TYPES.WARNING});
+        return;
       }
-    );
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+        setCurrentPlatform('gallery');
+        setActiveTab('image');
+        setImageUrl(''); // Clear URL when image is picked
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      showToast(toast, "Failed to pick image", {type: TOAST_TYPES.DANGER});
+    }
   };
 
   return (
     <View>
       {/* Add New Collection Modal */}
-      {isAddCollectionModalVisible && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isAddCollectionModalVisible}
-          onRequestClose={() => {
-            resetModalStates();
-            setIsAddCollectionModalVisible(false);
-          }}>
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <AppHeading style={styles.modalTitle}>Create New Collection</AppHeading>
-                <TouchableOpacity onPress={() => setIsAddCollectionModalVisible(false)}>
-                  <Ionicons name="close-outline" size={24} color="#000" />
-                </TouchableOpacity>
-              </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isAddCollectionModalVisible}
+        onRequestClose={() => {
+          resetModalStates();
+          setIsAddCollectionModalVisible(false);
+        }}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <AppHeading style={styles.modalTitle}>Create New Collection</AppHeading>
+              <TouchableOpacity onPress={() => setIsAddCollectionModalVisible(false)}>
+                <Ionicons name="close-outline" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
 
-              <AppTextInput
-                style={styles.input}
-                placeholder="Collection Name"
-                value={newCollectionName}
-                onChangeText={setNewCollectionName}
+            <AppTextInput
+              style={styles.input}
+              placeholder="Collection Name"
+              value={newCollectionName}
+              onChangeText={setNewCollectionName}
+            />
+
+            <AppTextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Description (optional)"
+              value={newCollectionDescription}
+              onChangeText={setNewCollectionDescription}
+              multiline={true}
+              numberOfLines={3}
+            />
+
+            <View style={styles.buttonRow}>
+              <AppButton
+                style={[styles.actionButton, styles.cancelButton]}
+                title="Cancel"
+                onPress={() => setIsAddCollectionModalVisible(false)}
+                textStyle={styles.buttonText}
               />
-
-              <AppTextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Description (optional)"
-                value={newCollectionDescription}
-                onChangeText={setNewCollectionDescription}
-                multiline={true}
-                numberOfLines={3}
+              <AppButton
+                style={[styles.actionButton, styles.confirmButton]}
+                title="Create Collection"
+                onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)}
+                textStyle={styles.buttonTextWhite}
               />
-
-              <View style={styles.buttonRow}>
-                <AppButton
-                  style={[styles.actionButton, styles.cancelButton]}
-                  title="Cancel"
-                  onPress={() => setIsAddCollectionModalVisible(false)}
-                  textStyle={styles.buttonText}
-                />
-                <AppButton
-                  style={[styles.actionButton, styles.confirmButton]}
-                  title="Create Collection"
-                  onPress={() => handleAddCollection(newCollectionName, newCollectionDescription)}
-                  textStyle={styles.buttonTextWhite}
-                />
-              </View>
             </View>
           </View>
-        </Modal>
-      )}
+        </View>
+      </Modal>
 
-      {/* Quick Add / Detailed Add Modal */}
-      {isModalVisible && (
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={isModalVisible}
-          onRequestClose={() => setIsModalVisible(false)}
+      {/* Add Post Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => {
+          resetModalStates();
+          setIsModalVisible(false);
+        }}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.modalBackground}
         >
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <AppHeading style={styles.modalTitle}>Add to Collection</AppHeading>
-                <TouchableOpacity onPress={() => setIsModalVisible(false)}>
-                  <Ionicons name="close-outline" size={24} color="#000" />
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <AppHeading style={styles.modalTitle}>Add to Collection</AppHeading>
+              <TouchableOpacity onPress={() => setIsModalVisible(false)}>
+                <Ionicons name="close-outline" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.scrollContainer}>
+              {/* Tab Selector */}
+              <View style={styles.tabContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'image' && styles.activeTabButton,
+                  ]}
+                  onPress={() => setActiveTab('image')}
+                >
+                  <Text style={[
+                    styles.tabButtonText,
+                    activeTab === 'image' && styles.activeTabButtonText,
+                  ]}>Gallery Image</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[
+                    styles.tabButton,
+                    activeTab === 'url' && styles.activeTabButton,
+                  ]}
+                  onPress={() => setActiveTab('url')}
+                >
+                  <Text style={[
+                    styles.tabButtonText,
+                    activeTab === 'url' && styles.activeTabButtonText,
+                  ]}>Image URL</Text>
                 </TouchableOpacity>
               </View>
 
-              <ScrollView style={styles.scrollContainer}>
-                {/* Image Upload or URL */}
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Image</Text>
-                  <TouchableOpacity onPress={handleImagePicker} style={styles.uploadButton}>
-                    <Ionicons name="images-outline" size={24} color="#fff" />
-                    <Text style={styles.uploadButtonText}>Choose Image</Text>
-                  </TouchableOpacity>
+              {/* Image Picker Section */}
+              {activeTab === 'image' && (
+                <View style={styles.imageSection}>
+                  {image ? (
+                    <View style={styles.selectedImageContainer}>
+                      <Image source={{ uri: image }} style={styles.selectedImage} />
+                      <TouchableOpacity
+                        style={styles.removeImageButton}
+                        onPress={() => setImage(null)}
+                      >
+                        <Ionicons name="close-circle" size={24} color="#FF3B30" />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.pickImageButton}
+                      onPress={pickImage}
+                    >
+                      <Ionicons name="image-outline" size={40} color="#007AFF" />
+                      <Text style={styles.pickImageText}>Select Image from Gallery</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
 
-                  <Text style={styles.orText}>OR</Text>
-
+              {/* URL Input Section */}
+              {activeTab === 'url' && (
+                <View style={styles.urlSection}>
                   <AppTextInput
-                    placeholder="Paste image URL"
+                    placeholder="Paste Instagram or TikTok URL"
                     value={imageUrl}
-                    onChangeText={setImageUrl}
-                    style={styles.input}
+                    onChangeText={text => {
+                      setImageUrl(text);
+                      // Auto-detect platform
+                      if (text.includes('instagram.com')) {
+                        setCurrentPlatform('instagram');
+                      } else if (text.includes('tiktok.com')) {
+                        setCurrentPlatform('tiktok');
+                      } else if (text.includes('pinterest.com')) {
+                        setCurrentPlatform('pinterest');
+                      } else {
+                        setCurrentPlatform('other');
+                      }
+                    }}
+                    style={styles.urlInput}
                   />
+
+                  {/* Platform indicator */}
+                  {imageUrl && (
+                    <View style={styles.platformIndicator}>
+                      <Text style={styles.platformText}>
+                        {currentPlatform === 'instagram' ? 'Instagram Content' : 
+                         currentPlatform === 'tiktok' ? 'TikTok Content' : 
+                         currentPlatform === 'pinterest' ? 'Pinterest Content' : 
+                         'Web Content'}
+                      </Text>
+                      {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color="#E1306C" />}
+                      {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color="#000000" />}
+                      {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={20} color="#E60023" />}
+                    </View>
+                  )}
                 </View>
+              )}
 
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Details</Text>
-                  <AppTextInput
-                    placeholder="Notes"
-                    value={notes}
-                    onChangeText={setNotes}
-                    style={[styles.input, styles.textArea]}
-                    multiline={true}
-                    numberOfLines={3}
-                  />
+              {/* Notes Section */}
+              <AppTextInput
+                placeholder="Notes"
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                style={styles.notesInput}
+              />
 
-                  <AppTextInput
-                    placeholder="Tags (comma separated)"
-                    value={tags}
-                    onChangeText={setTags}
-                    style={styles.input}
-                  />
-                </View>
+              {/* Tags Input */}
+              <AppTextInput
+                placeholder="Tags (comma separated)"
+                value={tags}
+                onChangeText={setTags}
+                style={styles.tagsInput}
+              />
 
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Select Collection</Text>
-                  {/* Collection selection */}
+              {/* Collection Selector Section */}
+              <View style={styles.collectionSelectorSection}>
+                <Text style={styles.sectionLabel}>Add to Collection:</Text>
+                
+                {isAddingNewCollection ? (
+                  // New Collection Input
+                  <View style={styles.newCollectionContainer}>
+                    <AppTextInput
+                      placeholder="New Collection Name"
+                      value={newCollectionName}
+                      onChangeText={setNewCollectionName}
+                      style={styles.newCollectionInput}
+                    />
+                    <TouchableOpacity
+                      style={styles.checkmarkButton}
+                      onPress={handleQuickAddCollection}
+                    >
+                      <Ionicons name="checkmark-outline" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  // Collection Picker
                   <View style={styles.pickerContainer}>
                     <Picker
                       selectedValue={selectedCollection}
@@ -298,32 +464,25 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                       <Picker.Item label="+ Add New Collection" value="new" />
                     </Picker>
                   </View>
+                )}
+              </View>
+            </ScrollView>
 
-                  {/* Modify the Picker's add new collection section */}
-                  {isAddingNewCollection && (
-                    <View style={styles.newCollectionContainer}>
-                      <AppTextInput
-                        style={[styles.input, { flex: 1 }]}
-                        placeholder="New Collection Name"
-                        value={newCollectionName}
-                        onChangeText={setNewCollectionName}
-                      />
-                      <TouchableOpacity
-                        style={styles.checkmarkButton}
-                        onPress={handleQuickAddCollection}
-                      >
-                        <Ionicons name="checkmark-outline" size={24} color="#fff" />
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              </ScrollView>
-
+            {/* Modal Footer */}
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#007AFF" />
+                <Text style={styles.loadingText}>Uploading image...</Text>
+              </View>
+            ) : (
               <View style={styles.buttonRow}>
                 <AppButton
                   style={[styles.actionButton, styles.cancelButton]}
                   title="Cancel"
-                  onPress={() => setIsModalVisible(false)}
+                  onPress={() => {
+                    resetModalStates();
+                    setIsModalVisible(false);
+                  }}
                   textStyle={styles.buttonText}
                 />
                 <AppButton
@@ -333,10 +492,10 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                   textStyle={styles.buttonTextWhite}
                 />
               </View>
-            </View>
+            )}
           </View>
-        </Modal>
-      )}
+        </KeyboardAvoidingView>
+      </Modal>
 
       {/* FAB Button */}
       <TouchableOpacity
@@ -360,7 +519,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
             <MaterialIcons name="post-add" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Post</Text>
           </TouchableOpacity>
-
+          
           <TouchableOpacity
             style={styles.fabMenuItem}
             onPress={() => {
@@ -413,6 +572,35 @@ const styles = StyleSheet.create({
   scrollContainer: {
     maxHeight: '70%',
   },
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+    padding: 3,
+  },
+  tabButton: {
+    flex: 1,
+    paddingVertical: 10,
+    alignItems: 'center',
+    borderRadius: 6,
+  },
+  activeTabButton: {
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  tabButtonText: {
+    color: '#666',
+    fontWeight: '500',
+  },
+  activeTabButtonText: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
   section: {
     marginBottom: 20,
   },
@@ -434,6 +622,79 @@ const styles = StyleSheet.create({
     height: 80,
     textAlignVertical: 'top',
   },
+  imageSection: {
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  pickImageButton: {
+    width: '100%',
+    height: 150,
+    borderWidth: 2,
+    borderColor: '#e0e0e0',
+    borderStyle: 'dashed',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+  },
+  pickImageText: {
+    marginTop: 10,
+    color: '#666',
+    fontSize: 16,
+  },
+  selectedImageContainer: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  selectedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  removeImageButton: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    borderRadius: 15,
+  },
+  urlSection: {
+    marginBottom: 15,
+  },
+  urlInput: {
+    height: 50,
+  },
+  platformIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingVertical: 4,
+  },
+  platformText: {
+    marginRight: 8,
+    color: '#666',
+    fontSize: 14,
+  },
+  notesInput: {
+    height: 100,
+    textAlignVertical: 'top',
+    marginBottom: 15,
+  },
+  tagsInput: {
+    marginBottom: 15,
+  },
+  collectionSelectorSection: {
+    marginBottom: 15,
+  },
+  sectionLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 8,
+    color: '#333',
+  },
   pickerContainer: {
     borderWidth: 1,
     borderColor: '#ddd',
@@ -450,6 +711,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  newCollectionInput: {
+    flex: 1,
+  },
   checkmarkButton: {
     backgroundColor: '#007AFF',
     borderRadius: 8,
@@ -457,25 +721,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  uploadButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    marginBottom: 12,
-    alignItems: 'center',
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  uploadButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    marginLeft: 8,
-  },
-  orText: {
-    textAlign: 'center',
-    marginVertical: 8,
-    color: '#666',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -550,6 +795,18 @@ const styles = StyleSheet.create({
   fabMenuText: {
     fontSize: 16,
     color: '#333',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+    fontSize: 14,
   },
 });
 
