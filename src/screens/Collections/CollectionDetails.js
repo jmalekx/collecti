@@ -6,7 +6,6 @@ import {
   FlatList,
   StyleSheet,
   Image,
-  Alert,
   TouchableOpacity,
   Modal,
 } from 'react-native';
@@ -20,6 +19,7 @@ import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 // Services
 import { 
@@ -70,6 +70,11 @@ const CollectionDetails = ({ route, navigation }) => {
   const userId = currentUserId; // Use for operations on the user's own collections
   const toast = useToast();
   const canEditCollection = !isExternalCollection && collectionName !== "Unsorted";
+
+  const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
+  const [showDeletePostModal, setShowDeletePostModal] = useState(false);
+  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
+
 
   // Fetch collection details and posts
   const fetchData = async () => {
@@ -171,40 +176,28 @@ const CollectionDetails = ({ route, navigation }) => {
       showToast(toast, "No posts selected", { type: TOAST_TYPES.WARNING });
       return;
     }
-
-    Alert.alert(
-      'Delete Selected Posts',
-      `Are you sure you want to delete ${selectedPosts.length} selected posts?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const deletePromises = selectedPosts.map(postId => 
-                deletePostService(collectionId, postId)
-              );
-              
-              await Promise.all(deletePromises);
-              showToast(toast, `${selectedPosts.length} posts deleted successfully`, { type: TOAST_TYPES.SUCCESS });
-              
-              // Refresh posts and exit selection mode
-              fetchPosts();
-              setIsSelectionMode(false);
-              setSelectedPosts([]);
-              
-              // Update collection thumbnail
-              await updateCollectionThumbnail(collectionId);
-            } catch (error) {
-              console.error('Error deleting posts: ', error);
-              showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
-            }
-          },
-        },
-      ]
-    );
+    setShowDeleteGroupModal(true);
   };
+
+  const handleConfirmGroupDelete = async () => {
+    try {
+      const batchPromises = selectedPosts.map(postId => 
+        deletePostService(collectionId, postId)
+      );
+      
+      await Promise.all(batchPromises);
+      setShowDeleteGroupModal(false);
+      showToast(toast, `${selectedPosts.length} posts deleted`, { type: TOAST_TYPES.SUCCESS });
+      setSelectedPosts([]);
+      setIsSelectionMode(false);
+      fetchPosts();
+    } catch (error) {
+      console.error('Error deleting posts: ', error);
+      showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
+      setShowDeleteGroupModal(false);
+    }
+  };
+  
 
   // Create new collection and move posts there
   const handleCreateCollectionAndMove = async () => {
@@ -291,54 +284,39 @@ const CollectionDetails = ({ route, navigation }) => {
   };
 
   // Delete collection with confirmation
-  const deleteCollection = async () => {
-    Alert.alert(
-      'Delete Collection',
-      'Are you sure you want to delete this collection?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Use the service to delete the collection
-              await deleteCollectionService(collectionId);
-              navigation.goBack(); // Navigate back after deletion
-            } catch (error) {
-              console.error('Error deleting collection: ', error);
-              showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
-            }
-          },
-        },
-      ]
-    );
+  const deleteCollection = () => {
+  setShowDeleteCollectionModal(true);
+};
+
+  const handleDeleteCollection = async () => {
+    try {
+      await deleteCollectionService(collectionId);
+      setShowDeleteCollectionModal(false);
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error deleting collection: ', error);
+      showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
+      setShowDeleteCollectionModal(false);
+    }
   };
 
   // Delete post with confirmation
-  const deletePost = async (postId) => {
-    Alert.alert(
-      'Delete Post',
-      'Are you sure you want to delete this post?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              // Use the service to delete the post
-              await deletePostService(collectionId, postId);
-              fetchPosts(); // Refresh the posts list
-              setIsMenuVisible(false); // Close the menu
-            } catch (error) {
-              console.error('Error deleting post: ', error);
-              showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
-            }
-          },
-        },
-      ]
-    );
+  const deletePost = (postId) => {
+    setSelectedPost({ id: postId });
+    setShowDeletePostModal(true);
+    setIsMenuVisible(false);
+  };
+
+  const handleDeletePost = async () => {
+    try {
+      await deletePostService(collectionId, selectedPost.id);
+      setShowDeletePostModal(false);
+      fetchPosts();
+    } catch (error) {
+      console.error('Error deleting post: ', error);
+      showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
+      setShowDeletePostModal(false);
+    }
   };
 
   // Open the menu for a specific post
@@ -603,6 +581,31 @@ const CollectionDetails = ({ route, navigation }) => {
           </View>
         </View>
       </Modal>
+      <View>
+              {/* Delete Collection Modal */}
+          <ConfirmationModal
+            visible={showDeleteCollectionModal}
+            onClose={() => setShowDeleteCollectionModal(false)}
+            title="Delete Collection"
+            message="Are you sure you want to delete this collection? This action cannot be undone."
+            primaryAction={handleDeleteCollection}
+            primaryText="Delete"
+            primaryStyle="danger"
+            icon="trash-outline"
+          />
+          
+          {/* Delete Group Modal */}
+          <ConfirmationModal
+            visible={showDeleteGroupModal}
+            onClose={() => setShowDeleteGroupModal(false)}
+            title={`Delete ${selectedPosts.length} Posts`}
+            message="Are you sure you want to delete these posts? This action cannot be undone."
+            primaryAction={handleConfirmGroupDelete}
+            primaryText="Delete"
+            primaryStyle="danger"
+            icon="trash-outline"
+          />
+        </View>
 
       {/* Menu Modal */}
       <Modal

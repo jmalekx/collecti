@@ -3,6 +3,7 @@ import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import PinterestButton from '../../components/PinterestButton';
 import commonStyles from '../../commonStyles';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 const UserSettings = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,35 +24,17 @@ const UserSettings = ({ navigation }) => {
       </TouchableOpacity>
 
       {/* Logout Confirmation Modal */}
-      <Modal
-        animationType="fade"
-        transparent={true}
+      <ConfirmationModal
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Log out</Text>
-            <Text style={styles.modalMessage}>
-              Are you sure you want to log out? You'll need to login again to use the app.
-            </Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity 
-                style={styles.cancelButton} 
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.logoutButton} 
-                onPress={handleLogout}
-              >
-                <Text style={styles.logoutButtonText}>Log out</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setModalVisible(false)}
+        title="Log out"
+        message="Are you sure you want to log out? You'll need to login again to use the app."
+        primaryAction={handleLogout}
+        primaryText="Log out"
+        primaryStyle="danger"
+        secondaryText="Cancel"
+        icon="log-out-outline"
+      />
     </View>
   );
 };
@@ -63,56 +46,14 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContent: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  modalMessage: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#555',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  cancelButton: {
-    flex: 1,
-    paddingVertical: 10,
-    marginRight: 5,
-    borderRadius: 8,
-    backgroundColor: '#E0E0E0',
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  logoutButton: {
-    flex: 1,
-    paddingVertical: 10,
-    marginLeft: 5,
-    borderRadius: 8,
+  button: {
     backgroundColor: '#007AFF',
+    padding: 14,
+    borderRadius: 8,
+    marginVertical: 10,
     alignItems: 'center',
   },
-  logoutButtonText: {
+  buttonText: {
     fontSize: 16,
     color: '#fff',
   },

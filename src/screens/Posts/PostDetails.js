@@ -15,10 +15,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
-import { Alert } from 'react-native';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getPost, deletePost } from '../../services/posts';
 import LinkifyIt from 'linkify-it';
+import ConfirmationModal
+ from '../../components/ConfirmationModal';
 const linkify = LinkifyIt();
 
 const TextWithLinks = ({ text, style }) => {
@@ -91,6 +92,7 @@ const PostDetails = ({ route, navigation }) => {
     const effectiveUserId = ownerId || currentUserId;
     // Check if this is another user's collection
     const isExternalCollection = ownerId && ownerId !== currentUserId;
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const toast = useToast();
 
     const fetchPost = async () => {
@@ -111,32 +113,8 @@ const PostDetails = ({ route, navigation }) => {
         }
     };
 
-    const handleDelete = async () => {
-        Alert.alert(
-            "Delete Post",
-            "Are you sure you want to delete this post? This action cannot be undone.",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "Delete",
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            // Use service instead of direct Firebase operations
-                            await deletePost(collectionId, postId);
-                            showToast(toast, "Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
-                            navigation.goBack();
-                        } catch (error) {
-                            console.error('Error deleting post:', error);
-                            showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
-                        }
-                    }
-                }
-            ]
-        );
+    const handleDelete = () => {
+        setShowDeleteModal(true);
     };
 
     useFocusEffect(
@@ -144,6 +122,19 @@ const PostDetails = ({ route, navigation }) => {
             fetchPost();
         }, [collectionId, postId])
     );
+
+    const confirmDelete = async () => {
+        try {
+            await deletePost(collectionId, postId);
+            showToast(toast, "Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
+            setShowDeleteModal(false);
+            navigation.goBack();
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
+            setShowDeleteModal(false);
+        }
+    };
 
 const handlePlatformLink = () => {
     if (!post) return;
@@ -304,6 +295,18 @@ const renderPostContent = () => {
                     </Text>
                 </TouchableOpacity>
             )}
+
+                    {/* Delete Post Modal */}
+                    <ConfirmationModal
+                        visible={showDeleteModal}
+                        onClose={() => setShowDeleteModal(false)}
+                        title="Delete Post"
+                        message="Are you sure you want to delete this post? This action cannot be undone."
+                        primaryAction={confirmDelete}
+                        primaryText="Delete"
+                        primaryStyle="danger"
+                        icon="trash-outline"
+                    />
         </View>
     );
 };
