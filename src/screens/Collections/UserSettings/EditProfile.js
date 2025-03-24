@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { FIREBASE_DB, FIREBASE_AUTH } from '../../../../FirebaseConfig';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../../commonStyles';
 
 const EditProfile = ({ navigation }) => {
   const userId = FIREBASE_AUTH.currentUser?.uid;

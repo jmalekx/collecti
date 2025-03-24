@@ -12,14 +12,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
-import { DEFAULT_THUMBNAIL } from '../../constants';
-import InstagramEmbed from '../../components/InstagramEmbed';
-import TikTokEmbed from '../../components/TiktokEmbed';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
-import { getPost, deletePost } from '../../services/posts';
+import { DEFAULT_THUMBNAIL } from '../../../constants';
+import InstagramEmbed from '../../../components/InstagramEmbed';
+import TikTokEmbed from '../../../components/TiktokEmbed';
+import { showToast, TOAST_TYPES } from '../../../components/Toasts';
+import { getPost, deletePost } from '../../../services/posts';
 import LinkifyIt from 'linkify-it';
 import ConfirmationModal
-    from '../../components/ConfirmationModal';
+    from '../../../components/ConfirmationModal';
 const linkify = LinkifyIt();
 
 const TextWithLinks = ({ text, style }) => {

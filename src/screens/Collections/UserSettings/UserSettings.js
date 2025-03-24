@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
-import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import PinterestButton from '../../components/PinterestButton';
-import commonStyles from '../../commonStyles';
-import ConfirmationModal from '../../components/ConfirmationModal';
+import { FIREBASE_AUTH } from '../../../../FirebaseConfig';
+import PinterestButton from '../../../components/PinterestButton';
+import commonStyles from '../../../commonStyles';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const UserSettings = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);

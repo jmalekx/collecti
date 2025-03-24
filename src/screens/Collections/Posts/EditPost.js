@@ -8,11 +8,11 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
+import { FIREBASE_DB } from '../../../../FirebaseConfig';
 import { getAuth } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 const EditPost = ({ route, navigation }) => {
     const { collectionId, postId } = route.params;

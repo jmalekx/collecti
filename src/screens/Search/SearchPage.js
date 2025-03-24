@@ -25,7 +25,7 @@ const SearchPage = ({ navigation }) => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [processedIds, setProcessedIds] = useState(new Set());
   const [loadedIds] = useState(new Set());
-  const BATCH_SIZE = 2; // Number of items to load per batch
+  const BATCH_SIZE = 6; // Number of items to load per batch
   const [bookmarkedCollections, setBookmarkedCollections] = useState(new Set());
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
   const toast = useToast();
