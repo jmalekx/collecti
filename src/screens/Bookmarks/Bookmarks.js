@@ -3,12 +3,122 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 
 const Bookmarks = () => {
+  const [bookmarkedCollections, setBookmarkedCollections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
+  const currentUserId = FIREBASE_AUTH.currentUser?.uid;
+
+  useEffect(() => {
+    // Load bookmarked collections when the component mounts
+    if (currentUserId) {
+      loadBookmarkedCollections();
+    }
+
+    // Add listener for when the screen comes into focus to refresh data
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (currentUserId) {
+        loadBookmarkedCollections();
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, currentUserId]);
+
+  const loadBookmarkedCollections = async () => {
+    try {
+      setLoading(true);
+      // Use user-specific key for bookmarks
+      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
+      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+      setBookmarkedCollections(bookmarks);
+    } catch (error) {
+      console.error('Error loading bookmarked collections:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeBookmark = async (collectionId) => {
+    try {
+      // Filter out the collection to be removed
+      const updatedBookmarks = bookmarkedCollections.filter(
+        collection => collection.id !== collectionId
+      );
+      
+      // Update state
+      setBookmarkedCollections(updatedBookmarks);
+      
+      // Save to AsyncStorage with user-specific key
+      await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+    }
+  };
+
+  const navigateToCollectionDetail = (collection) => {
+    navigation.navigate('CollectionDetails', { 
+      collectionId: collection.id,
+      ownerId: collection.ownerId,
+      isExternalCollection: collection.ownerId !== currentUserId
+    });
+  };
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity 
+      style={styles.collectionCard}
+      onPress={() => navigateToCollectionDetail(item)}
+    >
+      <Image 
+        source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }} 
+        style={styles.collectionImage}
+      />
+      <View style={styles.collectionInfo}>
+        <Text style={styles.collectionTitle}>{item.title}</Text>
+        <Text style={styles.collectionDescription} numberOfLines={2}>
+          {item.description || 'No description available'}
+        </Text>
+      </View>
+      <TouchableOpacity 
+        style={styles.bookmarkButton}
+        onPress={() => removeBookmark(item.id)}
+      >
+        <Ionicons name="bookmark" size={24} color="#FF6B6B" />
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+
+  const EmptyBookmarksMessage = () => (
+    <View style={styles.emptyContainer}>
+      <Ionicons name="bookmark-outline" size={64} color="#ccc" />
+      <Text style={styles.emptyText}>You haven't bookmarked any collections yet</Text>
+      <TouchableOpacity 
+        style={styles.exploreButton}
+        onPress={() => navigation.navigate('Search')}
+      >
+        <Text style={styles.exploreButtonText}>Explore Collections</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Bookmarks</Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Text>Loading bookmarks...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={bookmarkedCollections}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={bookmarkedCollections.length === 0 ? styles.emptyListContent : styles.listContent}
+          ListEmptyComponent={EmptyBookmarksMessage}
+        />
+      )}
     </View>
   );
 };

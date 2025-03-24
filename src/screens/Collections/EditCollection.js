@@ -46,7 +46,7 @@ const EditCollection = ({ route, navigation }) => {
         description: collectionDescription,
       });
       
-      showToast(toast, "Collection updated successfully", {type: TOAST_TYPES.SUCCESS});
+      showToast(toast, "Collection updated successfully", {type: TOAST_TYPES.INFO});
       navigation.goBack();
     } catch (error) {
       console.error('Error updating collection: ', error);

@@ -83,15 +83,20 @@ const formatPlatform = (platform) => {
 };
 
 const PostDetails = ({ route, navigation }) => {
-    const { collectionId, postId } = route.params;
+    const { collectionId, postId, ownerId } = route.params;
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
-    const userId = getAuth().currentUser?.uid;
+    const currentUserId = getAuth().currentUser?.uid;
+    // Use the owner ID from params if available, otherwise use current user ID
+    const effectiveUserId = ownerId || currentUserId;
+    // Check if this is another user's collection
+    const isExternalCollection = ownerId && ownerId !== currentUserId;
     const toast = useToast();
 
     const fetchPost = async () => {
         try {
-            const postData = await getPost(collectionId, postId);
+            // Pass the effective user ID to the getPost service
+            const postData = await getPost(collectionId, postId, effectiveUserId);
             if (postData) {
                 setPost(postData);
             } else {
@@ -234,18 +239,39 @@ const renderPostContent = () => {
                     <Ionicons name="chevron-back" size={24} color="#007AFF" />
                 </TouchableOpacity>
                 <View style={styles.headerActions}>
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
-                        style={styles.headerButton}
-                    >
-                        <Ionicons name="create-outline" size={24} color="#007AFF" />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={handleDelete}
-                        style={styles.headerButton}
-                    >
-                        <Ionicons name="trash" size={24} color="#FF3B30" />
-                    </TouchableOpacity>
+                    {isExternalCollection ? (
+                        // Disabled buttons for external collections
+                        <>
+                            <TouchableOpacity
+                                disabled={true}
+                                style={[styles.headerButton, styles.disabledIcon]}
+                            >
+                                <Ionicons name="create-outline" size={24} color="#ccc" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                disabled={true}
+                                style={[styles.headerButton, styles.disabledIcon]}
+                            >
+                                <Ionicons name="trash" size={24} color="#ccc" />
+                            </TouchableOpacity>
+                        </>
+                    ) : (
+                        // Enabled buttons for user's own collections
+                        <>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
+                                style={styles.headerButton}
+                            >
+                                <Ionicons name="create-outline" size={24} color="#007AFF" />
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={handleDelete}
+                                style={styles.headerButton}
+                            >
+                                <Ionicons name="trash" size={24} color="#FF3B30" />
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
             </View>
 
@@ -360,6 +386,9 @@ const styles = StyleSheet.create({
     link: {
         color: '#007AFF',
         textDecorationLine: 'underline',
+    },
+    disabledIcon: {
+        opacity: 0.4,
     },
 });
 

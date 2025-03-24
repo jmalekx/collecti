@@ -63,6 +63,8 @@ function BookmarksStack() {
   return (
     <Stack.Navigator>
        <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Bookmarks' }} />
+       <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+       <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

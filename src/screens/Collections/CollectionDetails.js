@@ -479,7 +479,8 @@ const CollectionDetails = ({ route, navigation }) => {
               } else {
                 navigation.navigate('PostDetails', {
                   postId: item.id,
-                  collectionId: collectionId
+                  collectionId: collectionId,
+                  ownerId: effectiveUserId  
                 });
               }
             }}

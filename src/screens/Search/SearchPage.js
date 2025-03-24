@@ -12,7 +12,9 @@ import {
     startAfter 
   } from 'firebase/firestore';
 import { DEFAULT_THUMBNAIL } from '../../constants';
-import CollectionDetails from '../Collections/CollectionDetails';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const SearchPage = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +26,37 @@ const SearchPage = ({ navigation }) => {
     const [processedIds, setProcessedIds] = useState(new Set());
     const [loadedIds] = useState(new Set());
     const BATCH_SIZE = 2; // Number of items to load per batch
+    const [bookmarkedCollections, setBookmarkedCollections] = useState(new Set());
+    const currentUserId = FIREBASE_AUTH.currentUser?.uid;
+    const toast = useToast();
+
+    useEffect(() => {
+      if (currentUserId) {
+        loadBookmarkedCollections();
+      }
+      
+      // Also refresh bookmarked collections when the screen comes into focus
+      const unsubscribe = navigation.addListener('focus', () => {
+        if (currentUserId) {
+          loadBookmarkedCollections();
+        }
+      });
+      
+      return unsubscribe;
+    }, [navigation, currentUserId]);
+
+    const loadBookmarkedCollections = async () => {
+      try {
+        const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
+        const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+        
+        // Create a Set of bookmarked collection IDs for efficient lookup
+        const bookmarkedIds = new Set(bookmarks.map(item => item.id));
+        setBookmarkedCollections(bookmarkedIds);
+      } catch (error) {
+        console.error('Error loading bookmarked collections:', error);
+      }
+    };
 
     const fetchRecentCollections = async (loadMore = false) => {
         try {
@@ -186,18 +219,71 @@ const SearchPage = ({ navigation }) => {
   }, [searchQuery]);
 
   const bookmarkCollection = async (collectionId) => {
-    // Implement bookmark functionality here
-    console.log("Bookmarking collection:", collectionId);
-    //  save this to the user's bookmarks in Firestore
+    try {
+      // Get the collection data
+      const collection = results.find(item => item.id === collectionId);
+      
+      if (!collection) {
+        console.error("Collection not found in results");
+        return;
+      }
+      
+      // Collection data to save in the bookmark
+      const bookmarkData = {
+        id: collectionId,
+        ownerId: collection.ownerId,
+        imageUrl: collection.thumbnail || DEFAULT_THUMBNAIL,
+        title: collection.name,
+        description: collection.description || ''
+      };
+      
+      // Get existing bookmarks with user-specific key
+      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
+      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+      
+      // Check if already bookmarked
+      const isAlreadyBookmarked = bookmarks.some(item => item.id === collectionId);
+      
+      if (!isAlreadyBookmarked) {
+        // Add to bookmarks and save with user-specific key
+        const updatedBookmarks = [...bookmarks, bookmarkData];
+        await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
+        
+        // Update the bookmarked collections set
+        setBookmarkedCollections(prev => new Set([...prev, collectionId]));
+        
+        // Show feedback to user
+        showToast(toast,"Collection added to bookmarks",{ type: TOAST_TYPES.SUCCESS });
+      } else {
+        // Remove from bookmarks
+        const updatedBookmarks = bookmarks.filter(item => item.id !== collectionId);
+        await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
+        
+        // Update the bookmarked collections set
+        setBookmarkedCollections(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(collectionId);
+          return newSet;
+        });
+        
+        // Show feedback to user
+        showToast(toast,"Collection removed from bookmarks",{ type: TOAST_TYPES.INFO });
+      }
+    } catch (error) {
+      console.error("Error managing bookmark:", error);
+      showToast(toast,"Could not save or remove this bookmark",{ type: TOAST_TYPES.DANGER });
+    }
   };
 
-  const navigateToCollection = (collectionId, ownerId) => {
-    navigation.navigate('CollectionDetails', { 
-      collectionId: collectionId,
-      ownerId: ownerId,  // Pass the owner's ID explicitly
-      isExternalCollection: ownerId !== FIREBASE_AUTH.currentUser?.uid
-    });
-  };
+const navigateToCollection = (collectionId, ownerId) => {
+  // Navigate to the collection details screen
+  // Set isExternalCollection to true if the collection belongs to another user
+  navigation.navigate('CollectionDetails', { 
+    collectionId, 
+    ownerId,
+    isExternalCollection: ownerId !== FIREBASE_AUTH.currentUser?.uid
+  });
+};
 
   return (
     <View style={styles.container}>
@@ -247,36 +333,43 @@ const SearchPage = ({ navigation }) => {
                         </View>
                     ) : null
                 )}
-            renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.collectionCard}
-            onPress={() => navigateToCollection(item.id, item.ownerId)}
-          >
-            <Image 
-              source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }} 
-              style={styles.thumbnail}
-              resizeMode="cover"
-            />
-            <View style={styles.cardContent}>
-              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-              <Text style={styles.collectionSubtext} numberOfLines={1}>
-                {item.ownerId === FIREBASE_AUTH.currentUser?.uid 
-                  ? 'Your Collection' 
-                  : 'Public Collection'}
-              </Text>
-              
-              {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
-                <TouchableOpacity
-                  onPress={() => bookmarkCollection(item.id)}
-                  style={styles.bookmarkButton}
-                >
-                  <Ionicons name="bookmark-outline" size={16} color="#007AFF" />
-                  <Text style={styles.bookmarkText}>Save</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
+                renderItem={({ item }) => (
+                  <TouchableOpacity 
+                    style={styles.collectionCard}
+                    onPress={() => navigateToCollection(item.id, item.ownerId)}
+                  >
+                    <Image 
+                      source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }} 
+                      style={styles.thumbnail}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.cardContent}>
+                      <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+                      <Text style={styles.collectionSubtext} numberOfLines={1}>
+                        {item.ownerId === FIREBASE_AUTH.currentUser?.uid 
+                          ? 'Your Collection' 
+                          : 'Public Collection'}
+                      </Text>
+                      
+                      {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
+                        <TouchableOpacity
+                          onPress={() => bookmarkCollection(item.id)}
+                          style={styles.bookmarkButton}
+                        >
+                          <Ionicons 
+                            name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"} 
+                            size={16} 
+                            color="#007AFF" 
+                          />
+                          <Text style={styles.bookmarkText}>
+                            {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                )}
+        
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="search" size={64} color="#ccc" />
