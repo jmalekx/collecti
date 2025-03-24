@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  Modal, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   ScrollView,
   Image,
   KeyboardAvoidingView,
@@ -22,12 +22,12 @@ import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import { showToast, TOAST_TYPES } from './Toasts';
 import { uploadImageToCloudinary } from '../services/storage';
 
-const AddButton = ({ 
-  onAddPost, 
-  onCreateCollection, 
-  collections = [], 
-  sharedUrl, 
-  platform 
+const AddButton = ({
+  onAddPost,
+  onCreateCollection,
+  collections = [],
+  sharedUrl,
+  platform
 }) => {
   const toast = useToast();
   const isScreenFocused = useIsFocused();
@@ -102,7 +102,7 @@ const AddButton = ({
       }
     } catch (error) {
       console.error('Error fetching Pinterest data:', error);
-      showToast(toast, "Failed to fetch Pinterest data", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Failed to fetch Pinterest data", { type: TOAST_TYPES.WARNING });
     }
   };
 
@@ -114,22 +114,22 @@ const AddButton = ({
 
   const handleAddPost = async () => {
     if (!image && !imageUrl) {
-      showToast(toast, "Please select an image or paste an Image URL", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Please select an image or paste an Image URL", { type: TOAST_TYPES.WARNING });
       return;
     }
-  
+
     // Validate collection
     if (!selectedCollection) {
-      showToast(toast, "Please select a collection", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Please select a collection", { type: TOAST_TYPES.WARNING });
       return;
     }
-  
+
     try {
       setIsLoading(true);
-      
+
       let imageToUse = imageUrl;
       let platformToUse = currentPlatform;
-      
+
       // For image from gallery, upload to Cloudinary
       if (image) {
         try {
@@ -138,7 +138,7 @@ const AddButton = ({
           platformToUse = 'gallery';
         } catch (uploadError) {
           console.error('Image upload failed:', uploadError);
-          showToast(toast, "Failed to upload image", {type: TOAST_TYPES.DANGER});
+          showToast(toast, "Failed to upload image", { type: TOAST_TYPES.DANGER });
           setIsLoading(false);
           return;
         }
@@ -149,20 +149,17 @@ const AddButton = ({
       } else if (imageUrl.includes('pinterest.com')) {
         platformToUse = 'pinterest';
       }
-      
+
       // Add post with the image URL (either from Cloudinary or direct URL)
       await onAddPost(notes, tags, imageToUse, selectedCollection, platformToUse);
-  
+
       // Reset form and close modal
       resetModalStates();
       setIsModalVisible(false);
       setIsFabMenuVisible(false);
-      
-      // REMOVE THIS LINE TO FIX DUPLICATE TOASTS
-      // showToast(toast, "Post added successfully", {type: TOAST_TYPES.SUCCESS});
+
     } catch (error) {
       console.error('Error adding post:', error);
-      showToast(toast, "Failed to add post", {type: TOAST_TYPES.DANGER});
     } finally {
       setIsLoading(false);
     }
@@ -172,12 +169,12 @@ const AddButton = ({
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      showToast(toast, "Collection name cannot be empty!", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Collection name cannot be empty!", { type: TOAST_TYPES.WARNING });
       return;
     }
 
     if (trimmedName.toLowerCase() === 'unsorted') {
-      showToast(toast, 'Cannot use "Unsorted" as a collection name', {type: TOAST_TYPES.WARNING});
+      showToast(toast, 'Cannot use "Unsorted" as a collection name', { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -187,18 +184,16 @@ const AddButton = ({
       // Store the collection ID
       setSelectedCollection(collectionId);
       setIsAddCollectionModalVisible(false);
-      showToast(toast, "Collection created successfully", {type: TOAST_TYPES.SUCCESS});
       return collectionId;
     } catch (error) {
       console.error('Error creating collection:', error);
-      showToast(toast, "Failed to create collection", {type: TOAST_TYPES.DANGER});
     }
   };
 
   // Handle quick add collection
   const handleQuickAddCollection = async () => {
     if (!newCollectionName.trim()) {
-      showToast(toast, "Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -214,7 +209,7 @@ const AddButton = ({
       // Request permissions
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== 'granted') {
-        showToast(toast, "Permission to access media library is required", {type: TOAST_TYPES.WARNING});
+        showToast(toast, "Permission to access media library is required", { type: TOAST_TYPES.WARNING });
         return;
       }
 
@@ -233,7 +228,7 @@ const AddButton = ({
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      showToast(toast, "Failed to pick image", {type: TOAST_TYPES.DANGER});
+      showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -328,7 +323,7 @@ const AddButton = ({
                     activeTab === 'image' && styles.activeTabButtonText,
                   ]}>Gallery Image</Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
                   style={[
                     styles.tabButton,
@@ -394,10 +389,10 @@ const AddButton = ({
                   {imageUrl && (
                     <View style={styles.platformIndicator}>
                       <Text style={styles.platformText}>
-                        {currentPlatform === 'instagram' ? 'Instagram Content' : 
-                         currentPlatform === 'tiktok' ? 'TikTok Content' : 
-                         currentPlatform === 'pinterest' ? 'Pinterest Content' : 
-                         'Web Content'}
+                        {currentPlatform === 'instagram' ? 'Instagram Content' :
+                          currentPlatform === 'tiktok' ? 'TikTok Content' :
+                            currentPlatform === 'pinterest' ? 'Pinterest Content' :
+                              'Web Content'}
                       </Text>
                       {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color="#E1306C" />}
                       {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color="#000000" />}
@@ -427,7 +422,7 @@ const AddButton = ({
               {/* Collection Selector Section */}
               <View style={styles.collectionSelectorSection}>
                 <Text style={styles.sectionLabel}>Add to Collection:</Text>
-                
+
                 {isAddingNewCollection ? (
                   // New Collection Input
                   <View style={styles.newCollectionContainer}>
@@ -519,7 +514,7 @@ const AddButton = ({
             <MaterialIcons name="post-add" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Post</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.fabMenuItem}
             onPress={() => {
@@ -752,14 +747,14 @@ const styles = StyleSheet.create({
   },
   fabButton: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 40,
     backgroundColor: '#007AFF',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -768,12 +763,12 @@ const styles = StyleSheet.create({
   },
   fabMenu: {
     position: 'absolute',
-    bottom: 90,
-    right: 20,
+    bottom: 110,
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#eee',
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

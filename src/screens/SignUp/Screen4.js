@@ -33,7 +33,7 @@ export default function Screen4({ navigation }) {
       });
     } catch (error) {
       console.error('Error creating collection:', error);
-      showToast(toast,`Failed to create collection: ${collectionName}`, { type: TOAST_TYPES.DANGER });
+      showToast(toast, `Failed to create collection: ${collectionName}`, { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -53,17 +53,23 @@ export default function Screen4({ navigation }) {
         await setDoc(userRef, { isNewUser: false }, { merge: true });
 
         // Navigate to the next screen
-        navigation.navigate('Inside');
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Inside' }],
+        });
       }
     } catch (error) {
       console.error('Error completing onboarding:', error);
-      showToast(toast,'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
+      showToast(toast, 'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
     }
   };
 
   const skipOnboarding = () => {
     // Navigate to the next screen without creating any collections
-    navigation.navigate('Inside');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Inside' }],
+    });
   };
 
   return (

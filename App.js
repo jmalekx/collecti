@@ -4,13 +4,16 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { onAuthStateChanged } from 'firebase/auth';
-import { ToastProvider } from 'react-native-toast-notifications';
+import { ToastProvider, useToast } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
 import { Ionicons } from '@expo/vector-icons';
+import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 
 import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, doc, collection, addDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+import { showToast, TOAST_TYPES } from './src/components/Toasts';
+import { DEFAULT_THUMBNAIL } from './src/constants';
 
 import SignIn from './src/screens/SignIn';
 import SignUp from './src/screens/SignUp/SignUp';
@@ -28,6 +31,7 @@ import EditProfile from './src/screens/Collections/UserSettings/EditProfile';
 import EditCollection from './src/screens/Collections/EditCollection';
 import SearchPage from './src/screens/Search/SearchPage';
 import Bookmarks from './src/screens/Bookmarks/Bookmarks';
+import AddButton from './src/components/AddButton';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -82,41 +86,210 @@ function SearchStack() {
   );
 }
 
-// Tab Navigator
+// Tab Navigator with AddButton functionality
 function InsideLayout() {
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+  const [collections, setCollections] = useState([]);
+  const [url, setUrl] = useState(null);
+  const [platform, setPlatform] = useState('gallery');
+  const { shareIntent } = useShareIntentContext();
+  const userId = FIREBASE_AUTH.currentUser?.uid;
 
-          if (route.name === 'HomeScreen') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'CollectionScreen') {
-            iconName = focused ? 'grid' : 'grid-outline';
-          } else if (route.name === 'SearchScreen') {
-            iconName = focused ? 'search' : 'search-outline';
-          } else if (route.name === 'BookmarkScreen') {
-            iconName = focused ? 'bookmark' : 'bookmark-outline';
+  // Toast provider for notifications
+  const toast = useToast();
+
+  // Fetch collections when component mounts or userId changes
+  useEffect(() => {
+    if (userId) {
+      fetchCollections();
+    }
+
+    // Handle share intent data
+    if (shareIntent?.webUrl || shareIntent?.text) {
+      const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
+      setUrl(extractedUrl);
+      detectPlatform(extractedUrl);
+    }
+  }, [userId, shareIntent]);
+
+  const fetchCollections = async () => {
+    try {
+      const collectionSnapshot = await getDocs(collection(FIREBASE_DB, 'users', userId, 'collections'));
+      const collectionsData = collectionSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setCollections(collectionsData);
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+      if (toast) {
+        showToast(toast, "Could not load collections", { type: TOAST_TYPES.WARNING });
+      }
+    }
+  };
+
+  const detectPlatform = (url) => {
+    if (!url) return;
+
+    if (url.includes('instagram.com')) {
+      setPlatform('instagram');
+    } else if (url.includes('pinterest.com')) {
+      setPlatform('pinterest');
+    } else if (url.includes('tiktok.com')) {
+      setPlatform('tiktok');
+    } else {
+      setPlatform('gallery');
+    }
+  };
+
+  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
+    try {
+      let thumbnail = image || DEFAULT_THUMBNAIL;
+      let originalUrl = image;
+
+      // Process Instagram URLs
+      if (postPlatform === 'instagram' && image && image.includes('instagram.com')) {
+        let postId;
+        if (image.includes('/p/')) {
+          const parts = image.split('/');
+          const pIndex = parts.indexOf('p');
+          if (pIndex !== -1 && parts.length > pIndex + 1) {
+            postId = parts[pIndex + 1];
           }
+        } else if (image.includes('instagram.com')) {
+          const match = image.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
+          postId = match ? match[1] : null;
+        }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: 'gray',
-      })}
-    >
-      <Tab.Screen name="HomeScreen" component={HomeStack} options={{ headerShown: false, title: 'Home' }} />
-      <Tab.Screen name="SearchScreen" component={SearchStack} options={{ headerShown: false, title: 'Search' }} />
-      <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false, title: 'Collections' }} />
-      <Tab.Screen name="BookmarkScreen" component={BookmarksStack} options={{ headerShown: false, title: 'Bookmarks' }} />
-    </Tab.Navigator>
+        if (postId) {
+          postId = postId.split('?')[0].split('/')[0];
+          thumbnail = `https://www.instagram.com/p/${postId}/embed`;
+        }
+      }
+
+      const postData = {
+        notes,
+        tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
+        image: originalUrl,
+        platform: postPlatform,
+        createdAt: new Date().toISOString(),
+        thumbnail,
+      };
+
+      const postsRef = collection(
+        FIREBASE_DB,
+        'users',
+        userId,
+        'collections',
+        selectedCollection,
+        'posts'
+      );
+
+      await addDoc(postsRef, postData);
+
+      // Update collection thumbnail if needed
+      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', selectedCollection);
+      const collectionDoc = await getDoc(collectionRef);
+
+      if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
+        await updateDoc(collectionRef, { thumbnail });
+      }
+
+      if (toast) {
+        showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
+      }
+
+      // Refresh collections
+      fetchCollections();
+
+      // Reset share intent data after successful post
+      setUrl(null);
+
+      return true;
+    } catch (error) {
+      console.error('Error adding post: ', error);
+      if (toast) {
+        showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
+      }
+      return false;
+    }
+  };
+
+  const handleCreateCollection = async (name, description) => {
+    try {
+      const docRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+        name,
+        description,
+        createdAt: new Date().toISOString(),
+        items: [],
+        thumbnail: DEFAULT_THUMBNAIL,
+      });
+
+      if (toast) {
+        showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
+      }
+
+      // Refresh collections
+      fetchCollections();
+
+      return docRef.id;
+    } catch (error) {
+      console.error('Error adding collection: ', error);
+      if (toast) {
+        showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
+      }
+      return null;
+    }
+  };
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'HomeScreen') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'CollectionScreen') {
+              iconName = focused ? 'grid' : 'grid-outline';
+            } else if (route.name === 'SearchScreen') {
+              iconName = focused ? 'search' : 'search-outline';
+            } else if (route.name === 'BookmarkScreen') {
+              iconName = focused ? 'bookmark' : 'bookmark-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: '#007AFF',
+          tabBarInactiveTintColor: 'gray',
+          tabBarStyle: {
+            height: 60,
+            paddingBottom: 5
+          },
+        })}
+      >
+        <Tab.Screen name="HomeScreen" component={HomeStack} options={{ headerShown: false, title: 'Home' }} />
+        <Tab.Screen name="SearchScreen" component={SearchStack} options={{ headerShown: false, title: 'Search' }} />
+        <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false, title: 'Collections' }} />
+        <Tab.Screen name="BookmarkScreen" component={BookmarksStack} options={{ headerShown: false, title: 'Bookmarks' }} />
+      </Tab.Navigator>
+
+      {/* AddButton with proper functionality */}
+      <AddButton
+        collections={collections}
+        sharedUrl={url}
+        platform={platform}
+        onAddPost={handleAddPost}
+        onCreateCollection={handleCreateCollection}
+      />
+    </View>
   );
 }
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isOnboarding, setIsOnboarding] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
@@ -125,17 +298,29 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
       if (user) {
-        const userDoc = await getDoc(doc(FIREBASE_DB, 'users', user.uid));
-        const isNewUser = userDoc.data()?.isNewUser ?? true;
-        setIsOnboarding(isNewUser);
+        // Set user state
+        setUser(user);
+
+        // Check if user needs onboarding
+        try {
+          const userDoc = await getDoc(doc(FIREBASE_DB, 'users', user.uid));
+          const isNewUser = userDoc.exists() ? userDoc.data()?.isNewUser ?? true : true;
+          setIsOnboarding(isNewUser);
+        } catch (error) {
+          console.error("Error checking user onboarding status:", error);
+          setIsOnboarding(false); // Default to no onboarding if error
+        }
+      } else {
+        setUser(null);
+        setIsOnboarding(false);
       }
-      setUser(user);
+      setInitializing(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || initializing) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading...</Text>
@@ -181,29 +366,38 @@ export default function App() {
           ),
         }}
       >
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="SignIn">
-            {user ? (
-              <>
-                <Stack.Screen name="Inside" component={InsideLayout} options={{ headerShown: false }} />
-                {isOnboarding && (
-                  <>
-                    <Stack.Screen name="Screen1" component={Screen1} options={{ headerShown: false }} />
-                    <Stack.Screen name="Screen2" component={Screen2} options={{ headerShown: false }} />
-                    <Stack.Screen name="Screen3" component={Screen3} options={{ headerShown: false }} />
-                    <Stack.Screen name="Screen4" component={Screen4} options={{ headerShown: false }} />
-                  </>
-                )}
-              </>
-            ) : (
-              <>
-                <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
-                <Stack.Screen name="SignUp" component={SignUp} />
-              </>
-            )}
-          </Stack.Navigator>
-        </NavigationContainer>
+        <ShareIntentProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="SignIn">
+              {user ? (
+                <>
+                  <Stack.Screen name="Inside" component={InsideLayout} options={{ headerShown: false }} />
+                  {isOnboarding && (
+                    <>
+                      <Stack.Screen name="Screen1" component={Screen1} options={{ headerShown: false }} />
+                      <Stack.Screen name="Screen2" component={Screen2} options={{ headerShown: false }} />
+                      <Stack.Screen name="Screen3" component={Screen3} options={{ headerShown: false }} />
+                      <Stack.Screen name="Screen4" component={Screen4} options={{ headerShown: false }} />
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
+                  <Stack.Screen name="SignUp" component={SignUp} />
+                </>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ShareIntentProvider>
       </ToastProvider>
     </>
   );
 }
+
+const styles = {
+  container: {
+    flex: 1,
+    position: 'relative',
+  },
+};

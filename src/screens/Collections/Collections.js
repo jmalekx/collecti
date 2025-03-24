@@ -1,15 +1,12 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useUserData } from '../../hooks/useUserData';
-import AddButton from '../../components/AddButton';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
-import { collection, addDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import commonStyles from '../../commonStyles';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
@@ -31,11 +28,9 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
 );
 
 const Collections = ({ }) => {
-  const toast = useToast();
   const navigation = useNavigation();
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
-  const userId = FIREBASE_AUTH.currentUser?.uid;
 
   //header with settings button
   useLayoutEffect(() => {
@@ -63,89 +58,6 @@ const Collections = ({ }) => {
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const handleAddCollection = async (collectionName, collectionDescription) => {
-    try {
-      await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
-        name: collectionName,
-        description: collectionDescription,
-        createdAt: new Date().toISOString(),
-        items: [],
-        thumbnail: DEFAULT_THUMBNAIL,
-      });
-      showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS, });
-    } catch (error) {
-      console.error('Error adding collection: ', error);
-      showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
-  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
-    try {
-      let thumbnail = image || DEFAULT_THUMBNAIL;
-      let originalUrl = image;
-
-      // Check if platform is Instagram and generate embed URL
-      if (postPlatform === 'instagram' && image.includes('instagram.com')) {
-        // Extract post ID following the same pattern as in InstagramEmbed.js
-        let postId;
-
-        if (image.includes('/p/')) {
-          // Format: https://www.instagram.com/p/ABC123/
-          const parts = image.split('/');
-          const pIndex = parts.indexOf('p');
-          if (pIndex !== -1 && parts.length > pIndex + 1) {
-            postId = parts[pIndex + 1];
-          }
-        } else if (image.includes('instagram.com')) {
-          // Try to extract from any Instagram URL
-          const match = image.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
-          postId = match ? match[1] : null;
-        }
-
-        if (postId) {
-          // Clean up the post ID (remove any trailing slashes or parameters)
-          postId = postId.split('?')[0].split('/')[0];
-          thumbnail = `https://www.instagram.com/p/${postId}/embed`;
-        }
-      }
-
-      const postData = {
-        notes,
-        tags: tags.split(',').map((tag) => tag.trim()), // Convert tags string to array
-        image: originalUrl, // Store the original URL
-        platform: postPlatform,
-        createdAt: new Date().toISOString(),
-        thumbnail, // Store the embed URL or image URL as thumbnail
-      };
-
-      const postsRef = collection(
-        FIREBASE_DB,
-        'users',
-        userId,
-        'collections',
-        selectedCollection,
-        'posts'
-      );
-
-      await addDoc(postsRef, postData);
-
-      // Update collection thumbnail if this is the first post
-      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', selectedCollection);
-      const collectionDoc = await getDoc(collectionRef);
-      if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
-        await updateDoc(collectionRef, { thumbnail });
-      }
-      showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
-
-      // No need to explicitly call fetchCollections since useUserData hook
-      // will automatically update via its real-time listener
-
-    } catch (error) {
-      console.error('Error adding post: ', error);
-      showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
-    }
-  };
 
   // Improved renderThumbnail function to match CollectionDetails approach
   const renderThumbnail = (thumbnail) => {
@@ -226,15 +138,6 @@ const Collections = ({ }) => {
           </TouchableOpacity>
         )}
       />
-
-      {/* AddButton Component */}
-      <View style={styles.addButtonContainer}>
-        <AddButton
-          onAddPost={handleAddPost}
-          onAddCollection={handleAddCollection}
-          collections={collections}
-        />
-      </View>
     </View>
   );
 };

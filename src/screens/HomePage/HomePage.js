@@ -5,12 +5,10 @@ import { getAuth } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
-import AddButton from '../../components/AddButton';
 
 // Import services instead of direct Firebase references
 import { getUserProfile } from '../../services/users';
 import { getAllCollections } from '../../services/collections';
-import { createPost } from '../../services/posts';
 import { getCurrentUserId } from '../../services/firebase';
 import commonStyles from '../../commonStyles';
 
@@ -123,38 +121,6 @@ const HomePage = ({ navigation }) => {
     console.log("Final platform value:", platform);
   };
 
-  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
-    console.log('Adding post with platform:', postPlatform);
-
-    if (!postPlatform) {
-      console.error("Error: platform is undefined");
-      showToast(toast, "Platform is not set correctly", { type: TOAST_TYPES.WARNING });
-      return;
-    }
-
-    try {
-      // Use the createPost service from your services
-      await createPost(selectedCollection, {
-        notes: notes || '',
-        tags: tags.split(',').map(tag => tag.trim()),
-        originalUrl: image || '',
-        platform: postPlatform,
-        thumbnail: image || '',
-        createdAt: new Date().toISOString(),
-      });
-
-      showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
-
-      // Refresh collections after adding a post
-      if (userId) {
-        fetchCollections(userId);
-      }
-    } catch (error) {
-      console.error('Error adding post:', error);
-      showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
   return (
     <View style={styles.container}>
       {/* Header with greeting and profile image */}
@@ -174,24 +140,6 @@ const HomePage = ({ navigation }) => {
           )}
         </View>
       </View>
-      <AddButton
-        sharedUrl={url}
-        platform={platform}
-        collections={collections}
-        onAddPost={handleAddPost}
-        onAddCollection={(name, description) => {
-          // Use the createCollection service here
-          createCollection({ name, description })
-            .then(() => {
-              showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
-              fetchCollections(userId); // Refresh collections
-            })
-            .catch(error => {
-              console.error('Error adding collection:', error);
-              showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
-            });
-        }}
-      />
     </View>
   );
 };
