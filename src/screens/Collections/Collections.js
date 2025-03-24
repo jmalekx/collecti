@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import { useUserData } from '../../hooks/useUserData';
 import AddButton from '../../components/AddButton';
@@ -36,6 +36,20 @@ const Collections = ({ }) => {
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
   const userId = FIREBASE_AUTH.currentUser?.uid;
+
+  //header with settings button
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('UserSettings')}
+          style={styles.headerButton}
+        >
+          <Ionicons name="settings-outline" size={24} color="#333" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   // Derived values from userProfile and collections
   const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email;

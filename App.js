@@ -27,6 +27,7 @@ import UserSettings from './src/screens/UserSettings';
 import EditProfile from './src/screens/UserSettings/EditProfile';
 import EditCollection from './src/screens/Collections/EditCollection';
 import SearchPage from './src/screens/Search/SearchPage';
+import Bookmarks from './src/screens/Bookmarks/Bookmarks';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -52,15 +53,16 @@ function CollectionsStack() {
       <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
       <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
+      <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true, title: 'Settings' }} />
     </Stack.Navigator>
   );
 }
 
 // Settings Stack
-function SettingsStack() {
+function BookmarksStack() {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true, title: 'Settings' }} />
+       <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Bookmarks' }} />
     </Stack.Navigator>
   );
 }
@@ -92,8 +94,8 @@ function InsideLayout() {
             iconName = focused ? 'grid' : 'grid-outline';
           } else if (route.name === 'SearchScreen') {
             iconName = focused ? 'search' : 'search-outline';
-          } else if (route.name === 'SettingsScreen') {
-            iconName = focused ? 'settings' : 'settings-outline';
+          } else if (route.name === 'BookmarkScreen') {
+            iconName = focused ? 'bookmark' : 'bookmark-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -105,7 +107,7 @@ function InsideLayout() {
       <Tab.Screen name="HomeScreen" component={HomeStack} options={{ headerShown: false, title: 'Home' }} />
       <Tab.Screen name="SearchScreen" component={SearchStack} options={{ headerShown: false, title: 'Search' }} />
       <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false, title: 'Collections' }} />
-      <Tab.Screen name="SettingsScreen" component={SettingsStack} options={{ headerShown: false, title: 'Settings' }} />
+      <Tab.Screen name="BookmarkScreen" component={BookmarksStack} options={{ headerShown: false, title: 'Bookmarks' }} />
     </Tab.Navigator>
   );
 }
