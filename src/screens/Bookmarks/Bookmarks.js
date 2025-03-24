@@ -47,10 +47,10 @@ const Bookmarks = () => {
       const updatedBookmarks = bookmarkedCollections.filter(
         collection => collection.id !== collectionId
       );
-      
+
       // Update state
       setBookmarkedCollections(updatedBookmarks);
-      
+
       // Save to AsyncStorage with user-specific key
       await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
     } catch (error) {
@@ -59,7 +59,7 @@ const Bookmarks = () => {
   };
 
   const navigateToCollectionDetail = (collection) => {
-    navigation.navigate('CollectionDetails', { 
+    navigation.navigate('CollectionDetails', {
       collectionId: collection.id,
       ownerId: collection.ownerId,
       isExternalCollection: collection.ownerId !== currentUserId
@@ -67,12 +67,12 @@ const Bookmarks = () => {
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={styles.collectionCard}
       onPress={() => navigateToCollectionDetail(item)}
     >
-      <Image 
-        source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }} 
+      <Image
+        source={{ uri: item.imageUrl || 'https://via.placeholder.com/150' }}
         style={styles.collectionImage}
       />
       <View style={styles.collectionInfo}>
@@ -81,7 +81,7 @@ const Bookmarks = () => {
           {item.description || 'No description available'}
         </Text>
       </View>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.bookmarkButton}
         onPress={() => removeBookmark(item.id)}
       >
@@ -94,7 +94,7 @@ const Bookmarks = () => {
     <View style={styles.emptyContainer}>
       <Ionicons name="bookmark-outline" size={64} color="#ccc" />
       <Text style={styles.emptyText}>You haven't bookmarked any collections yet</Text>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.exploreButton}
         onPress={() => navigation.navigate('Search')}
       >

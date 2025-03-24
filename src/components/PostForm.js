@@ -19,7 +19,7 @@ export const PostForm = ({
 
     const handleSubmit = () => {
         if (!notes.trim()) {
-            showToast(toast, "Notes cannot be empty", {type: TOAST_TYPES.WARNING});
+            showToast(toast, "Notes cannot be empty", { type: TOAST_TYPES.WARNING });
             return;
         }
 

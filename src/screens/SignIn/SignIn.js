@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView , TouchableOpacity, Text} from 'react-native';
+import { View, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text } from 'react-native';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import Logo from '../../images/tmplogo.png';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -10,7 +10,7 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const SignIn = ({ navigation }) => {
     const toast = useToast();
-    const {height} = useWindowDimensions();
+    const { height } = useWindowDimensions();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const SignIn = ({ navigation }) => {
             console.log(response);
         } catch (error) {
             console.log(error);
-            showToast(toast,"Login failed", {type: TOAST_TYPES.DANGER});
+            showToast(toast, "Login failed", { type: TOAST_TYPES.DANGER });
         } finally {
             setLoading(false);
         }
@@ -31,41 +31,41 @@ const SignIn = ({ navigation }) => {
 
     return (
         <View style={styles.root}>
-            <Image source={Logo} style={[styles.logo, {height: height * 0.45}]} resizeMode='contain'/>
+            <Image source={Logo} style={[styles.logo, { height: height * 0.45 }]} resizeMode='contain' />
             <AppHeading style={styles.MainText}>Welcome</AppHeading>
             <AppText style={styles.MainText}>Please enter your details below</AppText>
             <KeyboardAvoidingView behavior='padding'>
-                <AppTextInput 
-                    value={email} 
-                    style={styles.input} 
-                    placeholder="Email" 
-                    autoCapitalize="none" 
+                <AppTextInput
+                    value={email}
+                    style={styles.input}
+                    placeholder="Email"
+                    autoCapitalize="none"
                     onChangeText={(text) => setEmail(text)}
                 />
-                <AppTextInput 
-                    secureTextEntry={true} 
-                    value={password} 
-                    style={styles.input} 
-                    placeholder="Password" 
-                    autoCapitalize="none" 
+                <AppTextInput
+                    secureTextEntry={true}
+                    value={password}
+                    style={styles.input}
+                    placeholder="Password"
+                    autoCapitalize="none"
                     onChangeText={(text) => setPassword(text)}
                 />
-            
+
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff"/>
+                    <ActivityIndicator size="large" color="#0000ff" />
                 ) : (
                     <>
-                    <AppButton
-                        style={styles.button}
-                        title="Login"
-                        onPress={logIn}
-                    />
-                    <View style={styles.signContainer}>
-                        <AppText>Don't have an account? </AppText>
-                        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                            <AppText style={styles.signLink}>Sign Up</AppText>
-                        </TouchableOpacity>
-                    </View>
+                        <AppButton
+                            style={styles.button}
+                            title="Login"
+                            onPress={logIn}
+                        />
+                        <View style={styles.signContainer}>
+                            <AppText>Don't have an account? </AppText>
+                            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                                <AppText style={styles.signLink}>Sign Up</AppText>
+                            </TouchableOpacity>
+                        </View>
                     </>
                 )}
             </KeyboardAvoidingView>
@@ -75,17 +75,17 @@ const SignIn = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     ...commonStyles,
-    root:{
-        flex:1,
+    root: {
+        flex: 1,
         alignItems: 'center',
     },
-    logo:{
-        width:'75%',
-        maxWidth:200,
+    logo: {
+        width: '75%',
+        maxWidth: 200,
     },
-    MainText:{
-        alignSelf:'flex-start',
-        marginLeft:35,
+    MainText: {
+        alignSelf: 'flex-start',
+        marginLeft: 35,
     },
 })
 

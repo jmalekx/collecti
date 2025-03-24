@@ -28,7 +28,7 @@ export const createUserProfile = async (userId, userData) => {
             isNewUser: true,
             ...userData
         };
-        
+
         await setDoc(getUserRef(userId), userProfile);
         return userProfile;
     } catch (error) {

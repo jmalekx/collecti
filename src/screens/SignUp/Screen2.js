@@ -18,7 +18,7 @@ const Screen2 = ({ navigation }) => {
   };
 
   const handleContinue = () => {
-    navigation.navigate('Screen3', {selectedOptions});
+    navigation.navigate('Screen3', { selectedOptions });
   };
 
   return (
@@ -43,8 +43,8 @@ const Screen2 = ({ navigation }) => {
           </TouchableOpacity>
         ))}
       </View>
-      <AppButton 
-        style={styles.button} 
+      <AppButton
+        style={styles.button}
         onPress={handleContinue}
         title='Continue'
       />

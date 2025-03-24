@@ -1,6 +1,6 @@
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { 
-    signInWithEmailAndPassword, 
+import {
+    signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
@@ -34,13 +34,13 @@ export const signIn = async (email, password) => {
 export const signUp = async (email, password, userData) => {
     try {
         const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-        
+
         // Create user profile document in Firestore
         await createUserProfile(response.user.uid, {
             email,
             ...userData
         });
-        
+
         return response.user;
     } catch (error) {
         console.error('Error signing up:', error);

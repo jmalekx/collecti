@@ -3,15 +3,15 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AppText, AppHeading } from './Typography';
 
-const ConfirmationModal = ({ 
-  visible, 
-  onClose, 
-  title, 
-  message, 
-  primaryAction, 
-  primaryText, 
+const ConfirmationModal = ({
+  visible,
+  onClose,
+  title,
+  message,
+  primaryAction,
+  primaryText,
   primaryStyle = 'primary', // 'primary', 'danger', 'warning'
-  secondaryAction, 
+  secondaryAction,
   secondaryText = 'Cancel',
   icon
 }) => {
@@ -26,38 +26,38 @@ const ConfirmationModal = ({
         <View style={styles.modalContainer}>
           {icon && (
             <View style={[
-              styles.iconContainer, 
-              primaryStyle === 'danger' ? styles.dangerIcon : 
-              primaryStyle === 'warning' ? styles.warningIcon : 
-              styles.primaryIcon
+              styles.iconContainer,
+              primaryStyle === 'danger' ? styles.dangerIcon :
+                primaryStyle === 'warning' ? styles.warningIcon :
+                  styles.primaryIcon
             ]}>
               <Ionicons name={icon} size={36} color={
-                primaryStyle === 'danger' ? '#FF3B30' : 
-                primaryStyle === 'warning' ? '#FF9500' : 
-                '#007AFF'
+                primaryStyle === 'danger' ? '#FF3B30' :
+                  primaryStyle === 'warning' ? '#FF9500' :
+                    '#007AFF'
               } />
             </View>
           )}
-          
+
           <AppHeading style={styles.title}>{title}</AppHeading>
-          
+
           {message && <AppText style={styles.message}>{message}</AppText>}
-          
+
           <View style={styles.buttonRow}>
-            <TouchableOpacity 
-              style={styles.cancelButton} 
+            <TouchableOpacity
+              style={styles.cancelButton}
               onPress={secondaryAction || onClose}
             >
               <Text style={styles.cancelButtonText}>{secondaryText}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[
-                styles.actionButton, 
-                primaryStyle === 'danger' ? styles.dangerButton : 
-                primaryStyle === 'warning' ? styles.warningButton : 
-                styles.primaryButton
-              ]} 
+                styles.actionButton,
+                primaryStyle === 'danger' ? styles.dangerButton :
+                  primaryStyle === 'warning' ? styles.warningButton :
+                    styles.primaryButton
+              ]}
               onPress={primaryAction}
             >
               <Text style={styles.actionButtonText}>{primaryText}</Text>

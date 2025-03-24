@@ -13,8 +13,8 @@ const Screen1 = ({ navigation }) => {
       <AppSmallText>Let's set up your profile</AppSmallText>
       <AppText>How does Collecti work?</AppText>
       <AppSmallText>Share your favourite content into one central hub.</AppSmallText>
-      <AppButton 
-        style={styles.button} 
+      <AppButton
+        style={styles.button}
         onPress={() => navigation.navigate('Screen2')}
         title='Continue'
       />

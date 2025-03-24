@@ -7,21 +7,21 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   const [key, setKey] = useState(Date.now());
   const [initialUrl, setInitialUrl] = useState('');
   const webViewRef = useRef(null);
-  
+
   useEffect(() => {
     // Reset the component when URL changes
     setLoading(true);
     setKey(Date.now());
   }, [url, scale]);
-  
+
   // Handle different Instagram URL formats
   let postId;
-  
+
   if (!url) {
     console.error('Invalid Instagram URL: URL is undefined');
     return null;
   }
-  
+
   // Extract post ID from URL
   if (url.includes('/p/')) {
     // Format: https://www.instagram.com/p/ABC123/
@@ -35,7 +35,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     const match = url.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
     postId = match ? match[1] : null;
   }
-  
+
   if (!postId) {
     console.error('Could not extract Instagram post ID from:', url);
     return (
@@ -47,18 +47,18 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 
   // Clean up the post ID (remove any trailing slashes or parameters)
   postId = postId.split('?')[0].split('/')[0];
-  
+
   console.log('Loading Instagram embed with post ID:', postId);
 
   // Use the embed URL directly
   const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
-  
+
   useEffect(() => {
     if (embedUrl) {
       setInitialUrl(embedUrl);
     }
   }, [embedUrl]);
-  
+
   const reload = () => {
     if (webViewRef.current) {
       webViewRef.current.reload();
@@ -158,7 +158,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           <Text style={styles.loadingText}>Loading Instagram post...</Text>
         </View>
       )}
-      
+
       <WebView
         key={key}
         ref={webViewRef}
@@ -168,7 +168,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         domStorageEnabled={true}
         startInLoadingState={true}
         scrollEnabled={false}
-        
+
         // The most important part: prevent any navigation away from initial page
         onShouldStartLoadWithRequest={(request) => {
           // Only allow the initial load of our custom HTML and the embedded iframe
@@ -176,15 +176,15 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           if (!initialUrl) {
             return true;
           }
-          
+
           // Always allow about:blank and our custom HTML (data:text/html)
-          if (request.url.startsWith('about:blank') || 
-              request.url.startsWith('data:text/html') ||
-              request.url === initialUrl || 
-              request.url === embedUrl) {
+          if (request.url.startsWith('about:blank') ||
+            request.url.startsWith('data:text/html') ||
+            request.url === initialUrl ||
+            request.url === embedUrl) {
             return true;
           }
-          
+
           // For any other URL, prevent loading and return to our custom HTML
           console.log('Blocking navigation to:', request.url);
           setTimeout(() => {
@@ -203,18 +203,18 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
               }
             }
           }, 100);
-          
+
           return false;
         }}
-        
+
         // Additional navigation blocking
         onNavigationStateChange={(navState) => {
-          if (initialUrl && 
-              navState.url !== initialUrl && 
-              navState.url !== embedUrl && 
-              !navState.url.startsWith('about:blank') && 
-              !navState.url.startsWith('data:text/html')) {
-            
+          if (initialUrl &&
+            navState.url !== initialUrl &&
+            navState.url !== embedUrl &&
+            !navState.url.startsWith('about:blank') &&
+            !navState.url.startsWith('data:text/html')) {
+
             console.log('Detected navigation to:', navState.url);
             if (webViewRef.current) {
               webViewRef.current.stopLoading();
@@ -225,7 +225,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             }
           }
         }}
-        
+
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         onLoad={() => setLoading(false)}
@@ -243,8 +243,8 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           return (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>Failed to load Instagram post.</Text>
-              <TouchableOpacity 
-                style={styles.retryButton} 
+              <TouchableOpacity
+                style={styles.retryButton}
                 onPress={reload}
               >
                 <Text style={styles.retryText}>Retry</Text>

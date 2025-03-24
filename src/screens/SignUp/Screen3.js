@@ -4,7 +4,7 @@ import ProgressBar from '../../components/ProgressBar';
 import PinterestButton from '../../components/PinterestButton';
 import { Ionicons } from '@expo/vector-icons';
 import commonStyles from "../../commonStyles";
-import { AppText, AppHeading, AppButton} from '../../components/Typography';
+import { AppText, AppHeading, AppButton } from '../../components/Typography';
 
 const Screen3 = ({ route, navigation }) => {
   const { selectedOptions } = route.params;
@@ -23,7 +23,7 @@ const Screen3 = ({ route, navigation }) => {
       ) : (
         <AppHeading>Almost there...</AppHeading>
       )}
-      <AppButton 
+      <AppButton
         style={styles.button}
         onPress={() => navigation.navigate('Screen4', { selectedOptions })}
         title='Continue'

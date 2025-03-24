@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  Modal, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
+import {
+  View,
+  Text,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
   ScrollView
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -76,7 +76,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
       }
     } catch (error) {
       console.error('Error fetching Pinterest data:', error);
-      showToast(toast,"Failed to fetch Pinterest data", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Failed to fetch Pinterest data", { type: TOAST_TYPES.WARNING });
     }
   };
 
@@ -88,7 +88,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
 
   const handleAddPost = () => {
     if (!image && !imageUrl) {
-      showToast(toast,"Please select an image or paste an Image URL", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Please select an image or paste an Image URL", { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -112,12 +112,12 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
     const trimmedName = name.trim().toLowerCase();
 
     if (!trimmedName) {
-      showToast(toast,"Collection name cannot be empty!", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Collection name cannot be empty!", { type: TOAST_TYPES.WARNING });
       return;
     }
 
     if (trimmedName === 'unsorted') {
-      showToast(toast,'Cannot use "Unsorted" as a collection name', {type: TOAST_TYPES.WARNING});
+      showToast(toast, 'Cannot use "Unsorted" as a collection name', { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -142,7 +142,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
   // Modify the checkmark button's onPress handler
   const handleQuickAddCollection = () => {
     if (!newCollectionName.trim()) {
-      showToast(toast,"Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -247,9 +247,9 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                     <Ionicons name="images-outline" size={24} color="#fff" />
                     <Text style={styles.uploadButtonText}>Choose Image</Text>
                   </TouchableOpacity>
-                  
+
                   <Text style={styles.orText}>OR</Text>
-                  
+
                   <AppTextInput
                     placeholder="Paste image URL"
                     value={imageUrl}
@@ -268,7 +268,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
                     multiline={true}
                     numberOfLines={3}
                   />
-                  
+
                   <AppTextInput
                     placeholder="Tags (comma separated)"
                     value={tags}
@@ -360,7 +360,7 @@ const AddButton = ({ onAddPost, onAddCollection, sharedUrl, platform, collection
             <MaterialIcons name="post-add" size={24} color="#007bff" style={styles.menuIcon} />
             <Text style={styles.fabMenuText}>Add New Post</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={styles.fabMenuItem}
             onPress={() => {

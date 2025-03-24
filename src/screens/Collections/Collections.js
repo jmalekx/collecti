@@ -22,9 +22,9 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     />
     <Text style={styles.username}>{username}</Text>
     <Text style={styles.stats}>{stats}</Text>
-    <TouchableOpacity 
-    onPress={onEditProfile}
-    style={styles.button}>
+    <TouchableOpacity
+      onPress={onEditProfile}
+      style={styles.button}>
       <Text style={styles.buttonText}>Edit Profile</Text>
     </TouchableOpacity>
   </View>
@@ -41,7 +41,7 @@ const Collections = ({ }) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.navigate('UserSettings')}
           style={styles.headerButton}
         >
@@ -73,7 +73,7 @@ const Collections = ({ }) => {
         items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
-      showToast(toast,"Collection created successfully", { type: TOAST_TYPES.SUCCESS, });
+      showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS, });
     } catch (error) {
       console.error('Error adding collection: ', error);
       showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
@@ -89,7 +89,7 @@ const Collections = ({ }) => {
       if (postPlatform === 'instagram' && image.includes('instagram.com')) {
         // Extract post ID following the same pattern as in InstagramEmbed.js
         let postId;
-        
+
         if (image.includes('/p/')) {
           // Format: https://www.instagram.com/p/ABC123/
           const parts = image.split('/');
@@ -102,7 +102,7 @@ const Collections = ({ }) => {
           const match = image.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
           postId = match ? match[1] : null;
         }
-        
+
         if (postId) {
           // Clean up the post ID (remove any trailing slashes or parameters)
           postId = postId.split('?')[0].split('/')[0];
@@ -136,14 +136,14 @@ const Collections = ({ }) => {
       if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
         await updateDoc(collectionRef, { thumbnail });
       }
-      showToast(toast,"Post added successfully", { type: TOAST_TYPES.SUCCESS });
+      showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
 
       // No need to explicitly call fetchCollections since useUserData hook
       // will automatically update via its real-time listener
 
     } catch (error) {
       console.error('Error adding post: ', error);
-      showToast(toast,"Failed to add post", { type: TOAST_TYPES.DANGER });
+      showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -152,8 +152,8 @@ const Collections = ({ }) => {
     if (thumbnail && thumbnail.includes('instagram.com')) {
       return (
         <View style={styles.instagramContainer}>
-          <InstagramEmbed 
-            url={thumbnail} 
+          <InstagramEmbed
+            url={thumbnail}
             style={styles.instagramEmbed}
             scale={0.1}
           />
@@ -161,8 +161,8 @@ const Collections = ({ }) => {
       );
     } else if (thumbnail && thumbnail.includes('tiktok.com')) {
       return (
-        <TikTokEmbed 
-          url={thumbnail} 
+        <TikTokEmbed
+          url={thumbnail}
           style={styles.instagramEmbed}
           scale={0.3}
         />
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
-    overflow: 'hidden', 
+    overflow: 'hidden',
   },
   collectionName: {
     fontSize: 16,

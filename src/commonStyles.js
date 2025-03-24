@@ -117,7 +117,7 @@ const commonStyles = StyleSheet.create({
     marginTop: 20,
   },
   signLink: {
-      fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter_700Bold',
   },
   searchContainer: {
     flexDirection: 'row',

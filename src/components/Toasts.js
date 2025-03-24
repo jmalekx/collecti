@@ -20,13 +20,13 @@ const TOAST_ICONS = {
 
 export const toastConfig = {
   containerStyle: {
-    borderRadius: 12, 
+    borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 5,
     flexDirection: 'row',
     alignItems: 'left',
     width: '100%',
-    maxWidth: 330, 
+    maxWidth: 330,
     marginBottom: 7
   },
   textStyle: {
@@ -35,26 +35,26 @@ export const toastConfig = {
   },
   success: {
     backgroundColor: '#e7f5e8',
-    iconColor: '#2ECC71', 
+    iconColor: '#2ECC71',
   },
   danger: {
-    backgroundColor: '#ffe2e4', 
-    iconColor: '#ff626d', 
+    backgroundColor: '#ffe2e4',
+    iconColor: '#ff626d',
   },
   warning: {
-    backgroundColor: '#fff3e3', 
-    iconColor: '#feb37c', 
+    backgroundColor: '#fff3e3',
+    iconColor: '#feb37c',
   },
   info: {
     backgroundColor: '#eaf2ff',
-    iconColor: '#006efc', 
+    iconColor: '#006efc',
   }
 };
 
 const ToastWithIcon = ({ message, type }) => {
   const typeStyle = toastConfig[type] || toastConfig.info;
   const iconName = TOAST_ICONS[type] || TOAST_ICONS.info;
-  
+
   // Map toast types to proper display names
   const displayNames = {
     success: 'Success',
@@ -62,7 +62,7 @@ const ToastWithIcon = ({ message, type }) => {
     warning: 'Warning',
     info: 'Info'
   };
-  
+
   // Get the proper display name or fallback to capitalized type
   const displayName = displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     fontWeight: 'bold',
-    fontFamily: typography.fontBold, 
+    fontFamily: typography.fontBold,
     color: '#000000',
   },
   message: {

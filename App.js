@@ -62,9 +62,9 @@ function CollectionsStack() {
 function BookmarksStack() {
   return (
     <Stack.Navigator>
-       <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Bookmarks' }} />
-       <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
-       <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Bookmarks' }} />
+      <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }
@@ -146,41 +146,41 @@ export default function App() {
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#F9F6F2" translucent={false} />
-      <ToastProvider 
-    placement="top" 
-    duration={4000} 
-    offsetTop={20}
-    renderType={{
-      success: (toast) => (
-        <View style={[toastConfig.containerStyle, toastConfig.success]}>
-          <Text style={[toastConfig.textStyle, { color: toastConfig.success.color }]}>
-            {toast.message}
-          </Text>
-        </View>
-      ),
-      danger: (toast) => (
-        <View style={[toastConfig.containerStyle, toastConfig.danger]}>
-          <Text style={[toastConfig.textStyle, { color: toastConfig.danger.color }]}>
-            {toast.message}
-          </Text>
-        </View>
-      ),
-      warning: (toast) => (
-        <View style={[toastConfig.containerStyle, toastConfig.warning]}>
-          <Text style={[toastConfig.textStyle, { color: toastConfig.warning.color }]}>
-            {toast.message}
-          </Text>
-        </View>
-      ),
-      info: (toast) => (
-        <View style={[toastConfig.containerStyle, toastConfig.info]}>
-          <Text style={[toastConfig.textStyle, { color: toastConfig.info.color }]}>
-            {toast.message}
-          </Text>
-        </View>
-      ),
-    }}
-  >
+      <ToastProvider
+        placement="top"
+        duration={4000}
+        offsetTop={20}
+        renderType={{
+          success: (toast) => (
+            <View style={[toastConfig.containerStyle, toastConfig.success]}>
+              <Text style={[toastConfig.textStyle, { color: toastConfig.success.color }]}>
+                {toast.message}
+              </Text>
+            </View>
+          ),
+          danger: (toast) => (
+            <View style={[toastConfig.containerStyle, toastConfig.danger]}>
+              <Text style={[toastConfig.textStyle, { color: toastConfig.danger.color }]}>
+                {toast.message}
+              </Text>
+            </View>
+          ),
+          warning: (toast) => (
+            <View style={[toastConfig.containerStyle, toastConfig.warning]}>
+              <Text style={[toastConfig.textStyle, { color: toastConfig.warning.color }]}>
+                {toast.message}
+              </Text>
+            </View>
+          ),
+          info: (toast) => (
+            <View style={[toastConfig.containerStyle, toastConfig.info]}>
+              <Text style={[toastConfig.textStyle, { color: toastConfig.info.color }]}>
+                {toast.message}
+              </Text>
+            </View>
+          ),
+        }}
+      >
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SignIn">
             {user ? (

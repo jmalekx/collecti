@@ -28,15 +28,15 @@ const HomePage = ({ navigation }) => {
   useEffect(() => {
     console.log("==== SHARE INTENT DEBUG ====");
     console.log("Share Intent Data:", shareIntent);
-    
+
     const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
-    
+
     if (extractedUrl) {
       console.log("URL detected, setting URL state:", extractedUrl);
       setUrl(extractedUrl);
       detectPlatform(extractedUrl);
     }
-    
+
     // Use current user ID from service
     const currentUserId = getCurrentUserId();
     if (currentUserId) {
@@ -51,7 +51,7 @@ const HomePage = ({ navigation }) => {
     };
 
     Linking.addEventListener('url', urlEventListener);
-    
+
     Linking.getInitialURL().then(url => {
       if (url) {
         handleDeepLink(url);
@@ -67,7 +67,7 @@ const HomePage = ({ navigation }) => {
     try {
       // Use the service instead of direct Firestore calls
       const userProfile = await getUserProfile(userId);
-      
+
       if (userProfile) {
         setUserName(userProfile.username || 'User');
         setProfileImage(userProfile.profilePicture || null);
@@ -125,13 +125,13 @@ const HomePage = ({ navigation }) => {
 
   const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
     console.log('Adding post with platform:', postPlatform);
-  
+
     if (!postPlatform) {
       console.error("Error: platform is undefined");
-      showToast(toast, "Platform is not set correctly", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Platform is not set correctly", { type: TOAST_TYPES.WARNING });
       return;
     }
-  
+
     try {
       // Use the createPost service from your services
       await createPost(selectedCollection, {
@@ -142,9 +142,9 @@ const HomePage = ({ navigation }) => {
         thumbnail: image || '',
         createdAt: new Date().toISOString(),
       });
-      
+
       showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
-      
+
       // Refresh collections after adding a post
       if (userId) {
         fetchCollections(userId);
@@ -163,35 +163,35 @@ const HomePage = ({ navigation }) => {
           <Text style={styles.greeting}>Hello,</Text>
           <Text style={styles.username}>{userName}</Text>
         </View>
-        
+
         <View style={styles.profileContainer}>
-        {profileImage ? (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
-        ) : (
-          <View style={styles.defaultProfileImage}>
-            <Text style={styles.profileInitial}>{userName.charAt(0).toUpperCase()}</Text>
-          </View>
-        )}
-      </View>
+          {profileImage ? (
+            <Image source={{ uri: profileImage }} style={styles.profileImage} />
+          ) : (
+            <View style={styles.defaultProfileImage}>
+              <Text style={styles.profileInitial}>{userName.charAt(0).toUpperCase()}</Text>
+            </View>
+          )}
+        </View>
       </View>
       <AddButton
-      sharedUrl={url}
-      platform={platform}
-      collections={collections}
-      onAddPost={handleAddPost}
-      onAddCollection={(name, description) => {
-        // Use the createCollection service here
-        createCollection({ name, description })
-          .then(() => {
-            showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
-            fetchCollections(userId); // Refresh collections
-          })
-          .catch(error => {
-            console.error('Error adding collection:', error);
-            showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
-          });
-      }}
-    />
+        sharedUrl={url}
+        platform={platform}
+        collections={collections}
+        onAddPost={handleAddPost}
+        onAddCollection={(name, description) => {
+          // Use the createCollection service here
+          createCollection({ name, description })
+            .then(() => {
+              showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
+              fetchCollections(userId); // Refresh collections
+            })
+            .catch(error => {
+              console.error('Error adding collection:', error);
+              showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
+            });
+        }}
+      />
     </View>
   );
 };

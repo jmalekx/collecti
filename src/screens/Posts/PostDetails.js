@@ -19,12 +19,12 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getPost, deletePost } from '../../services/posts';
 import LinkifyIt from 'linkify-it';
 import ConfirmationModal
- from '../../components/ConfirmationModal';
+    from '../../components/ConfirmationModal';
 const linkify = LinkifyIt();
 
 const TextWithLinks = ({ text, style }) => {
     if (!text) return null;
-    
+
     const matches = linkify.match(text);
     if (!matches) {
         return <Text style={style}>{text}</Text>;
@@ -136,84 +136,84 @@ const PostDetails = ({ route, navigation }) => {
         }
     };
 
-const handlePlatformLink = () => {
-    if (!post) return;
-    
-    const postUrl = post.image || post.thumbnail || post.originalUrl;
-    
-    if (!postUrl) {
-        showToast(toast, "No URL available to open", { type: TOAST_TYPES.WARNING });
-        return;
-    }
-    
-    if (post.platform === 'instagram') {
-        Linking.openURL(postUrl);
-    } else if (post.platform === 'tiktok') {
-        const tiktokUrl = postUrl.split('?')[0]; // Remove any query parameters
-        Linking.openURL(tiktokUrl);
-    } else if (post.platform === 'pinterest') {
-        Linking.openURL(postUrl);
-    }
-};
+    const handlePlatformLink = () => {
+        if (!post) return;
+
+        const postUrl = post.image || post.thumbnail || post.originalUrl;
+
+        if (!postUrl) {
+            showToast(toast, "No URL available to open", { type: TOAST_TYPES.WARNING });
+            return;
+        }
+
+        if (post.platform === 'instagram') {
+            Linking.openURL(postUrl);
+        } else if (post.platform === 'tiktok') {
+            const tiktokUrl = postUrl.split('?')[0]; // Remove any query parameters
+            Linking.openURL(tiktokUrl);
+        } else if (post.platform === 'pinterest') {
+            Linking.openURL(postUrl);
+        }
+    };
 
 
-const renderPostContent = () => {
-    // First check if the post object exists
-    if (!post) return null;
-    
-    // Check for multiple possible URL fields with fallbacks
-    const postUrl = post.image || post.thumbnail || post.originalUrl;
-    
-    if (!postUrl) {
+    const renderPostContent = () => {
+        // First check if the post object exists
+        if (!post) return null;
+
+        // Check for multiple possible URL fields with fallbacks
+        const postUrl = post.image || post.thumbnail || post.originalUrl;
+
+        if (!postUrl) {
+            return (
+                <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>Unable to load content</Text>
+                </View>
+            );
+        }
+
+        // For Instagram posts
+        if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
+            return (
+                <View>
+                    <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1} />
+                </View>
+            );
+        }
+
+        // For TikTok posts
+        if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
+            return (
+                <View style={styles.embedContainer}>
+                    <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
+                </View>
+            );
+        }
+
+        // For Pinterest posts
+        if (post.platform === 'pinterest') {
+            return (
+                <View>
+                    <Image
+                        source={{ uri: postUrl }}
+                        style={styles.thumbnail}
+                    />
+                    <TouchableOpacity onPress={() => Linking.openURL(postUrl)}>
+                        <Text style={styles.linkText}>Open in Pinterest</Text>
+                    </TouchableOpacity>
+                </View>
+            );
+        }
+
+        // Default image rendering
         return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>Unable to load content</Text>
-            </View>
+            <Image
+                source={{ uri: postUrl }}
+                style={styles.thumbnail}
+                resizeMode="contain"
+            />
         );
-    }
-    
-    // For Instagram posts
-    if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
-        return (
-            <View>
-                <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1}/>
-            </View>
-        );
-    }
-    
-    // For TikTok posts
-    if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
-        return (
-            <View style={styles.embedContainer}>
-                <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
-            </View>
-        );
-    }
-    
-    // For Pinterest posts
-    if (post.platform === 'pinterest') {
-        return (
-            <View>
-                <Image 
-                    source={{ uri: postUrl }} 
-                    style={styles.thumbnail}
-                />
-                <TouchableOpacity onPress={() => Linking.openURL(postUrl)}>
-                    <Text style={styles.linkText}>Open in Pinterest</Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }
-    
-    // Default image rendering
-    return (
-        <Image 
-            source={{ uri: postUrl }} 
-            style={styles.thumbnail}
-            resizeMode="contain"
-        />
-    );
-};
+    };
 
     if (loading) {
         return (
@@ -296,17 +296,17 @@ const renderPostContent = () => {
                 </TouchableOpacity>
             )}
 
-                    {/* Delete Post Modal */}
-                    <ConfirmationModal
-                        visible={showDeleteModal}
-                        onClose={() => setShowDeleteModal(false)}
-                        title="Delete Post"
-                        message="Are you sure you want to delete this post? This action cannot be undone."
-                        primaryAction={confirmDelete}
-                        primaryText="Delete"
-                        primaryStyle="danger"
-                        icon="trash-outline"
-                    />
+            {/* Delete Post Modal */}
+            <ConfirmationModal
+                visible={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                title="Delete Post"
+                message="Are you sure you want to delete this post? This action cannot be undone."
+                primaryAction={confirmDelete}
+                primaryText="Delete"
+                primaryStyle="danger"
+                icon="trash-outline"
+            />
         </View>
     );
 };

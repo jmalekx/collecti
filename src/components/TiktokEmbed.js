@@ -61,7 +61,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
     if (url) {
       fetchEmbedCode();
     }
-  }, [url, scale]); 
+  }, [url, scale]);
 
   if (loading) {
     return (
@@ -94,7 +94,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
           }
           true; // Required for injectedJavaScript to work
         `}
-        onMessage={() => {}}
+        onMessage={() => { }}
       />
     </View>
   );

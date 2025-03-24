@@ -1,15 +1,15 @@
 //collections crud operations
-import { 
-    getCollectionRef, 
-    getCollectionsRef, 
+import {
+    getCollectionRef,
+    getCollectionsRef,
     getPostsRef,
     getCurrentUserId
 } from './firebase';
-import { 
-    getDoc, 
-    getDocs, 
-    addDoc, 
-    updateDoc, 
+import {
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
     deleteDoc,
     setDoc,
     onSnapshot,
@@ -51,7 +51,7 @@ export const createCollection = async (collectionData, userId = getCurrentUserId
             createdAt: new Date().toISOString(),
             thumbnail: DEFAULT_THUMBNAIL,
         };
-        
+
         const docRef = await addDoc(getCollectionsRef(userId), newCollection);
         return { id: docRef.id, ...newCollection };
     } catch (error) {
@@ -92,23 +92,23 @@ export const subscribeToCollections = (callback, userId = getCurrentUserId()) =>
                 id: doc.id,
                 ...doc.data()
             }));
-            
+
             // Sort collections to ensure Unsorted is first
             collections = collections.sort((a, b) => {
                 // Always put Unsorted at the top
                 if (a.name === 'Unsorted') return -1;
                 if (b.name === 'Unsorted') return 1;
-                
+
                 // Then sort by creation date (newest first)
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
-            
+
             callback(collections);
         },
         (error) => {
             console.error('Error subscribing to collections:', error);
         }
     );
-    
+
     return unsubscribe;
 };

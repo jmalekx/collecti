@@ -2,128 +2,128 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
-import { 
-    collectionGroup, 
-    query, 
-    where, 
-    getDocs, 
-    limit, 
-    orderBy,
-    startAfter 
-  } from 'firebase/firestore';
+import {
+  collectionGroup,
+  query,
+  where,
+  getDocs,
+  limit,
+  orderBy,
+  startAfter
+} from 'firebase/firestore';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
 const SearchPage = ({ navigation }) => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [lastVisible, setLastVisible] = useState(null); // Track last document for pagination
-    const [hasMore, setHasMore] = useState(true); // Track if more results exist
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [processedIds, setProcessedIds] = useState(new Set());
-    const [loadedIds] = useState(new Set());
-    const BATCH_SIZE = 2; // Number of items to load per batch
-    const [bookmarkedCollections, setBookmarkedCollections] = useState(new Set());
-    const currentUserId = FIREBASE_AUTH.currentUser?.uid;
-    const toast = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [lastVisible, setLastVisible] = useState(null); // Track last document for pagination
+  const [hasMore, setHasMore] = useState(true); // Track if more results exist
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [processedIds, setProcessedIds] = useState(new Set());
+  const [loadedIds] = useState(new Set());
+  const BATCH_SIZE = 2; // Number of items to load per batch
+  const [bookmarkedCollections, setBookmarkedCollections] = useState(new Set());
+  const currentUserId = FIREBASE_AUTH.currentUser?.uid;
+  const toast = useToast();
 
-    useEffect(() => {
+  useEffect(() => {
+    if (currentUserId) {
+      loadBookmarkedCollections();
+    }
+
+    // Also refresh bookmarked collections when the screen comes into focus
+    const unsubscribe = navigation.addListener('focus', () => {
       if (currentUserId) {
         loadBookmarkedCollections();
       }
-      
-      // Also refresh bookmarked collections when the screen comes into focus
-      const unsubscribe = navigation.addListener('focus', () => {
-        if (currentUserId) {
-          loadBookmarkedCollections();
-        }
-      });
-      
-      return unsubscribe;
-    }, [navigation, currentUserId]);
+    });
 
-    const loadBookmarkedCollections = async () => {
-      try {
-        const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
-        const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
-        
-        // Create a Set of bookmarked collection IDs for efficient lookup
-        const bookmarkedIds = new Set(bookmarks.map(item => item.id));
-        setBookmarkedCollections(bookmarkedIds);
-      } catch (error) {
-        console.error('Error loading bookmarked collections:', error);
+    return unsubscribe;
+  }, [navigation, currentUserId]);
+
+  const loadBookmarkedCollections = async () => {
+    try {
+      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
+      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+
+      // Create a Set of bookmarked collection IDs for efficient lookup
+      const bookmarkedIds = new Set(bookmarks.map(item => item.id));
+      setBookmarkedCollections(bookmarkedIds);
+    } catch (error) {
+      console.error('Error loading bookmarked collections:', error);
+    }
+  };
+
+  const fetchRecentCollections = async (loadMore = false) => {
+    try {
+      if (!hasMore && loadMore) return;
+
+      if (loadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        loadedIds.clear(); // Clear loaded IDs on fresh load
       }
-    };
 
-    const fetchRecentCollections = async (loadMore = false) => {
-        try {
-            if (!hasMore && loadMore) return;
-            
-            if (loadMore) {
-                setLoadingMore(true);
-            } else {
-                setLoading(true);
-                loadedIds.clear(); // Clear loaded IDs on fresh load
-            }
+      let recentCollectionsQuery;
+      if (loadMore && lastVisible) {
+        recentCollectionsQuery = query(
+          collectionGroup(FIREBASE_DB, 'collections'),
+          orderBy('createdAt', 'desc'),
+          startAfter(lastVisible),
+          limit(BATCH_SIZE)
+        );
+      } else {
+        recentCollectionsQuery = query(
+          collectionGroup(FIREBASE_DB, 'collections'),
+          orderBy('createdAt', 'desc'),
+          limit(BATCH_SIZE)
+        );
+      }
 
-            let recentCollectionsQuery;
-            if (loadMore && lastVisible) {
-                recentCollectionsQuery = query(
-                    collectionGroup(FIREBASE_DB, 'collections'),
-                    orderBy('createdAt', 'desc'),
-                    startAfter(lastVisible),
-                    limit(BATCH_SIZE)
-                );
-            } else {
-                recentCollectionsQuery = query(
-                    collectionGroup(FIREBASE_DB, 'collections'),
-                    orderBy('createdAt', 'desc'),
-                    limit(BATCH_SIZE)
-                );
-            }
+      const snapshot = await getDocs(recentCollectionsQuery);
+      // Update lastVisible only if we have results
+      if (snapshot.docs.length > 0) {
+        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
+        setHasMore(snapshot.docs.length === BATCH_SIZE);
+      } else {
+        setHasMore(false);
+      }
 
-            const snapshot = await getDocs(recentCollectionsQuery);
-             // Update lastVisible only if we have results
-             if (snapshot.docs.length > 0) {
-                setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-                setHasMore(snapshot.docs.length === BATCH_SIZE);
-            } else {
-                setHasMore(false);
-            }
+      const newCollections = snapshot.docs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          ownerId: doc.ref.parent.parent.id,
+          uniqueId: `${doc.ref.parent.parent.id}_${doc.id}`
+        }))
+        .filter(collection => {
+          // Skip if we've already loaded this collection
+          if (loadedIds.has(collection.uniqueId)) {
+            return false;
+          }
+          // Add to loaded IDs
+          loadedIds.add(collection.uniqueId);
 
-            const newCollections = snapshot.docs
-                .map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    ownerId: doc.ref.parent.parent.id,
-                    uniqueId: `${doc.ref.parent.parent.id}_${doc.id}`
-                }))
-                .filter(collection => {
-                    // Skip if we've already loaded this collection
-                    if (loadedIds.has(collection.uniqueId)) {
-                        return false;
-                    }
-                    // Add to loaded IDs
-                    loadedIds.add(collection.uniqueId);
-                    
-                    // Show user's own collections and other's non-Unsorted collections
-                    return collection.ownerId === FIREBASE_AUTH.currentUser?.uid || 
-                           !collection.name.includes('Unsorted');
-                });
+          // Show user's own collections and other's non-Unsorted collections
+          return collection.ownerId === FIREBASE_AUTH.currentUser?.uid ||
+            !collection.name.includes('Unsorted');
+        });
 
-            setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
-        } catch (error) {
-            console.error('Error fetching recent collections:', error);
-            setHasMore(false);
-        } finally {
-            setLoading(false);
-            setLoadingMore(false);
-        }
-    };
-  
+      setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
+    } catch (error) {
+      console.error('Error fetching recent collections:', error);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
 
   const performSearch = async (term, loadMore = false) => {
     try {
@@ -159,62 +159,62 @@ const SearchPage = ({ navigation }) => {
         const name = doc.data().name.toLowerCase();
         return name.includes(normalizedSearchTerm);
       });
-      
-     // Apply BATCH_SIZE limit to filtered results
-    const paginatedDocs = filteredDocs.slice(0, BATCH_SIZE);
-    
-    // Update lastVisible only if we have results
-    if (paginatedDocs.length > 0) {
-      setLastVisible(paginatedDocs[paginatedDocs.length - 1]);
-      // Check if we've reached the end
-      setHasMore(filteredDocs.length > BATCH_SIZE);
-    } else {
-      setHasMore(false);
-    }
 
-    const newCollections = paginatedDocs
-      .map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        ownerId: doc.ref.parent.parent.id
-      }))
-      .filter(collection => {
-        if (collection.ownerId === FIREBASE_AUTH.currentUser?.uid) {
-          return true;
-        }
-        return !collection.name.includes('Unsorted');
-      });
+      // Apply BATCH_SIZE limit to filtered results
+      const paginatedDocs = filteredDocs.slice(0, BATCH_SIZE);
 
-    // Append or replace results
-    setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
-  } catch (error) {
-    console.error('Error searching collections:', error);
-  } finally {
-    if (loadMore) {
-      setLoadingMore(false);
-    } else {
-      setLoading(false);
+      // Update lastVisible only if we have results
+      if (paginatedDocs.length > 0) {
+        setLastVisible(paginatedDocs[paginatedDocs.length - 1]);
+        // Check if we've reached the end
+        setHasMore(filteredDocs.length > BATCH_SIZE);
+      } else {
+        setHasMore(false);
+      }
+
+      const newCollections = paginatedDocs
+        .map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          ownerId: doc.ref.parent.parent.id
+        }))
+        .filter(collection => {
+          if (collection.ownerId === FIREBASE_AUTH.currentUser?.uid) {
+            return true;
+          }
+          return !collection.name.includes('Unsorted');
+        });
+
+      // Append or replace results
+      setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
+    } catch (error) {
+      console.error('Error searching collections:', error);
+    } finally {
+      if (loadMore) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
-  }
-};
+  };
 
   // Handle end reached (infinite scroll)
   const handleLoadMore = React.useCallback(() => {
     if (loading || loadingMore || !hasMore) return;
-    
+
     if (searchQuery.trim() !== '') {
-        performSearch(searchQuery, true);
+      performSearch(searchQuery, true);
     } else {
-        fetchRecentCollections(true);
+      fetchRecentCollections(true);
     }
-}, [loading, loadingMore, hasMore, searchQuery]);
+  }, [loading, loadingMore, hasMore, searchQuery]);
 
 
   // Reset pagination when search query changes
   useEffect(() => {
     setLastVisible(null);
     setHasMore(true);
-    
+
     const delayDebounce = setTimeout(() => {
       if (searchQuery.trim() !== '') {
         performSearch(searchQuery);
@@ -230,12 +230,12 @@ const SearchPage = ({ navigation }) => {
     try {
       // Get the collection data
       const collection = results.find(item => item.id === collectionId);
-      
+
       if (!collection) {
         console.error("Collection not found in results");
         return;
       }
-      
+
       // Collection data to save in the bookmark
       const bookmarkData = {
         id: collectionId,
@@ -244,65 +244,65 @@ const SearchPage = ({ navigation }) => {
         title: collection.name,
         description: collection.description || ''
       };
-      
+
       // Get existing bookmarks with user-specific key
       const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
-      
+
       // Check if already bookmarked
       const isAlreadyBookmarked = bookmarks.some(item => item.id === collectionId);
-      
+
       if (!isAlreadyBookmarked) {
         // Add to bookmarks and save with user-specific key
         const updatedBookmarks = [...bookmarks, bookmarkData];
         await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
-        
+
         // Update the bookmarked collections set
         setBookmarkedCollections(prev => new Set([...prev, collectionId]));
-        
+
         // Show feedback to user
-        showToast(toast,"Collection added to bookmarks",{ type: TOAST_TYPES.SUCCESS });
+        showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
       } else {
         // Remove from bookmarks
         const updatedBookmarks = bookmarks.filter(item => item.id !== collectionId);
         await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
-        
+
         // Update the bookmarked collections set
         setBookmarkedCollections(prev => {
           const newSet = new Set(prev);
           newSet.delete(collectionId);
           return newSet;
         });
-        
+
         // Show feedback to user
-        showToast(toast,"Collection removed from bookmarks",{ type: TOAST_TYPES.INFO });
+        showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
       }
     } catch (error) {
       console.error("Error managing bookmark:", error);
-      showToast(toast,"Could not save or remove this bookmark",{ type: TOAST_TYPES.DANGER });
+      showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
     }
   };
 
-const navigateToCollection = (collectionId, ownerId) => {
-  // Navigate to the collection details screen
-  // Set isExternalCollection to true if the collection belongs to another user
-  navigation.navigate('CollectionDetails', { 
-    collectionId, 
-    ownerId,
-    isExternalCollection: ownerId !== FIREBASE_AUTH.currentUser?.uid
-  });
-};
+  const navigateToCollection = (collectionId, ownerId) => {
+    // Navigate to the collection details screen
+    // Set isExternalCollection to true if the collection belongs to another user
+    navigation.navigate('CollectionDetails', {
+      collectionId,
+      ownerId,
+      isExternalCollection: ownerId !== FIREBASE_AUTH.currentUser?.uid
+    });
+  };
 
   return (
     <View style={styles.container}>
-        
+
       <View style={styles.searchContainer}>
-      {loading && !loadingMore && (
+        {loading && !loadingMore && (
           <View style={styles.fullScreenLoader}>
             <ActivityIndicator size="large" color="#007AFF" />
           </View>
         )}
-        
+
         <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
@@ -321,69 +321,69 @@ const navigateToCollection = (collectionId, ownerId) => {
 
       {/* Display search results */}
       <FlatList
-                data={results}
-                keyExtractor={item => item.uniqueId}
-                numColumns={2}
-                columnWrapperStyle={styles.resultGrid}
-                onEndReached={handleLoadMore}
-                onEndReachedThreshold={0.5}
-                removeClippedSubviews={true}
-                maxToRenderPerBatch={5}
-                windowSize={5}
-                initialNumToRender={10}
-                maintainVisibleContentPosition={{
-                    minIndexForVisible: 0,
-                }}
-                ListFooterComponent={() => (
-                    loadingMore ? (
-                        <View style={styles.loadingFooter}>
-                            <ActivityIndicator size="small" color="#007AFF" />
-                        </View>
-                    ) : null
-                )}
-                renderItem={({ item }) => (
-                  <TouchableOpacity 
-                    style={styles.collectionCard}
-                    onPress={() => navigateToCollection(item.id, item.ownerId)}
-                  >
-                    <Image 
-                      source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }} 
-                      style={styles.thumbnail}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.cardContent}>
-                      <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-                      <Text style={styles.collectionSubtext} numberOfLines={1}>
-                        {item.ownerId === FIREBASE_AUTH.currentUser?.uid 
-                          ? 'Your Collection' 
-                          : 'Public Collection'}
-                      </Text>
-                      
-                      {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
-                        <TouchableOpacity
-                          onPress={() => bookmarkCollection(item.id)}
-                          style={styles.bookmarkButton}
-                        >
-                          <Ionicons 
-                            name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"} 
-                            size={16} 
-                            color="#007AFF" 
-                          />
-                          <Text style={styles.bookmarkText}>
-                            {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                )}
-        
+        data={results}
+        keyExtractor={item => item.uniqueId}
+        numColumns={2}
+        columnWrapperStyle={styles.resultGrid}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={5}
+        windowSize={5}
+        initialNumToRender={10}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+        }}
+        ListFooterComponent={() => (
+          loadingMore ? (
+            <View style={styles.loadingFooter}>
+              <ActivityIndicator size="small" color="#007AFF" />
+            </View>
+          ) : null
+        )}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.collectionCard}
+            onPress={() => navigateToCollection(item.id, item.ownerId)}
+          >
+            <Image
+              source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+            <View style={styles.cardContent}>
+              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+              <Text style={styles.collectionSubtext} numberOfLines={1}>
+                {item.ownerId === FIREBASE_AUTH.currentUser?.uid
+                  ? 'Your Collection'
+                  : 'Public Collection'}
+              </Text>
+
+              {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
+                <TouchableOpacity
+                  onPress={() => bookmarkCollection(item.id)}
+                  style={styles.bookmarkButton}
+                >
+                  <Ionicons
+                    name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"}
+                    size={16}
+                    color="#007AFF"
+                  />
+                  <Text style={styles.bookmarkText}>
+                    {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="search" size={64} color="#ccc" />
             <Text style={styles.emptyText}>
-              {searchQuery.trim() === '' 
-                ? 'Try searching for collections' 
+              {searchQuery.trim() === ''
+                ? 'Try searching for collections'
                 : 'No results found'}
             </Text>
           </View>

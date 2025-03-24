@@ -33,7 +33,7 @@ const EditProfile = ({ navigation }) => {
         username: username,
         profilePicture: profilePicture,
       }, { merge: true });
-  
+
       alert('Profile updated successfully');
       navigation.goBack(); // Go back to the previous screen (Collections screen)
     } catch (error) {
@@ -55,8 +55,8 @@ const EditProfile = ({ navigation }) => {
         onChangeText={setUsername}
       />
       <TouchableOpacity
-      style={styles.button}
-      onPress={handleSaveProfile}
+        style={styles.button}
+        onPress={handleSaveProfile}
       >
         <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>

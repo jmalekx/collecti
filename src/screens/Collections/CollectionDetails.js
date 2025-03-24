@@ -22,17 +22,17 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 // Services
-import { 
-  getCollection, 
-  getAllCollections, 
-  updateCollection, 
+import {
+  getCollection,
+  getAllCollections,
+  updateCollection,
   deleteCollection as deleteCollectionService,
-  createCollection 
+  createCollection
 } from '../../services/collections';
-import { 
-  getCollectionPosts, 
+import {
+  getCollectionPosts,
   deletePost as deletePostService,
-  updateCollectionThumbnail 
+  updateCollectionThumbnail
 } from '../../services/posts';
 
 // Firebase helpers
@@ -53,7 +53,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [numColumns, setNumColumns] = useState(2);
-  
+
   // Group selection state
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState([]);
@@ -62,7 +62,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
   const [collections, setCollections] = useState([]);
-  
+
   // Get the current user ID
   const currentUserId = getCurrentUserId();
   // Use the owner ID if viewing an external collection, otherwise use current user ID
@@ -84,6 +84,16 @@ const CollectionDetails = ({ route, navigation }) => {
       await fetchAllCollections();
     }
   }
+
+  const getPlatformIcon = (post) => {
+    if (post.thumbnail.includes('instagram.com')) {
+      return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
+    } else if (post.thumbnail.includes('tiktok.com')) {
+      return <Ionicons name="logo-tiktok" size={20} color="#000000" />;
+    } else {
+      return <Ionicons name="images-outline" size={20} color="#4CAF50" />;
+    }
+  };
 
   // Filter posts based on search query
   const filteredPosts = posts.filter((post) =>
@@ -161,12 +171,12 @@ const CollectionDetails = ({ route, navigation }) => {
       showToast(toast, "No posts selected", { type: TOAST_TYPES.WARNING });
       return;
     }
-    
+
     // Set the first collection as default if available
     if (collections.length > 0 && !selectedTargetCollection) {
       setSelectedTargetCollection(collections[0].id);
     }
-    
+
     setIsGroupActionModalVisible(true);
   };
 
@@ -181,10 +191,10 @@ const CollectionDetails = ({ route, navigation }) => {
 
   const handleConfirmGroupDelete = async () => {
     try {
-      const batchPromises = selectedPosts.map(postId => 
+      const batchPromises = selectedPosts.map(postId =>
         deletePostService(collectionId, postId)
       );
-      
+
       await Promise.all(batchPromises);
       setShowDeleteGroupModal(false);
       showToast(toast, `${selectedPosts.length} posts deleted`, { type: TOAST_TYPES.SUCCESS });
@@ -197,7 +207,7 @@ const CollectionDetails = ({ route, navigation }) => {
       setShowDeleteGroupModal(false);
     }
   };
-  
+
 
   // Create new collection and move posts there
   const handleCreateCollectionAndMove = async () => {
@@ -212,12 +222,12 @@ const CollectionDetails = ({ route, navigation }) => {
         name: newCollectionName.trim(),
         description: ''
       };
-      
+
       const newCollection = await createCollection(newCollectionData);
 
       // Move posts to the new collection
       await movePostsToCollection(newCollection.id);
-      
+
       showToast(toast, `Posts moved to new collection: ${newCollectionName}`, { type: TOAST_TYPES.SUCCESS });
       setNewCollectionName('');
       setIsAddingNewCollection(false);
@@ -238,25 +248,25 @@ const CollectionDetails = ({ route, navigation }) => {
         // Get the post data
         const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
         const postDoc = await getDoc(postRef);
-        
+
         if (postDoc.exists()) {
           const postData = postDoc.data();
-          
+
           // Add post to target collection
           const newPostRef = doc(collection(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId, 'posts'));
           await setDoc(newPostRef, postData);
-          
+
           // Delete post from current collection
           await deleteDoc(postRef);
         }
       });
-      
+
       await Promise.all(movePromises);
-      
+
       // Update both collections' thumbnails
       await updateCollectionThumbnail(collectionId);
       await updateCollectionThumbnail(targetCollectionId);
-      
+
       return true;
     } catch (error) {
       console.error('Error moving posts: ', error);
@@ -285,8 +295,8 @@ const CollectionDetails = ({ route, navigation }) => {
 
   // Delete collection with confirmation
   const deleteCollection = () => {
-  setShowDeleteCollectionModal(true);
-};
+    setShowDeleteCollectionModal(true);
+  };
 
   const handleDeleteCollection = async () => {
     try {
@@ -334,7 +344,7 @@ const CollectionDetails = ({ route, navigation }) => {
   // Render post content based on the platform
   const renderPostContent = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
-      return <InstagramEmbed url={post.thumbnail} scale={0.42}/>;
+      return <InstagramEmbed url={post.thumbnail} scale={0.42} />;
     } else if (post.thumbnail.includes('tiktok.com')) {
       return <TikTokEmbed url={post.thumbnail} scale={0.4} />;
     } else {
@@ -351,68 +361,68 @@ const CollectionDetails = ({ route, navigation }) => {
     <View style={styles.container}>
       {/* Collection Header */}
       <View style={styles.header}>
-      <View style={styles.headerTop}>
-      <TouchableOpacity 
+        <View style={styles.headerTop}>
+          <TouchableOpacity
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
-        <Text style={styles.collectionName}>{collectionName}</Text>
-        <View style={styles.headerIcons}>
-          {isSelectionMode ? (
-            <>
-              <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                <Ionicons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-              <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
-              <TouchableOpacity 
-                onPress={handleGroupMove} 
-                style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                disabled={isExternalCollection}
-              >
-                <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={handleGroupDelete} 
-                style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                disabled={isExternalCollection}
-              >
-                <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
-              </TouchableOpacity>
-            </>
-          ) : (
-            <>
-            <TouchableOpacity 
-              onPress={toggleSelectionMode} 
-              style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-              disabled={isExternalCollection}
-            >
-              <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
-            </TouchableOpacity>
-            {canEditCollection ? (
+          <Text style={styles.collectionName}>{collectionName}</Text>
+          <View style={styles.headerIcons}>
+            {isSelectionMode ? (
               <>
-                <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
-                  <Ionicons name="create-outline" size={24} color="#000" />
+                <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
+                  <Ionicons name="close" size={24} color="#000" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={deleteCollection} style={styles.selectionButton}>
-                  <Ionicons name="trash" size={24} color="red" />
+                <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
+                <TouchableOpacity
+                  onPress={handleGroupMove}
+                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleGroupDelete}
+                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
                 </TouchableOpacity>
               </>
             ) : (
               <>
-                <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                  <Ionicons name="create-outline" size={24} color="#ccc" />
+                <TouchableOpacity
+                  onPress={toggleSelectionMode}
+                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
                 </TouchableOpacity>
-                <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                  <Ionicons name="trash" size={24} color="#ccc" />
-                </TouchableOpacity>
+                {canEditCollection ? (
+                  <>
+                    <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
+                      <Ionicons name="create-outline" size={24} color="#000" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={deleteCollection} style={styles.selectionButton}>
+                      <Ionicons name="trash" size={24} color="red" />
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                      <Ionicons name="create-outline" size={24} color="#ccc" />
+                    </TouchableOpacity>
+                    <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                      <Ionicons name="trash" size={24} color="#ccc" />
+                    </TouchableOpacity>
+                  </>
+                )}
               </>
             )}
-            </>
-          )}
+          </View>
         </View>
-      </View>
         <View style={styles.headerBottom}>
           <Text style={styles.collectionDescription}>{collectionDescription}</Text>
           <Text style={styles.postCount}>{posts.length} posts</Text>
@@ -451,6 +461,7 @@ const CollectionDetails = ({ route, navigation }) => {
               styles.postCard,
               isSelectionMode && selectedPosts.includes(item.id) && styles.selectedPostCard
             ]}
+
             onPress={() => {
               if (isSelectionMode) {
                 togglePostSelection(item.id);
@@ -458,7 +469,7 @@ const CollectionDetails = ({ route, navigation }) => {
                 navigation.navigate('PostDetails', {
                   postId: item.id,
                   collectionId: collectionId,
-                  ownerId: effectiveUserId  
+                  ownerId: effectiveUserId
                 });
               }
             }}
@@ -469,12 +480,17 @@ const CollectionDetails = ({ route, navigation }) => {
               }
             }}
           >
+            {/* Platform Icon */}
+            <View style={styles.platformIconContainer}>
+              {getPlatformIcon(item)}
+            </View>
+
             {isSelectionMode && (
               <View style={styles.checkboxContainer}>
-                <Ionicons 
-                  name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"} 
-                  size={24} 
-                  color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"} 
+                <Ionicons
+                  name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
+                  size={24}
+                  color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"}
                 />
               </View>
             )}
@@ -482,7 +498,9 @@ const CollectionDetails = ({ route, navigation }) => {
             {/* Post Content */}
             {renderPostContent(item)}
             <Text style={styles.postTitle}>{item.notes}</Text>
+
           </TouchableOpacity>
+
         )}
       />
 
@@ -501,7 +519,7 @@ const CollectionDetails = ({ route, navigation }) => {
                 <Ionicons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
-            
+
             {!isAddingNewCollection ? (
               <>
                 <Text style={styles.modalLabel}>Select Target Collection:</Text>
@@ -529,7 +547,7 @@ const CollectionDetails = ({ route, navigation }) => {
                     <Text style={styles.noCollectionsText}>No other collections available</Text>
                   </View>
                 )}
-                
+
                 <View style={styles.buttonRow}>
                   <AppButton
                     style={[styles.actionButton, styles.cancelButton]}
@@ -537,7 +555,7 @@ const CollectionDetails = ({ route, navigation }) => {
                     onPress={() => setIsGroupActionModalVisible(false)}
                     textStyle={styles.buttonText}
                   />
-                  
+
                   {collections.length > 0 && (
                     <AppButton
                       style={[styles.actionButton, styles.confirmButton]}
@@ -557,7 +575,7 @@ const CollectionDetails = ({ route, navigation }) => {
                   value={newCollectionName}
                   onChangeText={setNewCollectionName}
                 />
-                
+
                 <View style={styles.buttonRow}>
                   <AppButton
                     style={[styles.actionButton, styles.cancelButton]}
@@ -568,7 +586,7 @@ const CollectionDetails = ({ route, navigation }) => {
                     }}
                     textStyle={styles.buttonText}
                   />
-                  
+
                   <AppButton
                     style={[styles.actionButton, styles.confirmButton]}
                     title="Create & Move"
@@ -582,30 +600,30 @@ const CollectionDetails = ({ route, navigation }) => {
         </View>
       </Modal>
       <View>
-              {/* Delete Collection Modal */}
-          <ConfirmationModal
-            visible={showDeleteCollectionModal}
-            onClose={() => setShowDeleteCollectionModal(false)}
-            title="Delete Collection"
-            message="Are you sure you want to delete this collection? This action cannot be undone."
-            primaryAction={handleDeleteCollection}
-            primaryText="Delete"
-            primaryStyle="danger"
-            icon="trash-outline"
-          />
-          
-          {/* Delete Group Modal */}
-          <ConfirmationModal
-            visible={showDeleteGroupModal}
-            onClose={() => setShowDeleteGroupModal(false)}
-            title={`Delete ${selectedPosts.length} Posts`}
-            message="Are you sure you want to delete these posts? This action cannot be undone."
-            primaryAction={handleConfirmGroupDelete}
-            primaryText="Delete"
-            primaryStyle="danger"
-            icon="trash-outline"
-          />
-        </View>
+        {/* Delete Collection Modal */}
+        <ConfirmationModal
+          visible={showDeleteCollectionModal}
+          onClose={() => setShowDeleteCollectionModal(false)}
+          title="Delete Collection"
+          message="Are you sure you want to delete this collection? This action cannot be undone."
+          primaryAction={handleDeleteCollection}
+          primaryText="Delete"
+          primaryStyle="danger"
+          icon="trash-outline"
+        />
+
+        {/* Delete Group Modal */}
+        <ConfirmationModal
+          visible={showDeleteGroupModal}
+          onClose={() => setShowDeleteGroupModal(false)}
+          title={`Delete ${selectedPosts.length} Posts`}
+          message="Are you sure you want to delete these posts? This action cannot be undone."
+          primaryAction={handleConfirmGroupDelete}
+          primaryText="Delete"
+          primaryStyle="danger"
+          icon="trash-outline"
+        />
+      </View>
 
       {/* Menu Modal */}
       <Modal
@@ -700,7 +718,7 @@ const styles = StyleSheet.create({
     width: '48%',
     margin: '1%',
   },
-    
+
   backButton: {
     padding: 8,
     marginRight: 8,
@@ -889,6 +907,15 @@ const styles = StyleSheet.create({
   },
   selectionButton: {
     padding: 6,
+  },
+  platformIconContainer: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    zIndex: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    padding: 4,
   },
 });
 

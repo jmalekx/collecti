@@ -45,13 +45,13 @@ export const useUserData = () => {
                     ...coll,
                     items: []
                 }));
-                
+
                 setCollections(collectionsWithoutPosts);
-                
+
                 // Clean up any existing post subscriptions
                 postsUnsubscribes.forEach(unsub => unsub());
                 postsUnsubscribes = [];
-                
+
                 // Set up post listeners for each collection
                 newCollections.forEach(collection => {
                     // Include the Unsorted collection in post subscriptions
@@ -60,21 +60,21 @@ export const useUserData = () => {
                         setCollections(prev => {
                             const updatedCollections = [...prev];
                             const collIndex = updatedCollections.findIndex(c => c.id === collection.id);
-                            
+
                             if (collIndex !== -1) {
                                 updatedCollections[collIndex] = {
                                     ...updatedCollections[collIndex],
                                     items: posts
                                 };
                             }
-                            
+
                             return updatedCollections;
                         });
                     });
-                    
+
                     postsUnsubscribes.push(unsubscribe);
                 });
-                
+
                 setLoading(false);
             });
         };

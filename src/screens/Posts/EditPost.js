@@ -33,7 +33,7 @@ const EditPost = ({ route, navigation }) => {
                     setNotes(data.notes || '');
                     setTags(data.tags?.join(', ') || '');
                 } else {
-                   showToast(toast,"Post not found", { type: TOAST_TYPES.DANGER });
+                    showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
                     navigation.goBack();
                 }
             } catch (error) {
@@ -57,14 +57,14 @@ const EditPost = ({ route, navigation }) => {
                 updatedAt: new Date().toISOString(),
             });
 
-            showToast(toast,"Post updated", { type: TOAST_TYPES.INFO });
+            showToast(toast, "Post updated", { type: TOAST_TYPES.INFO });
 
             // Simply go back instead of explicitly navigating
             navigation.goBack();
 
         } catch (error) {
             console.error('Error updating post:', error);
-            showToast(toast,"Failed to update post", { type: TOAST_TYPES.DANGER });
+            showToast(toast, "Failed to update post", { type: TOAST_TYPES.DANGER });
         }
     };
 

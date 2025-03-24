@@ -47,14 +47,14 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
         const result = await pinterestService.handleRedirect(url);
         if (result.success) {
           setPinterestConnected(true);
-          showToast(toast,"Pinterest connected successfully!", {type: TOAST_TYPES.SUCCESS});
+          showToast(toast, "Pinterest connected successfully!", { type: TOAST_TYPES.SUCCESS });
           if (onConnected) {
             onConnected();
           }
         }
       } catch (error) {
         console.error('Error handling Pinterest redirect:', error);
-        showToast(toast, "Failed to connect Pinterest", {type: TOAST_TYPES.DANGER});
+        showToast(toast, "Failed to connect Pinterest", { type: TOAST_TYPES.DANGER });
       }
     }
   };
@@ -65,7 +65,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       await Linking.openURL(authUrl);
     } catch (error) {
       console.error('Error starting Pinterest auth:', error);
-      showToast(toast,"Failed to open Pinterest authorization", {type: TOAST_TYPES.DANGER});
+      showToast(toast, "Failed to open Pinterest authorization", { type: TOAST_TYPES.DANGER });
     }
   };
 
@@ -73,7 +73,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
     try {
       await pinterestService.logout();
       setPinterestConnected(false);
-      showToast(toast,"Pinterest disconnected", {type: TOAST_TYPES.SUCCESS});
+      showToast(toast, "Pinterest disconnected", { type: TOAST_TYPES.SUCCESS });
       if (onDisconnected) {
         onDisconnected();
       }
@@ -84,7 +84,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
   };
 
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[
         styles.pinterestButton,
         pinterestConnected && styles.pinterestConnected
@@ -99,7 +99,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
 };
 
 const styles = StyleSheet.create({
-    ...commonStyles,
+  ...commonStyles,
 });
 
 export default PinterestButton;

@@ -28,14 +28,14 @@ const EditCollection = ({ route, navigation }) => {
         console.error('Error fetching collection details: ', error);
       }
     };
-    
+
     fetchCollectionDetails();
   }, [collectionId, userId]);
 
   // Save the updated collection details
   const saveChanges = async () => {
     if (!collectionName.trim()) {
-      showToast(toast, "Collection name cannot be empty", {type: TOAST_TYPES.WARNING});
+      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;
     }
 
@@ -45,12 +45,12 @@ const EditCollection = ({ route, navigation }) => {
         name: collectionName,
         description: collectionDescription,
       });
-      
-      showToast(toast, "Collection updated successfully", {type: TOAST_TYPES.INFO});
+
+      showToast(toast, "Collection updated successfully", { type: TOAST_TYPES.INFO });
       navigation.goBack();
     } catch (error) {
       console.error('Error updating collection: ', error);
-      showToast(toast, "Failed to update collection", {type: TOAST_TYPES.DANGER});
+      showToast(toast, "Failed to update collection", { type: TOAST_TYPES.DANGER });
     }
   };
 

@@ -33,9 +33,9 @@ export const AppSmallText = ({ style, children, ...props }) => (
 );
 
 export const AppButton = ({ style, textStyle, onPress, title, ...props }) => (
-  <TouchableOpacity 
-    style={[commonStyles.button, style]} 
-    onPress={onPress} 
+  <TouchableOpacity
+    style={[commonStyles.button, style]}
+    onPress={onPress}
     {...props}
   >
     <Text style={[commonStyles.buttonText, { fontFamily: typography.fontBold }, textStyle]}>
@@ -44,19 +44,19 @@ export const AppButton = ({ style, textStyle, onPress, title, ...props }) => (
   </TouchableOpacity>
 );
 export const AppTextInput = ({ style, ...props }) => (
-    <TextInput 
-      style={[
-        { 
-          fontFamily: typography.fontRegular,
-          fontSize: 16,
-          padding: 10,
-          borderWidth: 1,
-          borderColor: '#e8e8e8',
-          borderRadius: 5,
-          backgroundColor: 'white',
-        }, 
-        style
-      ]} 
-      {...props} 
-    />
-  );
+  <TextInput
+    style={[
+      {
+        fontFamily: typography.fontRegular,
+        fontSize: 16,
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#e8e8e8',
+        borderRadius: 5,
+        backgroundColor: 'white',
+      },
+      style
+    ]}
+    {...props}
+  />
+);

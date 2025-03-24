@@ -47,11 +47,11 @@ export const createPost = async (collectionId, postData, userId = getCurrentUser
             ...postData,
             createdAt: new Date().toISOString(),
         };
-        
+
         const docRef = await addDoc(postsRef, newPost);
-        
+
         await updateCollectionThumbnail(collectionId, userId);
-        
+
         return { id: docRef.id, ...newPost };
     } catch (error) {
         console.error('Error creating post:', error);
@@ -75,7 +75,7 @@ export const deletePost = async (collectionId, postId, userId = getCurrentUserId
     try {
         await deleteDoc(getPostRef(collectionId, postId, userId));
         await updateCollectionThumbnail(collectionId, userId);
-        
+
         return true;
     } catch (error) {
         console.error('Error deleting post:', error);
@@ -86,7 +86,7 @@ export const deletePost = async (collectionId, postId, userId = getCurrentUserId
 // Set up a real-time listener for posts
 export const subscribeToPosts = (collectionId, callback, userId = getCurrentUserId()) => {
     const postsQuery = query(getPostsRef(collectionId, userId));
-    
+
     const unsubscribe = onSnapshot(
         postsQuery,
         (snapshot) => {
@@ -100,7 +100,7 @@ export const subscribeToPosts = (collectionId, callback, userId = getCurrentUser
             console.error('Error subscribing to posts:', error);
         }
     );
-    
+
     return unsubscribe;
 };
 
@@ -112,12 +112,12 @@ export const updateCollectionThumbnail = async (collectionId, userId = getCurren
             id: doc.id,
             ...doc.data()
         }));
-        
+
         // Sort posts by date to get the most recent one
-        const sortedPosts = posts.sort((a, b) => 
+        const sortedPosts = posts.sort((a, b) =>
             new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
         );
-        
+
         // Update the collection document with new thumbnail
         if (posts.length > 0) {
             await updateDoc(getCollectionRef(collectionId, userId), {
@@ -130,7 +130,7 @@ export const updateCollectionThumbnail = async (collectionId, userId = getCurren
                 lastUpdated: new Date().toISOString()
             });
         }
-        
+
         return true;
     } catch (error) {
         console.error('Error updating collection thumbnail:', error);
