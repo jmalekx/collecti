@@ -217,7 +217,9 @@ const AddButton = ({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [3, 4],
-        quality: 1,
+        quality: 0.5,
+        compress: 0.5,
+        base64: false,
       });
 
       if (!result.canceled) {
