@@ -1,6 +1,26 @@
+/*
+  React and React Native core imports
+*/
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
+/* 
+  Custom component imports and styling
+*/
+import commonStyles from '../commonStyles';
+
+
+/*
+  InstagramEmbed Component
+
+  Implements sandboxed embedding system for content from Instagram, normalising
+  platform-specific web content into native application context.
+
+  - URL parsing and validation
+  - Injected JS for Custom HTMl for embedding
+  - iFrame isolation and content security with navigation restrictions
+
+*/
 
 const InstagramEmbed = ({ url, style, scale = 1 }) => {
   const [loading, setLoading] = useState(true);
@@ -8,21 +28,20 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   const [initialUrl, setInitialUrl] = useState('');
   const webViewRef = useRef(null);
 
+  //Resetting component after change of URL or scale prop
   useEffect(() => {
-    // Reset the component when URL changes
     setLoading(true);
     setKey(Date.now());
   }, [url, scale]);
 
-  // Handle different Instagram URL formats
+  //URL validation and parsing
   let postId;
-
   if (!url) {
     console.error('Invalid Instagram URL: URL is undefined');
     return null;
   }
 
-  // Extract post ID from URL
+  //Strat 1: Standard path-based parsing (extracting post id from url)
   if (url.includes('/p/')) {
     // Format: https://www.instagram.com/p/ABC123/
     const parts = url.split('/');
@@ -30,12 +49,14 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     if (pIndex !== -1 && parts.length > pIndex + 1) {
       postId = parts[pIndex + 1];
     }
-  } else if (url.includes('instagram.com')) {
-    // Try to extract from any Instagram URL
+  } 
+  //Strat 2: Regex-based parsing
+  else if (url.includes('instagram.com')) {
     const match = url.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
     postId = match ? match[1] : null;
   }
 
+  //Error handling
   if (!postId) {
     console.error('Could not extract Instagram post ID from:', url);
     return (
@@ -45,12 +66,11 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     );
   }
 
-  // Clean up the post ID (remove any trailing slashes or parameters)
+  //Clean up post ID
   postId = postId.split('?')[0].split('/')[0];
-
   console.log('Loading Instagram embed with post ID:', postId);
-
-  // Use the embed URL directly
+  
+  //Using direct embed URL
   const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
 
   useEffect(() => {
@@ -59,6 +79,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     }
   }, [embedUrl]);
 
+  //Reloading webview
   const reload = () => {
     if (webViewRef.current) {
       webViewRef.current.reload();
@@ -66,8 +87,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     }
   };
 
-  // Create custom HTML that properly fits the Instagram embed
-  // Instead of using Instagram's embed URL directly, we'll create a custom viewer
+  //Custom HTML viewer for embed for proper fitting/adjustment to UI
   const customHtml = `
     <html>
       <head>
@@ -102,7 +122,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             border: none;
             pointer-events: none;
           }
-          /* Create transparent overlay to intercept all clicks */
+          /*Transparent overlay to intercept all clicks/navigations that embed usually has*/
           .overlay {
             position: absolute;
             top: 0;
@@ -115,7 +135,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         </style>
       </head>
       <body>
-        <!-- Transparent overlay to catch all clicks -->
+        <!--Transparent overlay to catch all clicks -->
         <div class="overlay"></div>
         
         <div class="embed-container">
@@ -123,12 +143,12 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         </div>
         
         <script>
-          // Adjust container size after iframe loads
+          //Adjust container size after iframe loads
           window.onload = function() {
             const iframe = document.querySelector('iframe');
             const overlay = document.querySelector('.overlay');
             
-            // Intercept all clicks
+            //Intercept all clicks
             document.addEventListener('click', function(e) {
               e.preventDefault();
               e.stopPropagation();
@@ -169,15 +189,14 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         startInLoadingState={true}
         scrollEnabled={false}
 
-        // The most important part: prevent any navigation away from initial page
+        //System to prevent navigation from app due to embedded content
         onShouldStartLoadWithRequest={(request) => {
-          // Only allow the initial load of our custom HTML and the embedded iframe
-          // Check if this is the initial load
+          // Only allow the initial load of custom HTML and the embedded iframe
           if (!initialUrl) {
             return true;
           }
 
-          // Always allow about:blank and our custom HTML (data:text/html)
+          //Always allow about:blank and custom HTML
           if (request.url.startsWith('about:blank') ||
             request.url.startsWith('data:text/html') ||
             request.url === initialUrl ||
@@ -185,12 +204,12 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             return true;
           }
 
-          // For any other URL, prevent loading and return to our custom HTML
+          //Any other URL, prevent loading and return to custom HTML
           console.log('Blocking navigation to:', request.url);
           setTimeout(() => {
             if (webViewRef.current) {
               webViewRef.current.stopLoading();
-              // Force reload our custom HTML if needed
+              //Force reload custom HTML if needed
               if (webViewRef.current && webViewRef.current.injectJavaScript) {
                 webViewRef.current.injectJavaScript(`
                   if (window.location.href !== '${embedUrl}' && 
@@ -207,7 +226,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           return false;
         }}
 
-        // Additional navigation blocking
+        //Additional navigation blocking
         onNavigationStateChange={(navState) => {
           if (initialUrl &&
             navState.url !== initialUrl &&
@@ -219,8 +238,8 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             if (webViewRef.current) {
               webViewRef.current.stopLoading();
               setTimeout(() => {
-                // Reset to our custom HTML
-                setKey(Date.now()); // Force a complete reload
+                //Reset to custom HTML
+                setKey(Date.now()); //Force complete reload
               }, 100);
             }
           }
@@ -253,7 +272,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           );
         }}
         injectedJavaScript={`
-          // Add click-blocking overlay
+          //Add click-blocking overlay
           if (!document.querySelector('.overlay')) {
             const overlay = document.createElement('div');
             overlay.className = 'overlay';
@@ -265,14 +284,14 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             document.body.appendChild(overlay);
           }
           
-          // Block all clicks
+          //Block all clicks
           document.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
             return false;
           }, true);
           
-          // Make all links non-clickable
+          //Make all links non-clickable
           const disableLinks = function() {
             const links = document.getElementsByTagName('a');
             for (let i = 0; i < links.length; i++) {
@@ -291,7 +310,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           // Run continuously to catch dynamically added links
           setInterval(disableLinks, 1000);
           
-          true; // Required for injectedJavaScript to work
+          true;
         `}
         cacheEnabled={false}
         incognito={true}
@@ -301,6 +320,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     width: '100%',
     height: 150,

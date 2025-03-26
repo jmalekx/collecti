@@ -1,19 +1,29 @@
+/*
+  React and React Native core imports
+*/
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+/*
+  Third-party library external imports
+*/
 import { Ionicons } from '@expo/vector-icons';
+/* 
+  Custom component imports and styling
+*/
 import { AppText, AppHeading } from './Typography';
+import commonStyles from '../commonStyles';
 
-const ConfirmationModal = ({
-  visible,
-  onClose,
-  title,
-  message,
-  primaryAction,
-  primaryText,
+/*
+  ConfirmationModal Component
+
+  Reusable dialogue modal following Strategy pattern for states. Impements multiple
+  semantic types (confirmation, warning, error)
+
+*/
+
+const ConfirmationModal = ({ visible, onClose, title, message, primaryAction, primaryText,
   primaryStyle = 'primary', // 'primary', 'danger', 'warning'
-  secondaryAction,
-  secondaryText = 'Cancel',
-  icon
+  secondaryAction, secondaryText = 'Cancel', icon
 }) => {
   return (
     <Modal
@@ -24,6 +34,7 @@ const ConfirmationModal = ({
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
+          {/* Icon - conditional rendering */}
           {icon && (
             <View style={[
               styles.iconContainer,
@@ -39,10 +50,11 @@ const ConfirmationModal = ({
             </View>
           )}
 
+          {/* Title and message */}
           <AppHeading style={styles.title}>{title}</AppHeading>
-
           {message && <AppText style={styles.message}>{message}</AppText>}
 
+          {/* Action buttons */}
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.cancelButton}
@@ -70,6 +82,7 @@ const ConfirmationModal = ({
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   modalBackground: {
     flex: 1,
     justifyContent: 'center',

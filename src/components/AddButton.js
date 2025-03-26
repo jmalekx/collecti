@@ -3,7 +3,6 @@
 */
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TextInput, StyleSheet, ScrollView, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
-
 /*
   Third-party library external imports
 */
@@ -12,18 +11,17 @@ import { Picker } from '@react-native-picker/picker';
 import { useToast } from 'react-native-toast-notifications';
 import { useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-
 /*
   Project services and utilities
 */
 import pinterestService from '../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../services/storage';
 import { showToast, TOAST_TYPES } from './Toasts';
-
 /* 
   Custom component imports and styling
 */
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
+import commonStyles from '../commonStyles';
 
 
 /*
@@ -582,6 +580,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
 //STYLES NEED TO BE ACTUALLY DONE AND ORGANISED EVENTUALLY; THIS IS ALL TMP LAYOUTS TIGHT NOW
 const styles = StyleSheet.create({
+  ...commonStyles,
   modalBg: {
     flex: 1,
     justifyContent: 'center',
