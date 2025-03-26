@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
-import { getPost, updatePost } from '../../../services/posts';
+import { loadPostForEditing, saveEditedPost } from '../../../services/postActionService';
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 //Custom component imports and styling
@@ -18,7 +18,7 @@ import { AppHeading } from '../../../components/Typography';
     EditPost Screen
 
     Implements (MVC) Model-View-Controller pattern for post editing with proper
-    service abstraction and CRUD operations, separating cocnerns betrween UI and data.
+    service abstraction and CRUD operations, separating concerns between UI and data.
     Manages editing post metadata using service layer.
 */
 
@@ -32,59 +32,42 @@ const EditPost = ({ route, navigation }) => {
     const [notes, setNotes] = useState('');
     const [tags, setTags] = useState('');
 
-    //Contex states
+    //Context states
     const toast = useToast();
 
     //Fetch post data on load
     useEffect(() => {
-        //Async function to fetch post data
-        const fetchPost = async () => {
-            try {
-                setLoading(true);
-                
-                //Using post service data layer
-                const post = await getPost(collectionId, postId);
-
-                if (post) {
-                    //Populating form fields with post data
-                    setNotes(post.notes || '');
-                    setTags(post.tags?.join(', ') || '');
-                } 
-                else {
-                    showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
-                    navigation.goBack();
-                }
-            } 
-            catch (error) {
-                console.error('Error fetching post:', error);
-                showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
-            } 
-            finally {
-                setLoading(false);
+        const fetchPostData = async () => {
+            setLoading(true);
+            
+            // Use service to load post data
+            const postData = await loadPostForEditing(collectionId, postId, toast);
+            
+            if (postData) {
+                setNotes(postData.notes);
+                setTags(postData.tags);
+            } else {
+                navigation.goBack();
             }
+            
+            setLoading(false);
         };
 
-        fetchPost();
-    }, [postId, collectionId, toast, navigation]);
+        fetchPostData();
+    }, [collectionId, postId, toast, navigation]);
 
     //Form submission handler
     const handleSave = async () => {
-        try {
-            //Prepare update data
-            const updateData = {
-                notes: notes,
-                tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                updatedAt: new Date().toISOString()
-            };
-
-            await updatePost(collectionId, postId, updateData);
-
-            showToast(toast, "Post updated", { type: TOAST_TYPES.INFO });
+        // Use service to save post data
+        const success = await saveEditedPost(
+            collectionId, 
+            postId, 
+            { notes, tags }, 
+            toast
+        );
+        
+        if (success) {
             navigation.goBack();
-        } 
-        catch (error) {
-            console.error('Error updating post:', error);
-            showToast(toast, "Failed to update post", { type: TOAST_TYPES.DANGER });
         }
     };
 
@@ -130,6 +113,7 @@ const EditPost = ({ route, navigation }) => {
     );
 };
 
+// styles remain the same
 const styles = StyleSheet.create({
     ...commonStyles,
     container: {

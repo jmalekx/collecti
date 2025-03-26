@@ -86,7 +86,8 @@ const PostDetails = ({ route, navigation }) => {
         if (success) {
             setShowDeleteModal(false);
             navigation.goBack();
-        } else {
+        } 
+        else {
             setShowDeleteModal(false);
         }
     };
