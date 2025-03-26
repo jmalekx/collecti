@@ -1,64 +1,126 @@
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../../../FirebaseConfig';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+
+//Third-party library external imports
+import { useToast } from 'react-native-toast-notifications';
+
+//Project services and utilities
+import { getUserProfile, updateUserProfile } from '../../../services/users';
+import { getCurrentUserId } from '../../../services/firebase';
+import { showToast, TOAST_TYPES } from '../../../components/Toasts';
+
+//Custom component imports and styling
 import commonStyles from '../../../commonStyles';
+import { AppHeading } from '../../../components/Typography';
+
+/*
+  EditProfile Screen
+
+  Component for editing user profile information.
+  Uses the users service for data operations and follows
+  the MVC pattern for separation of concerns.
+*/
 
 const EditProfile = ({ navigation }) => {
-  const userId = FIREBASE_AUTH.currentUser?.uid;
-  const [username, setUsername] = useState('');
-  const [profilePicture, setProfilePicture] = useState(''); // Keep this state for any future use
 
+  //State transitions
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  //Content managing
+  const [username, setUsername] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');
+
+  //Context state
+  const toast = useToast();
+  
+  //Load user profile data on component mount
   useEffect(() => {
     const fetchProfile = async () => {
-      if (userId) {
-        try {
-          const userDoc = await getDoc(doc(FIREBASE_DB, 'users', userId));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setUsername(userData.username || '');
-            setProfilePicture(userData.profilePicture || ''); // Default picture URL
-          }
-        } catch (error) {
-          console.error('Error fetching profile:', error);
+      try {
+        setLoading(true);
+        
+        //Call service to get user profile
+        const userData = await getUserProfile();
+        
+        if (userData) {
+          setUsername(userData.username || '');
+          setProfilePicture(userData.profilePicture || '');
         }
+      } catch (error) {
+        showToast(toast, "Failed to load profile", { type: TOAST_TYPES.DANGER });
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchProfile();
-  }, [userId]);
+  }, [toast]);
 
+  //Handle profile save action
   const handleSaveProfile = async () => {
     try {
-      await setDoc(doc(FIREBASE_DB, 'users', userId), {
+      setSaving(true);
+      
+      //Build update data object
+      const updateData = {
         username: username,
         profilePicture: profilePicture,
-      }, { merge: true });
-
-      alert('Profile updated successfully');
-      navigation.goBack(); // Go back to the previous screen (Collections screen)
+        updatedAt: new Date().toISOString()
+      };
+      
+      //Call service to update profile
+      await updateUserProfile(updateData);
+      
+      showToast(toast, "Profile updated successfully", { type: TOAST_TYPES.SUCCESS });
+      navigation.goBack();
     } catch (error) {
-      console.error('Error updating profile: ', error);
+      showToast(toast, "Failed to update profile", { type: TOAST_TYPES.DANGER });
+    } finally {
+      setSaving(false);
     }
   };
 
+  //Loading state render
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Edit Profile</Text>
+      <AppHeading>Edit Profile</AppHeading>
+      
+      {/* Profile picture section */}
       <View style={styles.profilePictureContainer}>
         <Text>Profile Picture (Currently Unchanged)</Text>
-        {/* Placeholder for profile picture */}
+        {/* Placeholder for profile picture component */}
       </View>
+      
+      {/* Username input */}
+      <Text style={styles.label}>Username</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Enter your username"
         value={username}
         onChangeText={setUsername}
       />
+      
+      {/* Save button with loading state */}
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, saving && styles.disabledButton]}
         onPress={handleSaveProfile}
+        disabled={saving}
       >
-        <Text style={styles.buttonText}>Save Changes</Text>
+        {saving ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Save Changes</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
@@ -71,12 +133,22 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   profilePictureContainer: {
     marginBottom: 16,
     height: 100,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f3f3f3',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
   input: {
     height: 40,
@@ -85,6 +157,20 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingLeft: 8,
     borderRadius: 8,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  disabledButton: {
+    backgroundColor: '#A0C8FF', // Lighter blue for disabled state
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
 
