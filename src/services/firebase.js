@@ -13,7 +13,13 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
 */
 
 //Current user helper
-export const getCurrentUserId = () => FIREBASE_AUTH.currentUser?.uid;
+export const getCurrentUserId = () => {
+    return FIREBASE_AUTH.currentUser?.uid || null;
+  };
+  
+export const getCurrentUser = () => {
+    return FIREBASE_AUTH.currentUser;
+  };
 
 //Document reference helpers
 export const getUserRef = (userId = getCurrentUserId()) =>

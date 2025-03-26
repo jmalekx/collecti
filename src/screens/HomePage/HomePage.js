@@ -1,50 +1,76 @@
+//React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TextInput, Image, TouchableOpacity } from 'react-native';
-import { getAuth } from 'firebase/auth';
-import { Ionicons } from '@expo/vector-icons';
+import { View, StyleSheet, Text, Image } from 'react-native';
+
+//Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+
+// Project services and utilities
+import { getUserProfile } from '../../services/users';
+import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 
-// Import services instead of direct Firebase references
-import { getUserProfile } from '../../services/users';
-import { getCurrentUserId } from '../../services/firebase';
+// Custom component imports and styling
 import commonStyles from '../../commonStyles';
 
-const HomePage = ({ }) => {
-  const toast = useToast();
-  const [userId, setUserId] = useState(null);
+/* 
+  HomePage Screen
+
+  Implements main landing screen after authentication or onboarding completion.
+  Displays personalised greeting, user profile information and provides 
+  access to main application features. Uses service layer for data access.
+*/
+
+const HomePage = () => {
+
+  //Stae transitions
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  //Context states
+  const toast = useToast();
 
+  //Load user profile data from services
   useEffect(() => {
-    const currentUserId = getCurrentUserId();
-    if (currentUserId) {
-      setUserId(currentUserId);
-      fetchUserProfile(currentUserId);
-    }
-  }, []);
-
-  const fetchUserProfile = async (userId) => {
-    try {
-      const userProfile = await getUserProfile(userId);
-
-      if (userProfile) {
-        setUserName(userProfile.username || 'User');
-        setProfileImage(userProfile.profilePicture || null);
-      } else {
-        // Fallback to Auth data if no profile exists
-        const auth = getAuth();
-        setUserName(auth.currentUser?.displayName || 'User');
-        setProfileImage(auth.currentUser?.photoURL || null);
+    const loadUserProfile = async () => {
+      try {
+        setIsLoading(true);
+        const userId = getCurrentUserId();
+        
+        if (!userId) {
+          return;
+        }
+        
+        const userProfile = await getUserProfile(userId);
+        
+        if (userProfile) {
+          //Prefer data from user profile
+          setUserName(userProfile.username || 'User');
+          setProfileImage(userProfile.profilePicture || null);
+        } 
+        else {
+          //Fallback to auth data using service layer
+          const currentUser = getCurrentUser();
+          setUserName(currentUser?.displayName || 'User');
+          setProfileImage(currentUser?.photoURL || null);
+        }
+      } 
+      catch (error) {
+        console.error("Error loading user profile:", error);
+        showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
+      } 
+      finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-      showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
-    }
-  };
+    };
+
+    loadUserProfile();
+  }, [toast]);
 
   return (
     <View style={styles.container}>
+      
       {/* Header with greeting and profile image */}
       <View style={styles.header}>
         <View style={styles.greetingContainer}>
@@ -62,6 +88,8 @@ const HomePage = ({ }) => {
           )}
         </View>
       </View>
+      
+      {/* Content for the home page would go here */}
     </View>
   );
 };
