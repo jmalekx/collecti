@@ -12,7 +12,6 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
     access layer.
 */
 
-
 //Current user helper
 export const getCurrentUserId = () => FIREBASE_AUTH.currentUser?.uid;
 

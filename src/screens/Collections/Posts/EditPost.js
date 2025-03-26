@@ -1,73 +1,94 @@
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    TouchableOpacity,
-    ActivityIndicator
-} from 'react-native';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { FIREBASE_DB } from '../../../../FirebaseConfig';
-import { getAuth } from 'firebase/auth';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+
+//Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
+
+//Project services and utilities
+import { getPost, updatePost } from '../../../services/posts';
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
+//Custom component imports and styling
+import commonStyles from '../../../commonStyles';
+import { AppHeading } from '../../../components/Typography';
+
+/*
+    EditPost Screen
+
+    Implements (MVC) Model-View-Controller pattern for post editing with proper
+    service abstraction and CRUD operations, separating cocnerns betrween UI and data.
+    Manages editing post metadata using service layer.
+*/
+
 const EditPost = ({ route, navigation }) => {
-    const { collectionId, postId } = route.params;
+
+    //State transitions
     const [loading, setLoading] = useState(true);
+
+    //Content managing
+    const { collectionId, postId } = route.params;
     const [notes, setNotes] = useState('');
     const [tags, setTags] = useState('');
-    const toast = useToast();
-    const userId = getAuth().currentUser?.uid;
 
+    //Contex states
+    const toast = useToast();
+
+    //Fetch post data on load
     useEffect(() => {
+        //Async function to fetch post data
         const fetchPost = async () => {
             try {
-                const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-                const postDoc = await getDoc(postRef);
+                setLoading(true);
+                
+                //Using post service data layer
+                const post = await getPost(collectionId, postId);
 
-                if (postDoc.exists()) {
-                    const data = postDoc.data();
-                    setNotes(data.notes || '');
-                    setTags(data.tags?.join(', ') || '');
-                } else {
+                if (post) {
+                    //Populating form fields with post data
+                    setNotes(post.notes || '');
+                    setTags(post.tags?.join(', ') || '');
+                } 
+                else {
                     showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
                     navigation.goBack();
                 }
-            } catch (error) {
+            } 
+            catch (error) {
                 console.error('Error fetching post:', error);
-                showToast("Failed to load post", { type: TOAST_TYPES.DANGER });
-            } finally {
+                showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
+            } 
+            finally {
                 setLoading(false);
             }
         };
 
         fetchPost();
-    }, [postId, collectionId]);
+    }, [postId, collectionId, toast, navigation]);
 
+    //Form submission handler
     const handleSave = async () => {
         try {
-            const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-
-            await updateDoc(postRef, {
+            //Prepare update data
+            const updateData = {
                 notes: notes,
                 tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-                updatedAt: new Date().toISOString(),
-            });
+                updatedAt: new Date().toISOString()
+            };
+
+            await updatePost(collectionId, postId, updateData);
 
             showToast(toast, "Post updated", { type: TOAST_TYPES.INFO });
-
-            // Simply go back instead of explicitly navigating
             navigation.goBack();
-
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error updating post:', error);
             showToast(toast, "Failed to update post", { type: TOAST_TYPES.DANGER });
         }
     };
 
+    //Conditional loading render while data being fetched
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -110,6 +131,7 @@ const EditPost = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    ...commonStyles,
     container: {
         flex: 1,
         backgroundColor: '#fff',

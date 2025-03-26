@@ -1,118 +1,75 @@
+//React and React Native core imports
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    Linking,
-    ActivityIndicator,
-    Image
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+
+//Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
 import { getAuth } from 'firebase/auth';
 import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
-import { DEFAULT_THUMBNAIL } from '../../../constants';
-import InstagramEmbed from '../../../components/InstagramEmbed';
-import TikTokEmbed from '../../../components/TiktokEmbed';
+
+//Project services and utilities
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
-import { getPost, deletePost } from '../../../services/posts';
-import LinkifyIt from 'linkify-it';
-import ConfirmationModal
-    from '../../../components/ConfirmationModal';
-const linkify = LinkifyIt();
+import { getPost } from '../../../services/posts';
+import { handlePostDeletion, handleOpenInPlatform } from '../../../services/postActionService';
+import { shouldShowPlatformLink, getPlatformDisplayName } from '../../../services/platformService';
+import ConfirmationModal from '../../../components/ConfirmationModal';
+import LinkTexts from '../../../components/LinkTexts';
+import { formatDate, formatPlatform } from '../../../utils/formatting';
+import RenderPosts from '../../../components/RenderPosts';
 
-const TextWithLinks = ({ text, style }) => {
-    if (!text) return null;
+//Custom component imports and styling
+import commonStyles from '../../../commonStyles';
 
-    const matches = linkify.match(text);
-    if (!matches) {
-        return <Text style={style}>{text}</Text>;
-    }
+/*
+    PostDetails Screen
 
-    const elements = [];
-    let lastIndex = 0;
-
-    matches.forEach((match, i) => {
-        // Add text before the link
-        if (match.index > lastIndex) {
-            elements.push(
-                <Text key={`text-${i}`} style={style}>
-                    {text.substring(lastIndex, match.index)}
-                </Text>
-            );
-        }
-
-        // Add the link
-        elements.push(
-            <Text
-                key={`link-${i}`}
-                style={[style, styles.link]}
-                onPress={() => Linking.openURL(match.url)}
-            >
-                {match.text}
-            </Text>
-        );
-
-        lastIndex = match.lastIndex;
-    });
-
-    // Add text after the last link
-    if (lastIndex < text.length) {
-        elements.push(
-            <Text key={`text-last`} style={style}>
-                {text.substring(lastIndex)}
-            </Text>
-        );
-    }
-
-    return <Text>{elements}</Text>;
-};
-
-const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-};
-
-const formatPlatform = (platform) => {
-    if (!platform) return 'Gallery';
-    return platform.charAt(0).toUpperCase() + platform.slice(1);
-};
+    Implements Composite View Pattern to display details of post info with
+    platform-specific rendering. Displays content, metadata and appropriate actions
+    based on user authentication
+*/
 
 const PostDetails = ({ route, navigation }) => {
-    const { collectionId, postId, ownerId } = route.params;
+
+    //State transitions
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
-    const currentUserId = getAuth().currentUser?.uid;
-    // Use the owner ID from params if available, otherwise use current user ID
-    const effectiveUserId = ownerId || currentUserId;
-    // Check if this is another user's collection
-    const isExternalCollection = ownerId && ownerId !== currentUserId;
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    //Content managing
+    const { collectionId, postId, ownerId } = route.params;
+    
+    //User authentication
+    const currentUserId = getAuth().currentUser?.uid; 
+    const effectiveUserId = ownerId || currentUserId; //Use owner ID from params otherwise current
+    const isExternalCollection = ownerId && ownerId !== currentUserId;
+
+    //Context states
     const toast = useToast();
 
+    //Fetch post data from service
     const fetchPost = async () => {
         try {
-            // Pass the effective user ID to the getPost service
+            //Service layer interaction
             const postData = await getPost(collectionId, postId, effectiveUserId);
             if (postData) {
                 setPost(postData);
-            } else {
+            } 
+            else {
                 showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
                 navigation.goBack();
             }
-        } catch (error) {
+        } 
+        catch (error) {
             console.error('Error fetching post:', error);
             showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
-        } finally {
+        } 
+        finally {
             setLoading(false);
         }
     };
 
+    //Delete post action handler
     const handleDelete = () => {
         setShowDeleteModal(true);
     };
@@ -123,98 +80,23 @@ const PostDetails = ({ route, navigation }) => {
         }, [collectionId, postId])
     );
 
+    //Delete confirmation handler
     const confirmDelete = async () => {
-        try {
-            await deletePost(collectionId, postId);
-            showToast(toast, "Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
+        const success = await handlePostDeletion(collectionId, postId, toast);
+        if (success) {
             setShowDeleteModal(false);
             navigation.goBack();
-        } catch (error) {
-            console.error('Error deleting post:', error);
-            showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
+        } else {
             setShowDeleteModal(false);
         }
     };
 
+    //Platform-specific link handling using service
     const handlePlatformLink = () => {
-        if (!post) return;
-
-        const postUrl = post.image || post.thumbnail || post.originalUrl;
-
-        if (!postUrl) {
-            showToast(toast, "No URL available to open", { type: TOAST_TYPES.WARNING });
-            return;
-        }
-
-        if (post.platform === 'instagram') {
-            Linking.openURL(postUrl);
-        } else if (post.platform === 'tiktok') {
-            const tiktokUrl = postUrl.split('?')[0]; // Remove any query parameters
-            Linking.openURL(tiktokUrl);
-        } else if (post.platform === 'pinterest') {
-            Linking.openURL(postUrl);
-        }
+        handleOpenInPlatform(post, toast);
     };
 
-
-    const renderPostContent = () => {
-        // First check if the post object exists
-        if (!post) return null;
-
-        // Check for multiple possible URL fields with fallbacks
-        const postUrl = post.image || post.thumbnail || post.originalUrl;
-
-        if (!postUrl) {
-            return (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>Unable to load content</Text>
-                </View>
-            );
-        }
-
-        // For Instagram posts
-        if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
-            return (
-                <View>
-                    <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1} />
-                </View>
-            );
-        }
-
-        // For TikTok posts
-        if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
-            return (
-                <View style={styles.embedContainer}>
-                    <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
-                </View>
-            );
-        }
-
-        // For Pinterest posts
-        if (post.platform === 'pinterest') {
-            return (
-                <View>
-                    <Image
-                        source={{ uri: postUrl }}
-                        style={styles.thumbnail}
-                    />
-                    <TouchableOpacity onPress={() => Linking.openURL(postUrl)}>
-                        <Text style={styles.linkText}>Open in Pinterest</Text>
-                    </TouchableOpacity>
-                </View>
-            );
-        }
-
-        // Default image rendering
-        return (
-            <Image
-                source={{ uri: postUrl }}
-                style={styles.thumbnail}
-                resizeMode="contain"
-            />
-        );
-    };
-
+    //Loading state render
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -225,13 +107,16 @@ const PostDetails = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+             {/* Header Section */}
             <View style={styles.header}>
+                {/* Back Navigation Button */}
                 <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Ionicons name="chevron-back" size={24} color="#007AFF" />
                 </TouchableOpacity>
+                {/* Action Buttons */}
                 <View style={styles.headerActions}>
                     {isExternalCollection ? (
-                        // Disabled buttons for external collections
+                        //Disabled buttons for external collections
                         <>
                             <TouchableOpacity
                                 disabled={true}
@@ -247,7 +132,7 @@ const PostDetails = ({ route, navigation }) => {
                             </TouchableOpacity>
                         </>
                     ) : (
-                        // Enabled buttons for user's own collections
+                        //Enabled buttons for user own collections
                         <>
                             <TouchableOpacity
                                 onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
@@ -266,9 +151,13 @@ const PostDetails = ({ route, navigation }) => {
                 </View>
             </View>
 
-            {renderPostContent()}
+            {/* Post Content - Using the specialized content renderer component */}
+            <RenderPosts post={post} toast={toast} />
 
-            <TextWithLinks text={post?.notes} style={styles.notes} />
+            {/* Post Notes Section */}
+            <LinkTexts text={post?.notes} style={styles.notes} />
+
+            {/* Post Metadata Section */}
             <View style={styles.metaContainer}>
                 {post?.createdAt && (
                     <Text style={styles.dateText}>
@@ -279,7 +168,8 @@ const PostDetails = ({ route, navigation }) => {
                     From {formatPlatform(post?.platform)}
                 </Text>
             </View>
-
+            
+            {/* Post Tags Section */}
             <View style={styles.tagsContainer}>
                 {post?.tags?.map((tag, index) => (
                     <Text key={index} style={styles.tag}>
@@ -288,10 +178,11 @@ const PostDetails = ({ route, navigation }) => {
                 ))}
             </View>
 
-            {post?.platform && post.platform !== 'gallery' && (
+            {/* Platform Link Button - Using platform service to determine visibility */}
+            {shouldShowPlatformLink(post) && (
                 <TouchableOpacity style={styles.platformButton} onPress={handlePlatformLink}>
                     <Text style={styles.platformButtonText}>
-                        View on {post.platform.charAt(0).toUpperCase() + post.platform.slice(1)}
+                        View on {getPlatformDisplayName(post)}
                     </Text>
                 </TouchableOpacity>
             )}
@@ -312,6 +203,7 @@ const PostDetails = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    ...commonStyles,
     container: {
         flex: 1,
         padding: 16,
@@ -325,12 +217,6 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
-    },
-    thumbnail: {
-        width: '100%',
-        height: 400,
-        borderRadius: 12,
         marginBottom: 20,
     },
     notes: {
@@ -386,13 +272,9 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
-    link: {
-        color: '#007AFF',
-        textDecorationLine: 'underline',
-    },
     disabledIcon: {
         opacity: 0.4,
-    },
+    }
 });
 
 export default PostDetails;

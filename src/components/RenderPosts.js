@@ -1,0 +1,106 @@
+//React and React Native core imports
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+
+//Project services and utilities
+import InstagramEmbed from './InstagramEmbed';
+import TikTokEmbed from './TiktokEmbed';
+import { extractPostUrl } from '../services/platformService';
+import { handleOpenInPlatform } from '../services/postActionService';
+
+/*
+    Post Content Renderer Component
+    
+    Renders post content based on platform type with appropriate
+    embeds and presentation logic.
+*/
+
+const RenderPosts = ({ post, toast }) => {
+    if (!post) return null;
+
+    //Use platform service for URL extraction
+    const postUrl = extractPostUrl(post);
+
+    if (!postUrl) {
+        return (
+            <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>Unable to load content</Text>
+            </View>
+        );
+    }
+
+    //Instagram posts
+    if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
+        return (
+            <View>
+                <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1} />
+            </View>
+        );
+    }
+
+    //TikTok posts
+    if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
+        return (
+            <View style={styles.embedContainer}>
+                <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
+            </View>
+        );
+    }
+
+    //Pinterest posts
+    if (post.platform === 'pinterest') {
+        return (
+            <View>
+                <Image
+                    source={{ uri: postUrl }}
+                    style={styles.thumbnail}
+                />
+                <TouchableOpacity onPress={() => handleOpenInPlatform(post, toast)}>
+                    <Text style={styles.linkText}>Open in Pinterest</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
+
+    //Default image rendering
+    return (
+        <Image
+            source={{ uri: postUrl }}
+            style={styles.thumbnail}
+            resizeMode="contain"
+        />
+    );
+};
+
+const styles = StyleSheet.create({
+    thumbnail: {
+        width: '100%',
+        height: 400,
+        borderRadius: 12,
+        marginBottom: 20,
+    },
+    embedContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    errorContainer: {
+        padding: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8f8f8',
+        borderRadius: 8,
+        marginVertical: 10,
+    },
+    errorText: {
+        color: '#666',
+        fontSize: 16,
+    },
+    linkText: {
+        color: '#007AFF',
+        textAlign: 'center',
+        marginBottom: 16,
+        textDecorationLine: 'underline',
+    }
+});
+
+export default RenderPosts;
