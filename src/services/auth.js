@@ -36,6 +36,13 @@ export const signUp = async (email, password, userData) => {
         const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
         const user = response.user;
         
+        //Create default username from email if not provided
+        if (!userData.username || userData.username.trim() === '') {
+            userData.username = email.split('@')[0];
+        } else {
+            userData.username = userData.username.trim();
+        }
+        
         //Create user profile document in Firestore
         await createUserProfile(user.uid, {
             email,

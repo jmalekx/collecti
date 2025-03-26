@@ -3,7 +3,6 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } 
 import { useUserData } from '../../hooks/useUserData';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
-import { useToast } from 'react-native-toast-notifications';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import commonStyles from '../../commonStyles';
@@ -47,7 +46,7 @@ const Collections = ({ }) => {
   }, [navigation]);
 
   // Derived values from userProfile and collections
-  const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email;
+  const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email?.split('@')[0] || 'User';
   const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
   // Calculate stats directly from collections
