@@ -1,5 +1,5 @@
 //Third-party library external imports
-import { getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 //Project services and utilities
 import { getUserRef, getCurrentUserId } from './firebase';
@@ -11,6 +11,24 @@ import { DEFAULT_PROFILE_PICTURE } from '../constants';
     Centralised interface for creating and retrieving user profiles from Firestore
 */
 
+//Subscribe to user profile changes
+export const subscribeToUserProfile = (callback, userId = getCurrentUserId()) => {
+    if (!userId) return () => {};
+    
+    return onSnapshot(
+        getUserRef(userId), 
+        (doc) => {
+            if (doc.exists()) {
+                callback(doc.data());
+            } else {
+                callback(null);
+            }
+        },
+        (error) => {
+            console.error('Error subscribing to user profile:', error);
+        }
+    );
+};
 
 //Retrieving user profile
 export const getUserProfile = async (userId = getCurrentUserId()) => {

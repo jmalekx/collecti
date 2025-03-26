@@ -1,22 +1,42 @@
+//React and React Native core imports
 import React, { useState, useLayoutEffect } from 'react';
-import { View, TouchableOpacity, Text, TextInput, StyleSheet, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
-import { doc, setDoc } from 'firebase/firestore';
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../../FirebaseConfig';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { View, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+
+//Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
-import commonStyles from '../../commonStyles';
-import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+
+//Project services and utilities
+import { signUp } from '../../services/auth';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import formValidation from '../../utils/formValidation';
+
+//Custom component imports and styling
+import { AppText, AppButton, AppTextInput } from '../../components/Typography';
+import commonStyles from '../../commonStyles';
+
+/*
+  SignUp Screen
+
+  Implements user registration flow following MVC architecture (handling view aspect
+  while auth service acts as model and controller for data manipulation)
+  - Component only handling UI and user interaction
+*/
 
 const SignUp = ({ navigation }) => {
-    const toast = useToast();
+
+    //Content managing
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const auth = FIREBASE_AUTH;
 
+    //State transitions
+    const [loading, setLoading] = useState(false);
+    
+    //Context states
+    const toast = useToast();
+
+    //Nav header config
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: 'Create Account',
@@ -25,7 +45,7 @@ const SignUp = ({ navigation }) => {
                 fontSize: 18,
             },
             headerStyle: {
-                backgroundColor: '#F9F6F2', //change color later
+                backgroundColor: '#F9F6F2',
                 shadowColor: 'transparent',
                 shadowOffset: { height: 0, width: 0 },
                 shadowOpacity: 0,
@@ -38,72 +58,43 @@ const SignUp = ({ navigation }) => {
         });
     }, [navigation]);
 
-    const validateEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(String(email).toLowerCase());
-    };
-
-    const validatePassword = (password) => {
-        return password.length >= 6;
-    };
-
-    const signUp = async () => {
-        if (!username.trim()) {
-            showToast(toast, "Please enter a username", { type: TOAST_TYPES.WARNING });
-            return;
-        }
-
-        if (!validateEmail(email)) {
-            showToast(toast, "Invalid email format", { type: TOAST_TYPES.WARNING });
-            return;
-        }
-
-        if (!validatePassword(password)) {
-            showToast(toast, "Password must be at least 6 characters long", { type: TOAST_TYPES.WARNING });
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            showToast(toast, "Passwords don't match", { type: TOAST_TYPES.WARNING });
+    //Sign up handled with service
+    const handleSignUp = async () => {
+        //Validate form data
+        if (!formValidation.validateSignupForm({
+            username, 
+            email, 
+            password, 
+            confirmPassword
+        }, 
+        toast)) {
             return;
         }
 
         setLoading(true);
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            const user = response.user;
-            const defaultPfp = 'https://i.pinimg.com/736x/9c/8b/20/9c8b201fbac282d91c766e250d0e3bc6.jpg';
-            const defaultThumbnail = 'https://i.pinimg.com/736x/f6/51/5a/f6515a3403f175ed9a0df4625daaaffd.jpg';
-
-            // Init profile with isNewUser flag
-            const userRef = doc(FIREBASE_DB, 'users', user.uid);
-            await setDoc(userRef, {
-                username: username.trim(), // Use the username from input field
-                email: user.email,
-                profilePicture: defaultPfp,
-                bio: '',
-                createdAt: new Date(),
-                collections: 1,
-                posts: 0,
-                isNewUser: true // This ensures user goes to onboarding
-            });
-
-            // Create 'Unsorted' collection
-            const unsortedCollectionRef = doc(FIREBASE_DB, 'users', user.uid, 'collections', 'Unsorted');
-            await setDoc(unsortedCollectionRef, {
-                name: 'Unsorted',
-                description: 'Posts not yet assigned to a collection',
-                createdAt: new Date().toISOString(),
-                items: [],
-                thumbnail: defaultThumbnail,
-                isPinned: true,
+            //Auth to handle sign up
+            await signUp(email, password, {
+                username: username.trim()
             });
 
             showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
             navigation.navigate('Screen1');
-        } catch (error) {
-            console.log(error);
-            showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
+        } 
+        catch (error) {
+            console.error("Sign up error:", error);
+
+            //Map Firebase error codes to user-friendly messages
+            const errorMessages = {
+                'auth/email-already-in-use': "Email is already in use",
+                'auth/invalid-email': "Invalid email format",
+                'auth/operation-not-allowed': "Sign up is currently disabled",
+                'auth/weak-password': "Password is too weak",
+                'auth/network-request-failed': "Network error. Check your connection"
+            };
+            
+            const errorMessage = errorMessages[error.code] || "Sign up failed";
+            showToast(toast, errorMessage, { type: TOAST_TYPES.DANGER });
         } finally {
             setLoading(false);
         }
@@ -150,7 +141,7 @@ const SignUp = ({ navigation }) => {
                         <AppButton
                             style={styles.button}
                             title='Sign Up'
-                            onPress={signUp}
+                            onPress={handleSignUp}
                         />
 
                         <View style={styles.signContainer}>
@@ -166,13 +157,13 @@ const SignUp = ({ navigation }) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = {
     ...commonStyles,
     root: {
         flex: 1,
         alignItems: 'center',
         padding: 20,
     },
-})
+};
 
 export default SignUp;

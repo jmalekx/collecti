@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 
 //Project services and utilities
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
-import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../constants';
-import { getUserProfile } from '../services/users';
+import { subscribeToUserProfile } from '../services/users';
 import { subscribeToCollections } from '../services/collections';
 import { subscribeToPosts } from '../services/posts';
 
@@ -32,25 +31,19 @@ export const useUserData = () => {
     const [collections, setCollections] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    //Fetching user profile using service layer
+    //Subscribing to user profile changes
     useEffect(() => {
         if (!userId) return;
-
-        //Implements async for clean promise handling
-        const fetchUserProfile = async () => {
-            try {
-                const profile = await getUserProfile(userId);
-                if (profile) {
-                    setUserProfile(profile);
-                }
-            } 
-            catch (error) {
-                console.error('Error fetching user profile: ', error);
+        
+        // Using real-time subscription instead of one-time fetch
+        const unsubscribe = subscribeToUserProfile((profile) => {
+            if (profile) {
+                setUserProfile(profile);
             }
-        };
-
-        fetchUserProfile();
-    }, [userId]); //Dependency array = only reruns if userId is changed
+        }, userId);
+        
+        return () => unsubscribe();
+    }, [userId]);
 
     //Subscribing to posts and collections
     useEffect(() => {

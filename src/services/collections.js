@@ -112,3 +112,28 @@ export const subscribeToCollections = (callback, userId = getCurrentUserId()) =>
 
     return unsubscribe;
 };
+
+//Create default unsorted collection for new user
+export const createDefaultCollection = async (userId) => {
+    try {
+        const collectionData = {
+            name: 'Unsorted',
+            description: 'Posts not yet assigned to a collection',
+            createdAt: new Date().toISOString(),
+            items: [],
+            thumbnail: DEFAULT_THUMBNAIL,
+            isPinned: true,
+        };
+        
+        const unsortedCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted');
+        await setDoc(unsortedCollectionRef, collectionData);
+        
+        return {
+            id: 'Unsorted',
+            ...collectionData
+        };
+    } catch (error) {
+        console.error('Error creating default collection:', error);
+        throw error;
+    }
+};

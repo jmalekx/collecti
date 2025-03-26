@@ -4,6 +4,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, on
 //Project services and utilities
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { createUserProfile, getUserProfile } from './users';
+import { createDefaultCollection } from './collections';
 
 /*
     Auth Service Module
@@ -33,14 +34,19 @@ export const signIn = async (email, password) => {
 export const signUp = async (email, password, userData) => {
     try {
         const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
-
+        const user = response.user;
+        
         //Create user profile document in Firestore
-        await createUserProfile(response.user.uid, {
+        await createUserProfile(user.uid, {
             email,
-            ...userData
+            ...userData,
+            isNewUser: true
         });
+        
+        //Create default "Unsorted" collection
+        await createDefaultCollection(user.uid);
 
-        return response.user;
+        return user;
     }
     catch (error) {
         console.error('Error signing up:', error);
