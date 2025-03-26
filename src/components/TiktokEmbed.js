@@ -5,7 +5,6 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 //Third-party library external imports
 import WebView from 'react-native-webview';
 
-
 /*
   TiktokEmbed Component
 

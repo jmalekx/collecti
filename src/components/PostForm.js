@@ -9,6 +9,13 @@ import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from './Toasts';
 import commonStyles from '../commonStyles';
 
+/*
+    PostForm Component
+
+    Implements reusable form interface for post creation and editing.
+    Implements form validation, state mnagement and data transformatuoion
+*/
+
 const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '',
     collections, onSubmit, submitButtonText = 'Save Changes',}) => {
     
