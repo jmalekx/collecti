@@ -1,23 +1,51 @@
+//React and React Native core imports
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Modal } from 'react-native';
-import { FIREBASE_AUTH } from '../../../../FirebaseConfig';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+
+//Project services and utilities
+import { logOut } from '../../../services/auth'; 
 import PinterestButton from '../../../components/PinterestButton';
-import commonStyles from '../../../commonStyles';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 
+//Custom component imports
+import commonStyles from '../../../commonStyles';
+
+/*
+  UserSettings Screen
+
+  Provides user account management options including:
+  - Pinterest integration
+  - Logout functionality
+  - Profile management (via navigation)
+  Uses service layer for authentication operations.
+*/
+
 const UserSettings = ({ navigation }) => {
+  //State transitions
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleLogout = () => {
+  //Handle user logout with confirmation
+  const handleLogout = async () => {
     setModalVisible(false);
-    FIREBASE_AUTH.signOut();
+    await logOut(); // Use auth service instead of direct Firebase access
   };
 
   return (
     <View style={styles.container}>
+      {/* Pinterest Integration Section */}
       <PinterestButton />
+      
+      {/* Account Management Section */}
       <TouchableOpacity
         style={styles.button}
+        onPress={() => navigation.navigate('EditProfile')}
+      >
+        <Text style={styles.buttonText}>Edit Profile</Text>
+      </TouchableOpacity>
+      
+      {/* Logout Section */}
+      <TouchableOpacity
+        style={[styles.button]}
         onPress={() => setModalVisible(true)}
       >
         <Text style={styles.buttonText}>Logout</Text>
@@ -45,17 +73,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 14,
-    borderRadius: 8,
-    marginVertical: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#fff',
   },
 });
 

@@ -2,7 +2,7 @@
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
 
 //Project services and utilities
-import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { createUserProfile, getUserProfile } from './users';
 
 /*
