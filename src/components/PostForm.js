@@ -1,28 +1,36 @@
-// components/PostForm.js
+//React and React Native core imports
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-import { showToast, TOAST_TYPES } from './Toasts';
 
-export const PostForm = ({
-    initialNotes = '',
-    initialTags = '',
-    initialCollectionId = '',
-    collections,
-    onSubmit,
-    submitButtonText = 'Save Changes',
-}) => {
+//Third-party library external imports
+import { useToast } from 'react-native-toast-notifications';
+
+//Custom component imports and styling
+import { showToast, TOAST_TYPES } from './Toasts';
+import commonStyles from '../commonStyles';
+
+const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '',
+    collections, onSubmit, submitButtonText = 'Save Changes',}) => {
+    
+    //Content managing
     const [notes, setNotes] = React.useState(initialNotes);
     const [tags, setTags] = React.useState(initialTags);
+
+    //State transitions
     const [selectedCollectionId, setSelectedCollectionId] = React.useState(initialCollectionId);
+    
+    //Context states
     const toast = useToast();
 
+    //Form submission handler
     const handleSubmit = () => {
+        //Input validations
         if (!notes.trim()) {
             showToast(toast, "Notes cannot be empty", { type: TOAST_TYPES.WARNING });
             return;
         }
 
+        //Data transform and submit (comma-sepparated string to clean array)
         onSubmit({
             notes,
             tags: tags.split(',').map(tag => tag.trim()),
@@ -32,6 +40,7 @@ export const PostForm = ({
 
     return (
         <View style={styles.container}>
+            {/* Notes Field - Required */}
             <Text style={styles.label}>Notes</Text>
             <TextInput
                 style={styles.input}
@@ -41,6 +50,7 @@ export const PostForm = ({
                 multiline
             />
 
+            {/* Tags Field - Optional */}          
             <Text style={styles.label}>Tags (comma-separated)</Text>
             <TextInput
                 style={styles.input}
@@ -49,6 +59,7 @@ export const PostForm = ({
                 placeholder="e.g., travel, inspiration"
             />
 
+            {/* Collection Selector - Required with default */}
             <Text style={styles.label}>Collection</Text>
             <Picker
                 selectedValue={selectedCollectionId}
@@ -64,6 +75,7 @@ export const PostForm = ({
                 ))}
             </Picker>
 
+            {/* Submit Button */}
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>{submitButtonText}</Text>
             </TouchableOpacity>
@@ -72,6 +84,7 @@ export const PostForm = ({
 };
 
 const styles = StyleSheet.create({
+    ...commonStyles,
     container: {
         flex: 1,
         padding: 16,
@@ -111,3 +124,5 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 });
+
+export default PostForm;

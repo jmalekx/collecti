@@ -1,11 +1,29 @@
+//React and React Native core imports
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+
+//Third-party library external imports
 import WebView from 'react-native-webview';
 
+
+/*
+  TiktokEmbed Component
+
+  Implements sandboxed embedding system for content from Tiktok, normalising
+  platform-specific web content into native application context.
+
+  - URL parsing and validation
+  - Injected JS for Custom HTMl for embedding
+
+*/
+
 const TikTokEmbed = ({ url, style, scale = 1 }) => {
+
+  //State transitions
   const [embedCode, setEmbedCode] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  //Custom HTML embed code for TikTok video -fetch TikTok embed code from oEmbed API
   useEffect(() => {
     const fetchEmbedCode = async () => {
       try {
@@ -38,7 +56,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
                   width: 100%;
                   height: 100%;
                   border: none;
-                  transform: scale(${scale}); /* Use the prop value here */
+                  transform: scale(${scale});
                   transform-origin: center;
                 }
               </style>
@@ -50,19 +68,23 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
             </body>
           </html>
         `;
+        //State update after successful API interaction
         setEmbedCode(centeredHtml);
         setLoading(false);
-      } catch (error) {
+      } 
+      catch (error) {
         console.error("Failed to fetch TikTok embed code:", error);
         setLoading(false);
       }
     };
 
+    //Conditional execution
     if (url) {
       fetchEmbedCode();
     }
   }, [url, scale]);
 
+  //Loading state render
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -84,15 +106,15 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         scalesPageToFit={true}
-        scrollEnabled={false} // Disable scrolling
+        scrollEnabled={false}
         injectedJavaScript={`
-          // Adjust iframe size dynamically
+          //Dynamic iframe size
           const iframe = document.querySelector('iframe');
           if (iframe) {
             iframe.style.width = '100%';
             iframe.style.height = '100%';
           }
-          true; // Required for injectedJavaScript to work
+          true;
         `}
         onMessage={() => { }}
       />
@@ -103,7 +125,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 150, // Match the height from CollectionDetails
+    height: 150, 
     borderRadius: 8,
     marginBottom: 8,
     overflow: 'hidden',

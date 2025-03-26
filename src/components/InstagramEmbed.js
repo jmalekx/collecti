@@ -1,14 +1,9 @@
-/*
-  React and React Native core imports
-*/
+//React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { WebView } from 'react-native-webview';
-/* 
-  Custom component imports and styling
-*/
-import commonStyles from '../commonStyles';
 
+//Third-party library external imports
+import { WebView } from 'react-native-webview';
 
 /*
   InstagramEmbed Component
@@ -23,6 +18,7 @@ import commonStyles from '../commonStyles';
 */
 
 const InstagramEmbed = ({ url, style, scale = 1 }) => {
+
   const [loading, setLoading] = useState(true);
   const [key, setKey] = useState(Date.now());
   const [initialUrl, setInitialUrl] = useState('');
@@ -49,7 +45,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     if (pIndex !== -1 && parts.length > pIndex + 1) {
       postId = parts[pIndex + 1];
     }
-  } 
+  }
   //Strat 2: Regex-based parsing
   else if (url.includes('instagram.com')) {
     const match = url.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
@@ -69,7 +65,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   //Clean up post ID
   postId = postId.split('?')[0].split('/')[0];
   console.log('Loading Instagram embed with post ID:', postId);
-  
+
   //Using direct embed URL
   const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
 
@@ -320,7 +316,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 };
 
 const styles = StyleSheet.create({
-  ...commonStyles,
   container: {
     width: '100%',
     height: 150,

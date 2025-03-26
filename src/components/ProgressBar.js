@@ -1,5 +1,15 @@
+//React and React Native core imports
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+
+/*
+  ProgressBar Component
+
+  Visual inidcator component to represent sequential progress.
+  Segment based approach to represent steps in process rather than continuous bar
+  (Discrete visual representation)
+
+*/
 
 const ProgressBar = ({ currentStep, totalSteps }) => {
   return (

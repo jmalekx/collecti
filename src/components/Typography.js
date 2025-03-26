@@ -1,6 +1,20 @@
+//React and React Native core imports
 import React from 'react';
 import { Text, TouchableOpacity, TextInput } from 'react-native';
+
+//Custom component imports and styling
 import commonStyles, { typography } from '../commonStyles';
+
+/*
+  Typography Component
+
+  Centralised component for text and typography styling for consistency
+  across the application - component composition, style inheritance, separation of concerns
+
+  - Consistent font family and size
+  - Centralised styling for text components
+  - Customisable text components for different use cases
+*/
 
 export const AppText = ({ style, children, ...props }) => (
   <Text style={[commonStyles.textRegular, style]} {...props}>

@@ -1,28 +1,22 @@
-/*
-  React and React Native core imports
-*/
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
 import { View, Text, Modal, TextInput, StyleSheet, ScrollView, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
-/*
-  Third-party library external imports
-*/
+
+//Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { useToast } from 'react-native-toast-notifications';
 import { useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-/*
-  Project services and utilities
-*/
+
+//Project services and utilities
 import pinterestService from '../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../services/storage';
+
+//Custom component imports and styling
 import { showToast, TOAST_TYPES } from './Toasts';
-/* 
-  Custom component imports and styling
-*/
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../commonStyles';
-
 
 /*
   AddButton Component
@@ -141,7 +135,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           setNotes(pinData.description || '');
         }
       }
-    } 
+    }
     catch (error) {
       console.error('Error fetching Pinterest data:', error);
       showToast(toast, "Failed to fetch Pinterest data", { type: TOAST_TYPES.WARNING });
@@ -178,13 +172,13 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           setIsLoading(false);
           return;
         }
-      } 
+      }
       else if (imageUrl.includes('instagram.com')) {
         platformToUse = 'instagram';
-      } 
+      }
       else if (imageUrl.includes('tiktok.com')) {
         platformToUse = 'tiktok';
-      } 
+      }
       else if (imageUrl.includes('pinterest.com')) {
         platformToUse = 'pinterest';
       }
@@ -195,10 +189,10 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       resetModalStates();
       setIsModalOpen(false);
       setIsOptionsOpen(false);
-    } 
+    }
     catch (error) {
       console.error('Error adding post:', error);
-    } 
+    }
     finally {
       setIsLoading(false);
     }
@@ -222,7 +216,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       setSelectedCollection(collectionId);
       setIsCollectionModalOpen(false);
       return collectionId;
-    } 
+    }
     catch (error) {
       console.error('Error creating collection:', error);
     }
@@ -268,7 +262,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         setActiveTab('image');
         setImageUrl('');
       }
-    } 
+    }
     catch (error) {
       console.error('Error picking image:', error);
       showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });

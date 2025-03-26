@@ -1,15 +1,11 @@
-/*
-  React and React Native core imports
-*/
+//React and React Native core imports
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
-/*
-  Third-party library external imports
-*/
+
+//Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
-/* 
-  Custom component imports and styling
-*/
+
+//Custom component imports and styling
 import { AppText, AppHeading } from './Typography';
 import commonStyles from '../commonStyles';
 

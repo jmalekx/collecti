@@ -1,8 +1,30 @@
-import { typography } from '../commonStyles';
-import { Ionicons } from '@expo/vector-icons';
+//React and React Native core imports
 import { View, Text, StyleSheet } from 'react-native';
 
-// Toast type constants
+//Third-party library external imports
+import { Ionicons } from '@expo/vector-icons';
+
+//Custom component imports and styling
+import { typography } from '../commonStyles';
+
+/*
+  Toasts Notification Component
+
+  Comprehensive notificaiton system for visual user feedback to communicate
+  operation outcomes and important info to users.
+
+  - Visual differentiation via colour and icons
+  - Semantic categorisation by purpose/severity
+
+  Colour scheme and semantic principles:
+  - Green: Success/completion
+  - Red: Error/failure
+  - Orange: Warning/caution
+  - Blue: Information/neutral
+
+*/
+
+//Toast type constants via enum like object
 export const TOAST_TYPES = {
   SUCCESS: 'success',
   DANGER: 'danger',
@@ -10,7 +32,7 @@ export const TOAST_TYPES = {
   INFO: 'info'
 };
 
-// Icon names for each toast type
+//Icon mapping for each toast type
 const TOAST_ICONS = {
   success: 'checkmark-circle',
   danger: 'alert-circle',
@@ -18,6 +40,7 @@ const TOAST_ICONS = {
   info: 'information-circle'
 };
 
+//Toast config for centralised styling and configuration
 export const toastConfig = {
   containerStyle: {
     borderRadius: 12,
@@ -51,11 +74,12 @@ export const toastConfig = {
   }
 };
 
-const ToastWithIcon = ({ message, type }) => {
+//Standardising toast notif with icon, title and message
+const ToastIcon = ({ message, type }) => {
   const typeStyle = toastConfig[type] || toastConfig.info;
   const iconName = TOAST_ICONS[type] || TOAST_ICONS.info;
 
-  // Map toast types to proper display names
+  //Display name mapping
   const displayNames = {
     success: 'Success',
     danger: 'Error',
@@ -63,7 +87,7 @@ const ToastWithIcon = ({ message, type }) => {
     info: 'Info'
   };
 
-  // Get the proper display name or fallback to capitalized type
+  //Get display name or fallback
   const displayName = displayNames[type] || type.charAt(0).toUpperCase() + type.slice(1);
 
   return (
@@ -103,13 +127,12 @@ const styles = StyleSheet.create({
   }
 });
 
-
-// Modified helper function to always use custom component
+//Display helper function to always use custom toast component
 export const showToast = (toast, message, options = {}) => {
   const type = options.type || TOAST_TYPES.INFO;
 
   toast.show(
-    <ToastWithIcon message={message} type={type} />,
+    <ToastIcon message={message} type={type} />,
     {
       type,
       placement: options.placement || "top",
