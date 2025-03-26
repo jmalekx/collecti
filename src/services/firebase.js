@@ -1,10 +1,22 @@
-import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
+//Third-party library external imports
 import { collection, doc } from 'firebase/firestore';
 
-// Current user helper
+//Project services and utilities
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
+
+/*
+    Firebase Service Module
+
+    Provides standardised firestore doc and collection references with path construction
+    Centralises database path defintions to ensure consistencty across application data
+    access layer.
+*/
+
+
+//Current user helper
 export const getCurrentUserId = () => FIREBASE_AUTH.currentUser?.uid;
 
-// Document reference helpers
+//Document reference helpers
 export const getUserRef = (userId = getCurrentUserId()) =>
     doc(FIREBASE_DB, 'users', userId);
 

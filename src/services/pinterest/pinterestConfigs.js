@@ -8,7 +8,14 @@ export const PINTEREST_CONFIG = {
   API_URL: 'https://api.pinterest.com/v5'
 };
 
-// https://www.pinterest.com/oauth/?client_id=1507461
-// &redirect_uri=collecti://oauth
-// &response_type=code
-// &scope=user_accounts:read,pins:read,pins:read_secret,boards_read,boards:read_secret
+/*
+  Pinterest API Configuration
+
+  Implements config for OAuth 2.0
+  Test link for auth:
+
+  https://www.pinterest.com/oauth/?client_id=1507461
+  &redirect_uri=collecti://oauth
+  &response_type=code
+  &scope=user_accounts:read,pins:read,pins:read_secret,boards_read,boards:read_secret
+*/

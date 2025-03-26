@@ -1,7 +1,23 @@
-import { PINTEREST_CONFIG } from './pinterestConfigs';
+//Third-party library external imports
 import axios from 'axios';
 import { encode as base64Encode } from 'base-64';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//Project services and utilities
+import { PINTEREST_CONFIG } from './pinterestConfigs';
+
+/*
+  PinterestService Module
+
+  Implements Pinterest API integration for the app using Singleton.
+  Implements OAuth 2.0 flow:
+  - Authorisation token request: user consent
+  - Token exchange: converting code to access tokens
+  - Token management: storing, expiration handling, refresh
+  - API access: authenticated requests
+  -Secure token storage in AsyncStorage
+
+*/
 
 class PinterestService {
   constructor() {
@@ -11,9 +27,7 @@ class PinterestService {
     this.expiresAt = null;
   }
 
-  /**
-   * Generates the authorization URL for Pinterest OAuth
-   */
+  //Generates the properly formats auth URL
   getAuthorizationUrl() {
     const params = new URLSearchParams({
       client_id: this.config.CLIENT_ID,
@@ -25,29 +39,29 @@ class PinterestService {
     return `${this.config.AUTH_URL}?${params.toString()}`;
   }
 
-  /**
-   * Handles the redirect from Pinterest OAuth and exchanges the code for tokens
-   * @param {string} url - The redirect URL containing the authorization code
-   */
+  //OAuth redirect handler
   async handleRedirect(url) {
     try {
-      const authCode = this.extractCodeFromUrl(url);
+      //Extracts auth code, parses redirect URL
+      const authCode = this.extractAuthCode(url);
       if (!authCode) {
         throw new Error('No authorization code found in redirect URL');
       }
 
       const result = await this.exchangeCodeForToken(authCode);
-      // Add debug logging
+      //Debug loggin - not logged in production
       console.log('[Pinterest Debug] Access Token:', result.accessToken);
       return result;
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error handling redirect:', error);
       throw error;
     }
   }
 
+  //Token Status check
   async getCurrentToken() {
-    await this.loadTokens(); // Ensure tokens are loaded
+    await this.loadTokens(); //Ensure tokens loaded
     return {
       accessToken: this.accessToken,
       expiresAt: new Date(this.expiresAt).toLocaleString(),
@@ -55,31 +69,27 @@ class PinterestService {
     };
   }
 
-  /**
-   * Extracts the authorization code from the redirect URL
-   * @param {string} url - The redirect URL
-   * @returns {string|null} The authorization code or null if not found
-   */
-  extractCodeFromUrl(url) {
-    // Parse the URL to extract the code parameter
+  //Extracting auth code from redirected URL
+  extractAuthCode(url) {
+    //Parsing URL
     const urlObj = new URL(url);
     const code = urlObj.searchParams.get('code');
     return code;
   }
 
-  /**
-   * Exchanges the authorization code for access and refresh tokens
-   * @param {string} code - The authorization code
-   */
+  //Exchanging auth code for access token
   async exchangeCodeForToken(code) {
     try {
+      //Basic encoding, for security would use proper encoding rather than string concatenation
       const basicAuth = base64Encode(`${this.config.CLIENT_ID}:${this.config.CLIENT_SECRET}`);
 
+      //Request body
       const params = new URLSearchParams();
       params.append('grant_type', 'authorization_code');
       params.append('code', code);
       params.append('redirect_uri', this.config.REDIRECT_URI);
 
+      //Token POST request
       const response = await axios.post(this.config.TOKEN_URL, params.toString(), {
         headers: {
           'Authorization': `Basic ${basicAuth}`,
@@ -89,7 +99,7 @@ class PinterestService {
 
       const tokenData = response.data;
 
-      // Store tokens
+      //Storing tokens
       await this.saveTokens({
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token,
@@ -100,17 +110,16 @@ class PinterestService {
         success: true,
         accessToken: tokenData.access_token
       };
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error exchanging code for token:', error.response?.data || error.message);
       throw error;
     }
   }
 
-  /**
-   * Saves the tokens to AsyncStorage
-   * @param {Object} tokens - The tokens to save
-   */
+  //Token storage in AsyncStorage
   async saveTokens({ accessToken, refreshToken, expiresIn }) {
+    //Calculating expiration time
     const expiresAt = new Date().getTime() + expiresIn * 1000;
 
     this.accessToken = accessToken;
@@ -118,23 +127,25 @@ class PinterestService {
     this.expiresAt = expiresAt;
 
     try {
+      //Persistence
       await AsyncStorage.setItem('pinterest_access_token', accessToken);
       await AsyncStorage.setItem('pinterest_refresh_token', refreshToken);
       await AsyncStorage.setItem('pinterest_token_expires_at', expiresAt.toString());
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error saving tokens to AsyncStorage:', error);
     }
   }
 
-  /**
-   * Loads the tokens from AsyncStorage
-   */
+  //Loading tokens from AsyncStorage
   async loadTokens() {
     try {
+      //Retrieves all token data
       const accessToken = await AsyncStorage.getItem('pinterest_access_token');
       const refreshToken = await AsyncStorage.getItem('pinterest_refresh_token');
       const expiresAt = await AsyncStorage.getItem('pinterest_token_expires_at');
 
+      //Validates retrieved token
       if (accessToken && refreshToken && expiresAt) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
@@ -142,26 +153,22 @@ class PinterestService {
         return true;
       }
       return false;
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error loading tokens from AsyncStorage:', error);
       return false;
     }
   }
 
-  /**
-   * Checks if the access token is expired
-   * @returns {boolean} Whether the token is expired
-   */
+  //Checking token expiration
   isTokenExpired() {
     if (!this.expiresAt) return true;
-    // Add a buffer of 5 minutes before expiration
+    //Add safety buffer of 5 minutes before expiration (preventing using expired token during request)
     const bufferTime = 5 * 60 * 1000;
     return new Date().getTime() + bufferTime > this.expiresAt;
   }
 
-  /**
-   * Refreshes the access token using the refresh token
-   */
+  //Refreshing access token
   async refreshAccessToken() {
     try {
       if (!this.refreshToken) {
@@ -170,10 +177,12 @@ class PinterestService {
 
       const basicAuth = base64Encode(`${this.config.CLIENT_ID}:${this.config.CLIENT_SECRET}`);
 
+      //Request body
       const params = new URLSearchParams();
       params.append('grant_type', 'refresh_token');
       params.append('refresh_token', this.refreshToken);
 
+      //Token refresh POST request
       const response = await axios.post(this.config.TOKEN_URL, params.toString(), {
         headers: {
           'Authorization': `Basic ${basicAuth}`,
@@ -183,6 +192,7 @@ class PinterestService {
 
       const tokenData = response.data;
 
+      //Storing refreshed tokens
       await this.saveTokens({
         accessToken: tokenData.access_token,
         refreshToken: tokenData.refresh_token || this.refreshToken,
@@ -193,17 +203,16 @@ class PinterestService {
         success: true,
         accessToken: tokenData.access_token
       };
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error refreshing token:', error.response?.data || error.message);
       throw error;
     }
   }
 
-  /**
-   * Gets the access token, refreshing if necessary
-   */
+  //Token access with auto-refresh
   async getAccessToken() {
-    // Load tokens if they're not already loaded
+    //Loads token from storage if not in memory
     if (!this.accessToken) {
       const loaded = await this.loadTokens();
       if (!loaded) {
@@ -211,7 +220,7 @@ class PinterestService {
       }
     }
 
-    // Check if token is expired and refresh if needed
+    //Expiration check and refresh
     if (this.isTokenExpired()) {
       await this.refreshAccessToken();
     }
@@ -219,16 +228,12 @@ class PinterestService {
     return this.accessToken;
   }
 
-  /**
-   * Makes an authenticated API request to Pinterest
-   * @param {string} endpoint - The API endpoint
-   * @param {string} method - The HTTP method
-   * @param {Object} data - The request data
-   */
+  //Making authenticated API request to pinterest
   async apiRequest(endpoint, method = 'GET', data = null) {
     try {
       const accessToken = await this.getAccessToken();
 
+      //API GET request
       const response = await axios({
         method,
         url: `${this.config.API_URL}${endpoint}`,
@@ -240,35 +245,34 @@ class PinterestService {
       });
 
       return response.data;
-    } catch (error) {
+    }
+    catch (error) {
       console.error('API request error:', error.response?.data || error.message);
       throw error;
     }
   }
 
-  /**
-   * Logs the user out by clearing stored tokens
-   */
+  //Authentication termination
   async logout() {
-    try {
+    try {  //Logging out by clearing stored tokens from storage
       await AsyncStorage.removeItem('pinterest_access_token');
       await AsyncStorage.removeItem('pinterest_refresh_token');
       await AsyncStorage.removeItem('pinterest_token_expires_at');
 
+      //Resetting in-memory tokens
       this.accessToken = null;
       this.refreshToken = null;
       this.expiresAt = null;
 
       return true;
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error during logout:', error);
       return false;
     }
   }
 
-  /**
-   * Checks if the user is authenticated
-   */
+  //Authentication Status check
   async isAuthenticated() {
     if (!this.accessToken) {
       await this.loadTokens();
@@ -276,11 +280,13 @@ class PinterestService {
     return !!this.accessToken && !this.isTokenExpired();
   }
 
+  //Pinterest Pin data fetching
   async fetchPinData(pinId) {
     try {
       const endpoint = `/pins/${pinId}`;
       const response = await this.apiRequest(endpoint);
 
+      //Normalising data
       return {
         image: response.media.images.original.url,
         description: response.description,
@@ -315,6 +321,6 @@ class PinterestService {
 
 }
 
-// Create a singleton instance
+//Creating singleton instance
 const pinterestService = new PinterestService();
 export default pinterestService;

@@ -1,22 +1,33 @@
-//user profile operations
-import { getUserRef, getCurrentUserId } from './firebase';
+//Third-party library external imports
 import { getDoc, setDoc, updateDoc } from 'firebase/firestore';
+
+//Project services and utilities
+import { getUserRef, getCurrentUserId } from './firebase';
 import { DEFAULT_PROFILE_PICTURE } from '../constants';
 
-// Get user profile
+/*
+    User Profile Service Module
+
+    Centralised interface for creating and retrieving user profiles from Firestore
+*/
+
+
+//Retrieving user profile
 export const getUserProfile = async (userId = getCurrentUserId()) => {
     try {
         const userDoc = await getDoc(getUserRef(userId));
         return userDoc.exists() ? userDoc.data() : null;
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error fetching user profile:', error);
         throw error;
     }
 };
 
-// Create a new user profile
+//Creating new user profile
 export const createUserProfile = async (userId, userData) => {
     try {
+        //Doc structure
         const userProfile = {
             username: userData.username,
             email: userData.email,
@@ -31,29 +42,32 @@ export const createUserProfile = async (userId, userData) => {
 
         await setDoc(getUserRef(userId), userProfile);
         return userProfile;
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error creating user profile:', error);
         throw error;
     }
 };
 
-// Update user profile
+//Updating user profile
 export const updateUserProfile = async (updateData, userId = getCurrentUserId()) => {
     try {
         await updateDoc(getUserRef(userId), updateData);
         return true;
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error updating user profile:', error);
         throw error;
     }
 };
 
-// Complete onboarding
+//Completing onboarding process after signing up
 export const completeOnboarding = async (userId = getCurrentUserId()) => {
     try {
         await updateDoc(getUserRef(userId), { isNewUser: false });
         return true;
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error completing onboarding:', error);
         throw error;
     }

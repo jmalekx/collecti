@@ -1,40 +1,46 @@
+//React and React Native core imports
+
+//Third-party library external imports
 import * as FileSystem from 'expo-file-system';
+
+//Project services and utilities
 import { getCurrentUserId } from './firebase';
 
-// Cloudinary configuration
-const CLOUD_NAME = 'dbabzybcu'; // Replace with your cloud name
-const UPLOAD_PRESET = 'collecti_user_uploads'; // Replace with your unsigned upload preset
+/*
+    Image Storage Service Module
+    
+    Implements image storage services for app. Abstracts image upload process and
+    provides consistent interface for storing user-generated content in scalable cloud environment.
+*/
 
-/**
- * Upload an image to Cloudinary
- * @param {string} localUri - The local image URI
- * @returns {Promise<string>} The download URL of the uploaded image
- */
-// Update your upload function with folder structure
+//Cloudinary config
+const CLOUD_NAME = 'dbabzybcu'; 
+const UPLOAD_PRESET = 'collecti_user_uploads'; 
+
+//Uploading image to Cloudinary
 export const uploadImageToCloudinary = async (localUri) => {
     try {
-      // Create a unique filename
+      //Ceate a unique filename
       const userId = getCurrentUserId();
       const filename = `user_${userId}_${Date.now()}`;
       
-      // Create form data for upload
+      //Create form data for upload
       const formData = new FormData();
       
-      // Add file to form data
+      //Add file to form data
       formData.append('file', {
         uri: localUri,
         type: 'image/jpeg',
         name: `${filename}.jpg`
       });
       
-      // Use the upload preset we configured
+      //Using upload preset configured in Cloudinary
       formData.append('upload_preset', 'collecti_user_uploads');
       
-      // Set folder structure: collecti/user_uploads/[userId]
-      // This organizes images by user
+      //Setting folder structure: collecti/user_uploads/[userId] to organise images by user
       formData.append('folder', `collecti/user_uploads/${userId}`);
       
-      // Make the upload request
+      //Upload POST request
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/dbabzybcu/image/upload`,
         {
@@ -50,7 +56,8 @@ export const uploadImageToCloudinary = async (localUri) => {
       }
       
       return data.secure_url;
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('Error uploading image to Cloudinary:', error);
       throw error;
     }

@@ -1,108 +1,92 @@
+//Third-party library external imports
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'firebase/auth';
+
+//Project services and utilities
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import {
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    sendPasswordResetEmail
-} from 'firebase/auth';
 import { createUserProfile, getUserProfile } from './users';
 
-/**
- * Sign in a user with email and password
- * @param {string} email - User email
- * @param {string} password - User password
- * @returns {Promise<UserCredential>} Firebase user object
- */
+/*
+    Auth Service Module
+
+    Implements Firebase authentication services for app.
+    Implements user management:
+        - Sign in
+        - Sign up
+        - Sign out
+        - Password reset
+        - User profile management
+*/
+
+//Sign in a user with email and password
 export const signIn = async (email, password) => {
     try {
         const response = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
         return response.user;
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error signing in:', error);
         throw error;
     }
 };
 
-/**
- * Create a new user account and profile
- * @param {string} email - User email
- * @param {string} password - User password
- * @param {object} userData - Additional user data (username, etc.)
- * @returns {Promise<UserCredential>} Firebase user object
- */
+//Create new user account and profile
 export const signUp = async (email, password, userData) => {
     try {
         const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
 
-        // Create user profile document in Firestore
+        //Create user profile document in Firestore
         await createUserProfile(response.user.uid, {
             email,
             ...userData
         });
 
         return response.user;
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error signing up:', error);
         throw error;
     }
 };
 
-/**
- * Sign out the current user
- * @returns {Promise<void>}
- */
+//Sign current user out, terminating session
 export const logOut = async () => {
     try {
         await signOut(FIREBASE_AUTH);
         return true;
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error signing out:', error);
         throw error;
     }
 };
 
-/**
- * Send a password reset email
- * @param {string} email - User email
- * @returns {Promise<void>}
- */
-export const resetPassword = async (email) => {
-    try {
-        await sendPasswordResetEmail(FIREBASE_AUTH, email);
-        return true;
-    } catch (error) {
-        console.error('Error sending password reset:', error);
-        throw error;
-    }
-};
+// //Send password reset email - not using this rn
+// export const resetPassword = async (email) => {
+//     try {
+//         await sendPasswordResetEmail(FIREBASE_AUTH, email);
+//         return true;
+//     } catch (error) {
+//         console.error('Error sending password reset:', error);
+//         throw error;
+//     }
+// };
 
-/**
- * Get the current authenticated user
- * @returns {User|null} Firebase user object or null if not authenticated
- */
+//Get current authenticated user
 export const getCurrentUser = () => FIREBASE_AUTH.currentUser;
 
-/**
- * Check if user needs onboarding
- * @param {string} userId - User ID
- * @returns {Promise<boolean>} Whether user needs onboarding
- */
+//Check onboarding status
 export const checkNeedsOnboarding = async (userId) => {
     try {
         const userProfile = await getUserProfile(userId);
         return userProfile?.isNewUser ?? true;
-    } catch (error) {
+    }
+    catch (error) {
         console.error('Error checking onboarding status:', error);
-        return true; // Default to showing onboarding if there's an error
+        return true; //Default to show onboarding if error
     }
 };
 
-/**
- * Set up an auth state change listener
- * @param {Function} callback - Function to call when auth state changes
- * @returns {Function} Unsubscribe function
- */
+//Authentication Change listener
 export const subscribeToAuthChanges = (callback) => {
     return onAuthStateChanged(FIREBASE_AUTH, callback);
 };
