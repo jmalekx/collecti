@@ -32,7 +32,7 @@ const SignUp = ({ navigation }) => {
 
     //State transitions
     const [loading, setLoading] = useState(false);
-    
+
     //Context states
     const toast = useToast();
 
@@ -62,12 +62,12 @@ const SignUp = ({ navigation }) => {
     const handleSignUp = async () => {
         //Validate form data
         if (!formValidation.validateSignupForm({
-            username, 
-            email, 
-            password, 
+            username,
+            email,
+            password,
             confirmPassword
-        }, 
-        toast)) {
+        },
+            toast)) {
             return;
         }
 
@@ -80,22 +80,11 @@ const SignUp = ({ navigation }) => {
 
             showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
             navigation.navigate('Screen1');
-        } 
+        }
         catch (error) {
-            console.error("Sign up error:", error);
-
-            //Map Firebase error codes to user-friendly messages
-            const errorMessages = {
-                'auth/email-already-in-use': "Email is already in use",
-                'auth/invalid-email': "Invalid email format",
-                'auth/operation-not-allowed': "Sign up is currently disabled",
-                'auth/weak-password': "Password is too weak",
-                'auth/network-request-failed': "Network error. Check your connection"
-            };
-            
-            const errorMessage = errorMessages[error.code] || "Sign up failed";
-            showToast(toast, errorMessage, { type: TOAST_TYPES.DANGER });
-        } finally {
+            showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
+        } 
+        finally {
             setLoading(false);
         }
     };

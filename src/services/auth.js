@@ -25,7 +25,7 @@ export const signIn = async (email, password) => {
         return response.user;
     }
     catch (error) {
-        console.error('Error signing in:', error);
+        console.log(error);
         throw error;
     }
 };
@@ -56,7 +56,7 @@ export const signUp = async (email, password, userData) => {
         return user;
     }
     catch (error) {
-        console.error('Error signing up:', error);
+        console.log(error);
         throw error;
     }
 };
@@ -68,7 +68,7 @@ export const logOut = async () => {
         return true;
     }
     catch (error) {
-        console.error('Error signing out:', error);
+        console.log(error);
         throw error;
     }
 };
@@ -94,7 +94,7 @@ export const checkNeedsOnboarding = async (userId) => {
         return userProfile?.isNewUser ?? true;
     }
     catch (error) {
-        console.error('Error checking onboarding status:', error);
+        console.log(error);
         return true; //Default to show onboarding if error
     }
 };

@@ -62,6 +62,23 @@ const formValidation = {
         }
 
         return true;
+    },
+    validateSignInForm: (formData, toast) => {
+        const { email, password } = formData;
+    
+        // Email validation
+        if (!email || !formValidation.isValidEmail(email)) {
+            showToast(toast, "Invalid email format", { type: TOAST_TYPES.WARNING });
+            return false;
+        }
+    
+        // Password validation - just check if it's provided
+        if (!password) {
+            showToast(toast, "Password is required", { type: TOAST_TYPES.WARNING });
+            return false;
+        }
+    
+        return true;
     }
 };
 

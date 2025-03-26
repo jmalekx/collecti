@@ -1,68 +1,136 @@
+// React and React Native core imports
 import React, { useState } from 'react';
-import { View, TextInput, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity, Text } from 'react-native';
-import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import Logo from '../../images/tmplogo.png';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { View, Image, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+
+// Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+
+// Project services and utilities
+import { signIn } from '../../services/auth';
+import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import formValidation from '../../utils/formValidation';
+
+// Custom component imports and styling
+import Logo from '../../images/tmplogo.png';
 import commonStyles from '../../commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
+
+/*
+    SignIn Screem
+
+    Implements user auth interfacte following MVC architecture pattern. Handles view aspect,
+    delegating data manipulato to auth layer.
+    
+*/
 
 const SignIn = ({ navigation }) => {
-    const toast = useToast();
-    const { height } = useWindowDimensions();
+
+    //Content managing
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const auth = FIREBASE_AUTH;
 
-    const logIn = async () => {
+    //State transitions
+    const [loading, setLoading] = useState(false);
+
+    //Context states
+    const toast = useToast();
+    const { height } = useWindowDimensions();
+
+    //Function to handle sign in
+    const handleSignIn = async () => {
+        //Form validation
+        if (!formValidation.validateSignInForm({ email, password }, toast)) {
+            return;
+        }
+
         setLoading(true);
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            console.log(response);
-        } catch (error) {
-            console.log(error);
+            //Auth service
+            const user = await signIn(email, password);
+
+            //Clear on success
+            setEmail('');
+            setPassword('');
+
+            showToast(toast, "Login successful", { type: TOAST_TYPES.SUCCESS });
+        }
+        catch (error) {
             showToast(toast, "Login failed", { type: TOAST_TYPES.DANGER });
-        } finally {
+        }
+        finally {
             setLoading(false);
         }
-    }
+    };
 
     return (
-        <View style={styles.root}>
-            <Image source={Logo} style={[styles.logo, { height: height * 0.45 }]} resizeMode='contain' />
-            <AppHeading style={styles.MainText}>Welcome</AppHeading>
-            <AppText style={styles.MainText}>Please enter your details below</AppText>
-            <KeyboardAvoidingView behavior='padding'>
+        <View style={styles.container}>
+
+            {/* Logo */}
+            <Image
+                source={Logo}
+                style={[styles.logo, { height: height * 0.45 }]}
+                resizeMode='contain'
+                accessibilityLabel="Application logo"
+            />
+
+            {/* Header text */}
+            <View style={styles.headerContainer}>
+                <AppHeading style={styles.headerText}>Welcome</AppHeading>
+                <AppText style={styles.subHeaderText}>Please enter your details below</AppText>
+            </View>
+
+            {/* Form */}
+            <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
+
+                {/* Email */}
                 <AppTextInput
                     value={email}
                     style={styles.input}
                     placeholder="Email"
                     autoCapitalize="none"
-                    onChangeText={(text) => setEmail(text)}
+                    keyboardType="email-address"
+                    onChangeText={setEmail}
+                    accessibilityLabel="Email input"
+                    testID="email-input"
                 />
+
+                {/* Password */}
                 <AppTextInput
                     secureTextEntry={true}
                     value={password}
                     style={styles.input}
                     placeholder="Password"
                     autoCapitalize="none"
-                    onChangeText={(text) => setPassword(text)}
+                    onChangeText={setPassword}
+                    accessibilityLabel="Password input"
+                    testID="password-input"
                 />
 
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <ActivityIndicator
+                        size="large"
+                        color="#0000ff"
+                        accessibilityLabel="Loading indicator"
+                    />
                 ) : (
                     <>
+                        {/* Login button */}
                         <AppButton
                             style={styles.button}
                             title="Login"
-                            onPress={logIn}
+                            onPress={handleSignIn}
+                            accessibilityLabel="Login button"
+                            testID="login-button"
                         />
+
+                        {/* Sign up link */}
                         <View style={styles.signContainer}>
                             <AppText>Don't have an account? </AppText>
-                            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                            <TouchableOpacity
+                                onPress={() => navigation.navigate('SignUp')}
+                                accessibilityLabel="Sign up link"
+                                testID="signup-link"
+                            >
                                 <AppText style={styles.signLink}>Sign Up</AppText>
                             </TouchableOpacity>
                         </View>
@@ -72,6 +140,7 @@ const SignIn = ({ navigation }) => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     ...commonStyles,
