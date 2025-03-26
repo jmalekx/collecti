@@ -13,10 +13,10 @@ import { DEFAULT_PROFILE_PICTURE } from '../constants';
 
 //Subscribe to user profile changes
 export const subscribeToUserProfile = (callback, userId = getCurrentUserId()) => {
-    if (!userId) return () => {};
-    
+    if (!userId) return () => { };
+
     return onSnapshot(
-        getUserRef(userId), 
+        getUserRef(userId),
         (doc) => {
             if (doc.exists()) {
                 callback(doc.data());
@@ -35,7 +35,7 @@ export const getUserProfile = async (userId = getCurrentUserId()) => {
     try {
         const userDoc = await getDoc(getUserRef(userId));
         return userDoc.exists() ? userDoc.data() : null;
-    } 
+    }
     catch (error) {
         console.error('Error fetching user profile:', error);
         throw error;
@@ -60,7 +60,7 @@ export const createUserProfile = async (userId, userData) => {
 
         await setDoc(getUserRef(userId), userProfile);
         return userProfile;
-    } 
+    }
     catch (error) {
         console.error('Error creating user profile:', error);
         throw error;
@@ -72,7 +72,7 @@ export const updateUserProfile = async (updateData, userId = getCurrentUserId())
     try {
         await updateDoc(getUserRef(userId), updateData);
         return true;
-    } 
+    }
     catch (error) {
         console.error('Error updating user profile:', error);
         throw error;
@@ -80,11 +80,18 @@ export const updateUserProfile = async (updateData, userId = getCurrentUserId())
 };
 
 //Completing onboarding process after signing up
-export const completeOnboarding = async (userId = getCurrentUserId()) => {
+export const completeOnboarding = async (userId) => {
     try {
-        await updateDoc(getUserRef(userId), { isNewUser: false });
+        if (!userId) {
+            throw new Error('User ID is required to complete onboarding');
+        }
+
+        await updateDoc(getUserRef(userId), {
+            isNewUser: false,
+            onboardingCompletedAt: new Date().toISOString()
+        });
         return true;
-    } 
+    }
     catch (error) {
         console.error('Error completing onboarding:', error);
         throw error;
