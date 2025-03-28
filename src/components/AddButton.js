@@ -77,17 +77,29 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   //Default collection selection
   useEffect(() => {
     if (collections.length > 0) {
-      //Unsorted is the default collection that will be selected if available
+      //ONLY set default collection on initial load or when collections change
+  
+      //Skip default selection in these cases:
+      //1. When we have a pending new collection
+      if (pendingNewCollection) {
+        return;
+      }
+      
+      //2. When user has manually selected a collection that exists in the collections array
+      const userSelectedCollection = collections.find(coll => coll.id === selectedCollection);
+      if (userSelectedCollection) {
+        return;
+      }
+      
+      //Only set default if we don't have a valid selection yet
       const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
       if (unsortedCollection) {
         setSelectedCollection(unsortedCollection.id);
-      }
-      else {
-        //Fallback if no unsorted collection (though it should be created by default, and cannot be deleted so)
+      } else {
         setSelectedCollection(collections[0].id);
       }
     }
-  }, [collections]);
+  }, [collections, pendingNewCollection]);
 
   //External content sharing - auto open modal and prefill with urls from shared source
   useEffect(() => {
@@ -143,6 +155,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     }
   };
 
+
   //Post submission handler
   const handleAddPost = async () => {
     //Input validations
@@ -157,42 +170,71 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     try {
       setIsLoading(true);
 
-      let imageToUse = imageUrl;
-      let platformToUse = currentPlatform;
+      let collectionToUse = selectedCollection;
 
-      //If user selects image upload, handle and upload to cloudinary storage
-      if (image) {
+      //If pending collection, check if it needs to be created
+      if (pendingNewCollection && selectedCollection === pendingNewCollection.id) {
         try {
-          //Await upload to retrieve url of uploaded image to store in database
-          imageToUse = await uploadImageToCloudinary(image);
-          platformToUse = 'gallery';
+          //Create the pending collection
+          const createdCollectionId = await onCreateCollection(
+            pendingNewCollection.name,
+            pendingNewCollection.description || ''
+          );
+
+          //Use real ID instead of the temporary one
+          collectionToUse = createdCollectionId;
         }
-        catch (uploadError) {
-          console.error('Image upload failed:', uploadError);
-          showToast(toast, "Failed to upload image", { type: TOAST_TYPES.DANGER });
+        catch (collectionError) {
+          console.error('Failed to create collection:', collectionError);
+          showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
           setIsLoading(false);
           return;
         }
       }
-      else if (imageUrl.includes('instagram.com')) {
-        platformToUse = 'instagram';
-      }
-      else if (imageUrl.includes('tiktok.com')) {
-        platformToUse = 'tiktok';
-      }
-      else if (imageUrl.includes('pinterest.com')) {
-        platformToUse = 'pinterest';
+
+      //If image from gallery upload to Cloudinary first
+      if (image) {
+        try {
+          showToast(toast, "Uploading image...", { type: TOAST_TYPES.INFO });
+          //Upload the local image to Cloudinary
+          const uploadedUrl = await uploadImageToCloudinary(image);
+          if (!uploadedUrl) {
+            throw new Error("Failed to upload image");
+          }
+          imageToUse = uploadedUrl;
+          platformToUse = 'gallery';
+        } 
+        catch (uploadError) {
+          console.error('Error uploading image to Cloudinary:', uploadError);
+          showToast(toast, "Failed to upload image", { type: TOAST_TYPES.DANGER });
+          setIsLoading(false);
+          return;
+        }
+      } else {
+        //Use URL directly
+        imageToUse = imageUrl;
+
+        //Platform detection based on URL
+        if (imageUrl.includes('instagram.com')) {
+          platformToUse = 'instagram';
+        }
+        else if (imageUrl.includes('tiktok.com')) {
+          platformToUse = 'tiktok';
+        }
+        else if (imageUrl.includes('pinterest.com')) {
+          platformToUse = 'pinterest';
+        }
       }
 
-      await onAddPost(notes, tags, imageToUse, selectedCollection, platformToUse);
+      await onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
 
-      //Reset and close modal upon successful post add
       resetModalStates();
       setIsModalOpen(false);
       setIsOptionsOpen(false);
     }
     catch (error) {
       console.error('Error adding post:', error);
+      showToast(toast, `Error adding post: ${error.message}`, { type: TOAST_TYPES.DANGER });
     }
     finally {
       setIsLoading(false);
@@ -214,27 +256,50 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     try {
       //Call parent function to create
       const collectionId = await onCreateCollection(trimmedName, description);
-      setSelectedCollection(collectionId);
+
+      //Only autoselect if coming from the post creation flow
+      if (isModalOpen) {
+        setPendingNewCollection(collectionId);
+        setSelectedCollection(collectionId);
+        showToast(toast, `${trimmedName} collection created and selected`, { type: TOAST_TYPES.SUCCESS });
+      }
+      else {
+        showToast(toast, `${trimmedName} collection created`, { type: TOAST_TYPES.SUCCESS });
+      }
+
       setIsCollectionModalOpen(false);
       return collectionId;
     }
     catch (error) {
       console.error('Error creating collection:', error);
+      showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
+      return null;
     }
   };
 
   //Handle quick add collection - optimised for inline collection creatio
   const handleQuickAddCollection = async () => {
-    //Combining validation and state transition
+    // Validation
     if (!newCollectionName.trim()) {
       showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;
     }
-    const collectionId = await handleAddCollection(newCollectionName, '');
-    if (collectionId) {
-      setIsNewCollection(false);
-      setNewCollectionName('');
-    }
+
+    //Create temporary ID for UI purposes
+    const tempId = `temp_${Date.now()}`;
+    const tempName = newCollectionName.trim();
+
+    setPendingNewCollection({
+      id: tempId,
+      name: tempName,
+      description: ''
+    });
+
+    setSelectedCollection(tempId);
+    showToast(toast, `${tempName} will be created when you add this post`, { type: TOAST_TYPES.SUCCESS });
+
+    setIsNewCollection(false);
+    setNewCollectionName('');
   };
 
   //Manual image picker/selection handler
@@ -494,8 +559,21 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
                       }}
                       style={styles.picker}
                     >
+                      {/* Show the pending collection at the top if it exists */}
+                      {pendingNewCollection && (
+                        <Picker.Item
+                          key={pendingNewCollection.id}
+                          label={`${pendingNewCollection.name} (New)`}
+                          value={pendingNewCollection.id}
+                        />
+                      )}
+
                       {collections.map((collection) => (
-                        <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
+                        <Picker.Item
+                          key={collection.id}
+                          label={collection.name}
+                          value={collection.id}
+                        />
                       ))}
                       <Picker.Item label="+ Add New Collection" value="new" />
                     </Picker>
