@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 import { Picker } from '@react-native-picker/picker';
 
@@ -33,7 +33,7 @@ import {
 import {
   getCollectionPosts,
   deletePost as deletePostService,
-  updateCollectionThumbnail
+  updateCollectionThumbnail, subscribeToPosts
 } from '../../services/posts';
 
 // Firebase helpers
@@ -75,6 +75,9 @@ const CollectionDetails = ({ route, navigation }) => {
   const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
   const [showDeletePostModal, setShowDeletePostModal] = useState(false);
   const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
+
+  const isFocused = useIsFocused();
+  
 
 
   // Fetch collection details and posts
@@ -148,8 +151,32 @@ const CollectionDetails = ({ route, navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
+      
+      // Set up an event listener for post additions
+      const unsubscribe = navigation.addListener('postAdded', (data) => {
+        // If the event data matches current collection, refresh posts
+        if (data && data.collectionId === collectionId) {
+          fetchPosts();
+        }
+      });
+      
+      // Clean up the event listener
+      return () => {
+        unsubscribe();
+      };
     }, [collectionId, userId])
   );
+
+  useEffect(() => {
+    if (collectionId && effectiveUserId) {
+      // Set up real-time listener for posts in this collection
+      const unsubscribe = subscribeToPosts(collectionId, (updatedPosts) => {
+        setPosts(updatedPosts);
+      }, effectiveUserId);
+      
+      return () => unsubscribe();
+    }
+  }, [collectionId, effectiveUserId]);
 
   // Toggle selection mode
   const toggleSelectionMode = () => {

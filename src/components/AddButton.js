@@ -221,7 +221,8 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           setIsLoading(false);
           return;
         }
-      } else {
+      } 
+      else {
         //Use URL directly
         imageToUse = imageUrl;
 
@@ -237,6 +238,9 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         }
         else if (imageUrl.includes('youtube.com') || imageUrl.includes('youtu.be')) {
           platformToUse = 'youtube';
+        }
+        else {
+          platformToUse = 'other';
         }
       }
 
