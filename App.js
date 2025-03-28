@@ -5,8 +5,7 @@ import { View, Text, StatusBar } from 'react-native';
 //Third-party library external imports
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native'; // Add this import
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ToastProvider, useToast } from 'react-native-toast-notifications';
+import { ToastProvider } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
@@ -20,45 +19,62 @@ import MainLayout from './src/components/MainLayout';
 import AuthStack from './src/navigation/stacks/AuthStack';
 import OnboardingStack from './src/navigation/stacks/OnboardingStack';
 
+/*
+  App Component
+
+  Main application entry point handling authentication flow, navigation routing, and UI state
+  Implements conditional rendering for authentication, onboarding, and main application views
+  Provides global context providers for notifications and content sharing
+
+  State machine:
+  - Initializing: Loading fonts and subscribing to auth changes
+  - Unauthenticated: Showing auth stack for login/signup
+  - Authenticated: 
+    - Onboarding: First-time user experience flow
+    - Main application: Full feature access with navigation
+*/
+
 const Stack = createNativeStackNavigator();
 
-//chant o export at the buttom of the file
+function App() {
 
-export default function App() {
+  //State transitions
   const [user, setUser] = useState(null);
   const [isOnboarding, setIsOnboarding] = useState(false);
-  const [initializing, setInitializing] = useState(true);
+  const [initialising, setInitialising] = useState(true);
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_700Bold,
   });
 
-  // Subscribe to authentication state changes
+  //Subscribe to auth state changes
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges(async (user) => {
       if (user) {
         setUser(user);
 
         try {
-          // Check if user needs onboarding
+          //Check if user needs onboarding
           const userProfile = await getUserProfile(user.uid);
           setIsOnboarding(userProfile?.isNewUser ?? true);
-        } catch (error) {
+        } 
+        catch (error) {
           console.error("Error checking user onboarding status:", error);
           setIsOnboarding(false);
         }
-      } else {
+      } 
+      else {
         setUser(null);
         setIsOnboarding(false);
       }
-      setInitializing(false);
+      setInitialising(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Show loading indicator while initializing
-  if (!fontsLoaded || initializing) {
+  //Show loading indicator
+  if (!fontsLoaded || initialising) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading...</Text>
@@ -134,9 +150,4 @@ export default function App() {
   );
 }
 
-const styles = {
-  container: {
-    flex: 1,
-    position: 'relative',
-  },
-};
+export default App;
