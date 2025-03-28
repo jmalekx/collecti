@@ -270,8 +270,8 @@ function InsideLayout() {
       >
         <Tab.Screen name="HomeScreen" component={HomeStack} options={{ headerShown: false, title: 'Home' }} />
         <Tab.Screen name="SearchScreen" component={SearchStack} options={{ headerShown: false, title: 'Search' }} />
-        <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false, title: 'Collections' }} />
         <Tab.Screen name="BookmarkScreen" component={BookmarksStack} options={{ headerShown: false, title: 'Bookmarks' }} />
+        <Tab.Screen name="CollectionScreen" component={CollectionsStack} options={{ headerShown: false, title: 'Collections' }} />
       </Tab.Navigator>
 
       {/* AddButton with proper functionality */}

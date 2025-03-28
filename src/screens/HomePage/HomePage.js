@@ -21,6 +21,8 @@ import commonStyles from '../../commonStyles';
   access to main application features. Uses service layer for data access.
 */
 
+//ADD RECENTLY ACCESSES COLECTIONS TO THIS SCREEN
+
 const HomePage = () => {
 
   //Stae transitions
