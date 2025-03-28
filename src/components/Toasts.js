@@ -93,7 +93,7 @@ const ToastIcon = ({ message, type }) => {
   return (
     <View style={[styles.container, { backgroundColor: typeStyle.backgroundColor }]}>
       <Ionicons name={iconName} size={24} color={typeStyle.iconColor} style={styles.icon} />
-      <View>
+      <View style={{ flex: 1 }}>
         <Text style={[styles.title]}>{displayName}</Text>
         <Text style={[styles.message]}>{message}</Text>
       </View>
@@ -124,6 +124,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: typography.fontRegular,
     color: '#585f6e',
+    flexShrink: 1,
+    flexWrap: 'wrap',
   }
 });
 
