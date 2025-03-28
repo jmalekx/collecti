@@ -16,7 +16,7 @@ import WebView from 'react-native-webview';
 
 */
 
-const TikTokEmbed = ({ url, style, scale = 1 }) => {
+const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
 
   //State transitions
   const [embedCode, setEmbedCode] = useState(null);
@@ -28,7 +28,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
       try {
         const response = await fetch(`https://www.tiktok.com/oembed?url=${url}`);
         const data = await response.json();
-        const centeredHtml = `
+        const customHtml = `
           <html>
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -50,6 +50,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
                   align-items: center;
                   width: 100%;
                   height: 100%;
+                  position: relative;
                 }
                 iframe {
                   width: 100%;
@@ -57,20 +58,33 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
                   border: none;
                   transform: scale(${scale});
                   transform-origin: center;
+                  ${!isInteractive ? 'pointer-events: none;' : ''}
+                }
+                /* Transparent overlay to block interactions when not interactive */
+                .overlay {
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  z-index: 999;
+                  background-color: transparent;
+                  display: ${isInteractive ? 'none' : 'block'};
                 }
               </style>
             </head>
             <body>
               <div class="embed-container">
+                ${!isInteractive ? '<div class="overlay"></div>' : ''}
                 ${data.html}
               </div>
             </body>
           </html>
         `;
         //State update after successful API interaction
-        setEmbedCode(centeredHtml);
+        setEmbedCode(customHtml);
         setLoading(false);
-      } 
+      }
       catch (error) {
         console.error("Failed to fetch TikTok embed code:", error);
         setLoading(false);
@@ -81,7 +95,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
     if (url) {
       fetchEmbedCode();
     }
-  }, [url, scale]);
+  }, [url, scale, isInteractive]);
 
   //Loading state render
   if (loading) {
@@ -107,12 +121,35 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
         scalesPageToFit={true}
         scrollEnabled={false}
         injectedJavaScript={`
-          //Dynamic iframe size
           const iframe = document.querySelector('iframe');
           if (iframe) {
             iframe.style.width = '100%';
             iframe.style.height = '100%';
           }
+          
+          ${!isInteractive ? `
+            document.addEventListener('click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }, true);
+            
+            const disableLinks = function() {
+              const links = document.getElementsByTagName('a');
+              for (let i = 0; i < links.length; i++) {
+                links[i].style.pointerEvents = 'none';
+                links[i].addEventListener('click', function(e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return false;
+                }, true);
+                links[i].href = 'javascript:void(0)';
+              }
+            };
+            
+            disableLinks();
+            setInterval(disableLinks, 1000);
+          ` : ''}
           true;
         `}
         onMessage={() => { }}
@@ -124,7 +161,7 @@ const TikTokEmbed = ({ url, style, scale = 1 }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 150, 
+    height: 150,
     borderRadius: 8,
     marginBottom: 8,
     overflow: 'hidden',

@@ -34,7 +34,10 @@ const RenderPosts = ({ post, toast }) => {
     if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
         return (
             <View>
-                <InstagramEmbed url={postUrl} style={styles.thumbnail} scale={0.1} />
+                <InstagramEmbed
+                    url={postUrl}
+                    style={styles.thumbnail}
+                    scale={0.1} />
             </View>
         );
     }
@@ -43,7 +46,11 @@ const RenderPosts = ({ post, toast }) => {
     if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
         return (
             <View style={styles.embedContainer}>
-                <TikTokEmbed url={postUrl} style={styles.thumbnail} scale={0.64} />
+                <TikTokEmbed
+                    url={postUrl}
+                    style={styles.thumbnail}
+                    scale={0.64}
+                    isInteractive={true} />
             </View>
         );
     }
@@ -62,12 +69,16 @@ const RenderPosts = ({ post, toast }) => {
             </View>
         );
     }
-    
+
     //YouTube posts
     if (post.platform === 'youtube' && (postUrl.includes('youtube.com') || postUrl.includes('youtu.be'))) {
         return (
             <View style={styles.embedContainer}>
-                <YouTubeEmbed url={postUrl} style={styles.thumbnail} scale={1.0} />
+                <YouTubeEmbed
+                    url={postUrl}
+                    style={styles.thumbnail}
+                    scale={1.0}
+                    isInteractive={true} />
             </View>
         );
     }
