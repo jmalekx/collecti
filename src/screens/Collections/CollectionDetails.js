@@ -91,6 +91,8 @@ const CollectionDetails = ({ route, navigation }) => {
       return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
     } else if (post.thumbnail.includes('tiktok.com')) {
       return <Ionicons name="logo-tiktok" size={20} color="#000000" />;
+    } else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
+      return <Ionicons name="logo-youtube" size={20} color="#FF0000" />;
     } else {
       return <Ionicons name="images-outline" size={20} color="#4CAF50" />;
     }
