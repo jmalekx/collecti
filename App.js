@@ -1,28 +1,37 @@
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
 import { View, Text, StatusBar } from 'react-native';
+
+//Third-party library external imports
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { onAuthStateChanged } from 'firebase/auth';
 import { ToastProvider, useToast } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
 import { Ionicons } from '@expo/vector-icons';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
-
-import { FIREBASE_AUTH, FIREBASE_DB } from './FirebaseConfig';
-import { getDoc, doc, collection, addDoc, updateDoc, getDocs } from 'firebase/firestore';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+
+//Project services and utilities
 import { showToast, TOAST_TYPES } from './src/components/Toasts';
 import { DEFAULT_THUMBNAIL } from './src/constants';
 
-import SignIn from './src/screens/SignIn';
+// Import service layers instead of direct Firebase imports
+import { subscribeToAuthChanges } from './src/services/auth';
+import { getUserProfile } from './src/services/users';
+import { getAllCollections, createCollection, updateCollection } from './src/services/collections';
+import { createPost } from './src/services/posts';
+import { getCurrentUserId } from './src/services/firebase';
+
+//Screen imports
+import SignIn from './src/screens/SignIn/SignIn';
 import SignUp from './src/screens/SignUp/SignUp';
 import Screen1 from './src/screens/SignUp/Screen1';
 import Screen2 from './src/screens/SignUp/Screen2';
 import Screen3 from './src/screens/SignUp/Screen3';
 import Screen4 from './src/screens/SignUp/Screen4';
-import HomePage from './src/screens/HomePage';
-import Collections from './src/screens/Collections';
+import HomePage from './src/screens/HomePage/HomePage';
+import Collections from './src/screens/Collections/Collections';
 import CollectionDetails from './src/screens/Collections/CollectionDetails';
 import EditPost from './src/screens/Collections/Posts/EditPost';
 import PostDetails from './src/screens/Collections/Posts/PostDetails';
@@ -36,7 +45,7 @@ import AddButton from './src/components/AddButton';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Home Stack
+//Home Stack
 function HomeStack() {
   return (
     <Stack.Navigator>
@@ -47,7 +56,7 @@ function HomeStack() {
   );
 }
 
-// Collections Stack
+//Collections Stack
 function CollectionsStack() {
   return (
     <Stack.Navigator>
@@ -62,7 +71,7 @@ function CollectionsStack() {
   );
 }
 
-// Settings Stack
+//Bookmarks Stack
 function BookmarksStack() {
   return (
     <Stack.Navigator>
@@ -73,7 +82,7 @@ function BookmarksStack() {
   );
 }
 
-// Search Stack
+//Search Stack
 function SearchStack() {
   return (
     <Stack.Navigator>
@@ -86,24 +95,26 @@ function SearchStack() {
   );
 }
 
-// Tab Navigator with AddButton functionality
+//Tab Navigator
 function InsideLayout() {
-  const [collections, setCollections] = useState([]);
-  const [url, setUrl] = useState(null);
-  const [platform, setPlatform] = useState('gallery');
-  const { shareIntent } = useShareIntentContext();
-  const userId = FIREBASE_AUTH.currentUser?.uid;
 
-  // Toast provider for notifications
+  //Content managing
+  const [url, setUrl] = useState(null);
+  const userId = getCurrentUserId(); 
+  const { shareIntent } = useShareIntentContext();
+
+  //State transition
+  const [collections, setCollections] = useState([]);
+  const [platform, setPlatform] = useState('gallery');
+
+  //Context states
   const toast = useToast();
 
-  // Fetch collections when component mounts or userId changes
   useEffect(() => {
     if (userId) {
       fetchCollections();
     }
 
-    // Handle share intent data
     if (shareIntent?.webUrl || shareIntent?.text) {
       const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
       setUrl(extractedUrl);
@@ -111,13 +122,10 @@ function InsideLayout() {
     }
   }, [userId, shareIntent]);
 
+  // Fetch collections using collections service
   const fetchCollections = async () => {
     try {
-      const collectionSnapshot = await getDocs(collection(FIREBASE_DB, 'users', userId, 'collections'));
-      const collectionsData = collectionSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const collectionsData = await getAllCollections(userId);
       setCollections(collectionsData);
     } catch (error) {
       console.error("Error fetching collections:", error);
@@ -141,72 +149,69 @@ function InsideLayout() {
     }
   };
 
-  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
-    try {
-      let thumbnail = image || DEFAULT_THUMBNAIL;
-      let originalUrl = image;
-
-      // Process Instagram URLs
-      if (postPlatform === 'instagram' && image && image.includes('instagram.com')) {
-        let postId;
-        if (image.includes('/p/')) {
-          const parts = image.split('/');
-          const pIndex = parts.indexOf('p');
-          if (pIndex !== -1 && parts.length > pIndex + 1) {
-            postId = parts[pIndex + 1];
-          }
-        } else if (image.includes('instagram.com')) {
-          const match = image.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
-          postId = match ? match[1] : null;
+  // Process thumbnail from URL based on platform
+  const processContentThumbnail = (url, platform) => {
+    if (!url) return DEFAULT_THUMBNAIL;
+    
+    // Process Instagram URLs
+    if (platform === 'instagram' && url.includes('instagram.com')) {
+      let postId;
+      if (url.includes('/p/')) {
+        const parts = url.split('/');
+        const pIndex = parts.indexOf('p');
+        if (pIndex !== -1 && parts.length > pIndex + 1) {
+          postId = parts[pIndex + 1];
         }
-
-        if (postId) {
-          postId = postId.split('?')[0].split('/')[0];
-          thumbnail = `https://www.instagram.com/p/${postId}/embed`;
-        }
+      } else if (url.includes('instagram.com')) {
+        const match = url.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
+        postId = match ? match[1] : null;
       }
 
+      if (postId) {
+        postId = postId.split('?')[0].split('/')[0];
+        return `https://www.instagram.com/p/${postId}/embed`;
+      }
+    }
+    
+    return url;
+  };
+
+  // Handle post creation using posts service
+  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
+    try {
+      let thumbnail = processContentThumbnail(image, postPlatform);
+      
+      // Prepare post data
       const postData = {
         notes,
-        tags: tags ? tags.split(',').map((tag) => tag.trim()) : [],
-        image: originalUrl,
+        tags: tags ? tags.split(',').map((tag) => tag.trim()).filter(tag => tag) : [],
+        image,
         platform: postPlatform,
-        createdAt: new Date().toISOString(),
         thumbnail,
       };
 
-      const postsRef = collection(
-        FIREBASE_DB,
-        'users',
-        userId,
-        'collections',
-        selectedCollection,
-        'posts'
-      );
-
-      await addDoc(postsRef, postData);
+      // Use posts service to create post
+      await createPost(selectedCollection, postData);
 
       // Update collection thumbnail if needed
-      const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', selectedCollection);
-      const collectionDoc = await getDoc(collectionRef);
-
-      if (!collectionDoc.data()?.thumbnail || collectionDoc.data().thumbnail === DEFAULT_THUMBNAIL) {
-        await updateDoc(collectionRef, { thumbnail });
+      // This should ideally be handled in the createPost service
+      // but we'll use updateCollection as a workaround
+      const collection = collections.find(c => c.id === selectedCollection);
+      if (collection && (!collection.thumbnail || collection.thumbnail === DEFAULT_THUMBNAIL)) {
+        await updateCollection(selectedCollection, { thumbnail });
       }
 
       if (toast) {
         showToast(toast, "Post added successfully", { type: TOAST_TYPES.SUCCESS });
       }
 
-      // Refresh collections
+      // Refresh collections and reset share data
       fetchCollections();
-
-      // Reset share intent data after successful post
       setUrl(null);
 
       return true;
     } catch (error) {
-      console.error('Error adding post: ', error);
+      console.error('Error adding post:', error);
       if (toast) {
         showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
       }
@@ -214,13 +219,14 @@ function InsideLayout() {
     }
   };
 
+  // Handle collection creation using collections service
   const handleCreateCollection = async (name, description) => {
     try {
-      const docRef = await addDoc(collection(FIREBASE_DB, 'users', userId, 'collections'), {
+      // Use collections service to create collection
+      const newCollection = await createCollection({
         name,
         description,
         createdAt: new Date().toISOString(),
-        items: [],
         thumbnail: DEFAULT_THUMBNAIL,
       });
 
@@ -230,10 +236,9 @@ function InsideLayout() {
 
       // Refresh collections
       fetchCollections();
-
-      return docRef.id;
+      return newCollection.id;
     } catch (error) {
-      console.error('Error adding collection: ', error);
+      console.error('Error adding collection:', error);
       if (toast) {
         showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
       }
@@ -295,20 +300,19 @@ export default function App() {
     Inter_700Bold,
   });
 
+  // Use auth service instead of direct Firebase access
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+    const unsubscribe = subscribeToAuthChanges(async (user) => {
       if (user) {
-        // Set user state
         setUser(user);
-
-        // Check if user needs onboarding
+        
         try {
-          const userDoc = await getDoc(doc(FIREBASE_DB, 'users', user.uid));
-          const isNewUser = userDoc.exists() ? userDoc.data()?.isNewUser ?? true : true;
-          setIsOnboarding(isNewUser);
+          // Use user service to check onboarding status
+          const userProfile = await getUserProfile(user.uid);
+          setIsOnboarding(userProfile?.isNewUser ?? true);
         } catch (error) {
           console.error("Error checking user onboarding status:", error);
-          setIsOnboarding(false); // Default to no onboarding if error
+          setIsOnboarding(false);
         }
       } else {
         setUser(null);
@@ -320,6 +324,7 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
+  // Loading state and UI rendering remain unchanged
   if (!fontsLoaded || initializing) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -366,26 +371,33 @@ export default function App() {
           ),
         }}
       >
-        <ShareIntentProvider>
+       <ShareIntentProvider>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="SignIn">
+            {/* KEY FIX: Use conditional rendering instead of initialRouteName */}
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
               {user ? (
-                <>
-                  <Stack.Screen name="Inside" component={InsideLayout} options={{ headerShown: false }} />
+                // User is signed in
+                <Stack.Group>
+                  <Stack.Screen name="Inside" component={InsideLayout} />
                   {isOnboarding && (
-                    <>
-                      <Stack.Screen name="Screen1" component={Screen1} options={{ headerShown: false }} />
-                      <Stack.Screen name="Screen2" component={Screen2} options={{ headerShown: false }} />
-                      <Stack.Screen name="Screen3" component={Screen3} options={{ headerShown: false }} />
-                      <Stack.Screen name="Screen4" component={Screen4} options={{ headerShown: false }} />
-                    </>
+                    <Stack.Group>
+                      <Stack.Screen name="Screen1" component={Screen1} />
+                      <Stack.Screen name="Screen2" component={Screen2} />
+                      <Stack.Screen name="Screen3" component={Screen3} />
+                      <Stack.Screen name="Screen4" component={Screen4} />
+                    </Stack.Group>
                   )}
-                </>
+                </Stack.Group>
               ) : (
-                <>
-                  <Stack.Screen name="SignIn" component={SignIn} options={{ headerShown: false }} />
-                  <Stack.Screen name="SignUp" component={SignUp} />
-                </>
+                // No user, show auth screens
+                <Stack.Group>
+                  <Stack.Screen name="SignIn" component={SignIn} />
+                  <Stack.Screen 
+                    name="SignUp" 
+                    component={SignUp} 
+                    options={{ headerShown: true }}
+                  />
+                </Stack.Group>
               )}
             </Stack.Navigator>
           </NavigationContainer>
@@ -394,7 +406,6 @@ export default function App() {
     </>
   );
 }
-
 const styles = {
   container: {
     flex: 1,
