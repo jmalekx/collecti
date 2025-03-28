@@ -12,7 +12,7 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 
 //Custom component imports and styling
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 import { AppHeading } from '../../components/Typography';
 
 /*

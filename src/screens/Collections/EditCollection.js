@@ -11,7 +11,7 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getCollection, updateCollection } from '../../services/collections';
 
 //Custom component imports and styling
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 /*
     EditCollection Screen

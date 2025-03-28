@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
 import { AppText, AppHeading } from './Typography';
-import commonStyles from '../commonStyles';
+import commonStyles from '../styles/commonStyles';
 
 /*
   ConfirmationModal Component

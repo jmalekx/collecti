@@ -5,7 +5,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import { typography } from '../commonStyles';
+import { typography } from '../styles/commonStyles';
 
 /*
   Toasts Notification Component

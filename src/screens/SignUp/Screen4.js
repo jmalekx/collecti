@@ -12,7 +12,7 @@ import { getCollectionSuggestions, completeOnboardingProcess } from '../../servi
 
 //Custom component imports and styling
 import ProgressBar from "../../components/ProgressBar";
-import commonStyles from "../../commonStyles";
+import commonStyles from "../../styles/commonStyles";
 import { AppText, AppHeading, AppButton } from '../../components/Typography';
 
 /*

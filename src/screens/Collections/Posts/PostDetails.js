@@ -19,7 +19,7 @@ import { formatDate, formatPlatform } from '../../../utils/formatting';
 import RenderPosts from '../../../components/RenderPosts';
 
 //Custom component imports and styling
-import commonStyles from '../../../commonStyles';
+import commonStyles from '../../../styles/commonStyles';
 
 /*
     PostDetails Screen

@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 //Custom component imports and styling
 import ProgressBar from '../../components/ProgressBar';
 import PinterestButton from '../../components/PinterestButton';
-import commonStyles from "../../commonStyles";
+import commonStyles from "../../styles/commonStyles";
 import { AppText, AppHeading, AppButton } from '../../components/Typography';
 
 /*

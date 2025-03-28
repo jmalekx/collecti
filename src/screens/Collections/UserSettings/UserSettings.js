@@ -8,7 +8,7 @@ import PinterestButton from '../../../components/PinterestButton';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 
 //Custom component imports
-import commonStyles from '../../../commonStyles';
+import commonStyles from '../../../styles/commonStyles';
 
 /*
   UserSettings Screen

@@ -42,7 +42,7 @@ import { collection, doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 
 // Constants
 import { DEFAULT_THUMBNAIL } from '../../constants';
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');

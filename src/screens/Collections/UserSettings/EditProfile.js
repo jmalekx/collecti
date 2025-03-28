@@ -11,7 +11,7 @@ import { getCurrentUserId } from '../../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 //Custom component imports and styling
-import commonStyles from '../../../commonStyles';
+import commonStyles from '../../../styles/commonStyles';
 import { AppHeading } from '../../../components/Typography';
 
 /*

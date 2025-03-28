@@ -17,7 +17,7 @@ import { uploadImageToCloudinary } from '../services/storage';
 
 import { showToast, TOAST_TYPES } from './Toasts';
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
-import commonStyles from '../commonStyles';
+import commonStyles from '../styles/commonStyles';
 
 /*
   AddButton Component

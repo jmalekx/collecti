@@ -12,7 +12,7 @@ import formValidation from '../../utils/formValidation';
 
 //Custom component imports and styling
 import { AppText, AppButton, AppTextInput } from '../../components/Typography';
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   SignUp Screen

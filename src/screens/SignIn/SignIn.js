@@ -12,7 +12,7 @@ import formValidation from '../../utils/formValidation';
 
 // Custom component imports and styling
 import Logo from '../../images/tmplogo.png';
-import commonStyles from '../../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 /*

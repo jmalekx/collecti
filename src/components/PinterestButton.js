@@ -10,7 +10,7 @@ import pinterestService from '../services/pinterest/pinterestServices';
 
 //Custom component imports and styling
 import { TOAST_TYPES, showToast } from './Toasts';
-import commonStyles from '../commonStyles';
+import commonStyles from '../styles/commonStyles';
 
 /*
   PinteresButton Component

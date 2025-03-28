@@ -3,7 +3,7 @@ import React from 'react';
 import { Text, TouchableOpacity, TextInput } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles, { typography } from '../commonStyles';
+import commonStyles, { typography } from '../styles/commonStyles';
 
 /*
   Typography Component
