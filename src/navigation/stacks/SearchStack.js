@@ -1,0 +1,26 @@
+//React and React Native core imports
+import React from 'react';
+
+//Third-party library external imports
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+//Screen imports
+import SearchPage from '../../screens/Search/SearchPage';
+import CollectionDetails from '../../screens/Collections/CollectionDetails';
+import EditCollection from '../../screens/Collections/EditCollection';
+import PostDetails from '../../screens/Collections/Posts/PostDetails';
+import EditPost from '../../screens/Collections/Posts/EditPost';
+
+const Stack = createNativeStackNavigator();
+
+const SearchStack = () => (
+    <Stack.Navigator>
+       <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: true, title: 'Search' }} />
+      <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+      <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+    </Stack.Navigator>
+);
+
+export default SearchStack;
