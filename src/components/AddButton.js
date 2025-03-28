@@ -78,19 +78,19 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   useEffect(() => {
     if (collections.length > 0) {
       //ONLY set default collection on initial load or when collections change
-  
+
       //Skip default selection in these cases:
       //1. When we have a pending new collection
       if (pendingNewCollection) {
         return;
       }
-      
+
       //2. When user has manually selected a collection that exists in the collections array
       const userSelectedCollection = collections.find(coll => coll.id === selectedCollection);
       if (userSelectedCollection) {
         return;
       }
-      
+
       //Only set default if we don't have a valid selection yet
       const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
       if (unsortedCollection) {
@@ -135,6 +135,14 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     setPendingNewCollection(null);
     setActiveTab('image');
     setCurrentPlatform('gallery');
+
+    //Reset selected collection to default (Unsorted)
+    const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
+    if (unsortedCollection) {
+      setSelectedCollection(unsortedCollection.id);
+    } else if (collections.length > 0) {
+      setSelectedCollection(collections[0].id);
+    }
   };
 
   //Pinterest data fetch - still need to get this to workk with API tokens adn stuff
@@ -203,7 +211,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           }
           imageToUse = uploadedUrl;
           platformToUse = 'gallery';
-        } 
+        }
         catch (uploadError) {
           console.error('Error uploading image to Cloudinary:', uploadError);
           showToast(toast, "Failed to upload image", { type: TOAST_TYPES.DANGER });
