@@ -73,6 +73,21 @@ class PinterestLink extends PlatformLink {
     }
 }
 
+//YouTube Platform Strategy
+class YouTubeLink extends PlatformLink {
+    async openUrl(url) {
+        return Linking.openURL(url);
+    }
+
+    isValidUrl(url) {
+        return !!url && (url.includes('youtube.com') || url.includes('youtu.be'));
+    }
+
+    getDisplayName() {
+        return 'YouTube';
+    }
+}
+
 //Default Platform Strategy
 class DefaultLink extends PlatformLink {
     async openUrl(url) {
@@ -90,6 +105,7 @@ export const createPlatformLink = (platform) => {
         'instagram': new InstagramLink(),
         'tiktok': new TiktokLink(),
         'pinterest': new PinterestLink(),
+        'youtube': new YouTubeLink(),
         'default': new DefaultLink()
     };
     
@@ -112,7 +128,7 @@ export const shouldShowPlatformLink = (post) => {
     if (!post || !post.platform) return false;
     
     //Only show platform links for social media platforms, not gallery
-    return ['instagram', 'tiktok', 'pinterest'].includes(post.platform.toLowerCase());
+    return ['instagram', 'tiktok', 'pinterest','youtube'].includes(post.platform.toLowerCase());
   };
 
 //Formatted platform name

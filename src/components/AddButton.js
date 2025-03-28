@@ -108,7 +108,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     console.log("platform:", platform);
     console.log("Should open modal:", Boolean(sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')));
 
-    if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')) {
+    if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest' || platform === 'youtube')) {
       setImageUrl(sharedUrl);
       setCurrentPlatform(platform);
       setActiveTab('url'); //Switch to URL tab if shared from different platform
@@ -200,6 +200,9 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         }
       }
 
+      let imageToUse;
+      let platformToUse;
+
       //If image from gallery upload to Cloudinary first
       if (image) {
         try {
@@ -231,6 +234,9 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         }
         else if (imageUrl.includes('pinterest.com')) {
           platformToUse = 'pinterest';
+        }
+        else if (imageUrl.includes('youtube.com') || imageUrl.includes('youtu.be')) {
+          platformToUse = 'youtube';
         }
       }
 
@@ -488,11 +494,17 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
                       //Auto-detect platform based on URL
                       if (text.includes('instagram.com')) {
                         setCurrentPlatform('instagram');
-                      } else if (text.includes('tiktok.com')) {
+                      }
+                      else if (text.includes('tiktok.com')) {
                         setCurrentPlatform('tiktok');
-                      } else if (text.includes('pinterest.com')) {
+                      }
+                      else if (text.includes('pinterest.com')) {
                         setCurrentPlatform('pinterest');
-                      } else {
+                      }
+                      else if (text.includes('youtube.com') || text.includes('youtu.be')) {
+                        setCurrentPlatform('youtube');
+                      }
+                      else {
                         setCurrentPlatform('other');
                       }
                     }}
@@ -506,11 +518,13 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
                         {currentPlatform === 'instagram' ? 'Instagram Content' :
                           currentPlatform === 'tiktok' ? 'TikTok Content' :
                             currentPlatform === 'pinterest' ? 'Pinterest Content' :
-                              'Web Content'}
+                              currentPlatform === 'youtube' ? 'YouTube Content' :
+                                'Web Content'}
                       </Text>
                       {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color="#E1306C" />}
                       {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color="#000000" />}
                       {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={20} color="#E60023" />}
+                      {currentPlatform === 'youtube' && <Ionicons name="logo-youtube" size={20} color="#FF0000" />}
                     </View>
                   )}
                 </View>

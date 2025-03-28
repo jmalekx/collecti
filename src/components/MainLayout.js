@@ -67,17 +67,30 @@ const MainLayout = () => {
   const detectPlatform = (url) => {
     if (!url) return;
 
-    if (url.includes('instagram.com')) {
+    setCurrentUrl(url);
+  
+    //Lowercase and trim the URL for consistency
+    const lowerUrl = url.toLowerCase().trim();
+
+    if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+      setPlatform('youtube');
+      console.log('Platform set to: youtube');
+    } 
+    else if (lowerUrl.includes('instagram.com')) {
       setPlatform('instagram');
+      console.log('Platform set to: instagram');
     } 
-    else if (url.includes('pinterest.com')) {
+    else if (lowerUrl.includes('pinterest.com')) {
       setPlatform('pinterest');
+      console.log('Platform set to: pinterest');
     } 
-    else if (url.includes('tiktok.com')) {
+    else if (lowerUrl.includes('tiktok.com')) {
       setPlatform('tiktok');
+      console.log('Platform set to: tiktok');
     } 
     else {
       setPlatform('gallery');
+      console.log('Platform set to: gallery (default)');
     }
   };
 

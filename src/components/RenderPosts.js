@@ -5,6 +5,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 //Project services and utilities
 import InstagramEmbed from './InstagramEmbed';
 import TikTokEmbed from './TiktokEmbed';
+import YouTubeEmbed from './YoutubeEmbed';
 import { extractPostUrl } from '../services/platformService';
 import { handleOpenInPlatform } from '../services/postActionService';
 
@@ -58,6 +59,15 @@ const RenderPosts = ({ post, toast }) => {
                 <TouchableOpacity onPress={() => handleOpenInPlatform(post, toast)}>
                     <Text style={styles.linkText}>Open in Pinterest</Text>
                 </TouchableOpacity>
+            </View>
+        );
+    }
+    
+    //YouTube posts
+    if (post.platform === 'youtube' && (postUrl.includes('youtube.com') || postUrl.includes('youtu.be'))) {
+        return (
+            <View style={styles.embedContainer}>
+                <YouTubeEmbed url={postUrl} style={styles.thumbnail} scale={1.0} />
             </View>
         );
     }
