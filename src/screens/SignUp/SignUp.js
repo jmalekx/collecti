@@ -79,7 +79,7 @@ const SignUp = ({ navigation }) => {
             });
 
             showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
-            navigation.navigate('Screen1');
+            navigation.navigate('Onboarding');
         }
         catch (error) {
             showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });

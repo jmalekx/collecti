@@ -11,31 +11,14 @@ import { toastConfig } from './src/components/Toasts';
 import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
-
 //Project services and utilities
-import { showToast, TOAST_TYPES } from './src/components/Toasts';
-import { DEFAULT_THUMBNAIL } from './src/constants';
-
-//Import service layers instead of direct Firebase imports
 import { subscribeToAuthChanges } from './src/services/auth';
 import { getUserProfile } from './src/services/users';
 
-//Import modular navigation components
-import TabNavigator from './src/navigation/TabNavigator';
-import HomeStack from './src/navigation/stacks/HomeStack';
-import CollectionsStack from './src/navigation/stacks/CollectionsStack';
-import SearchStack from './src/navigation/stacks/SearchStack';
-import BookmarksStack from './src/navigation/stacks/BookmarksStack';
-
-//Import onboarding screens
-import SignIn from './src/screens/SignIn/SignIn';
-import SignUp from './src/screens/SignUp/SignUp';
-import Screen1 from './src/screens/SignUp/Screen1';
-import Screen2 from './src/screens/SignUp/Screen2';
-import Screen3 from './src/screens/SignUp/Screen3';
-import Screen4 from './src/screens/SignUp/Screen4';
-
+//Import navigation stacks
 import MainLayout from './src/components/MainLayout';
+import AuthStack from './src/navigation/stacks/AuthStack';
+import OnboardingStack from './src/navigation/stacks/OnboardingStack';
 
 const Stack = createNativeStackNavigator();
 
@@ -55,7 +38,7 @@ export default function App() {
     const unsubscribe = subscribeToAuthChanges(async (user) => {
       if (user) {
         setUser(user);
-        
+
         try {
           // Check if user needs onboarding
           const userProfile = await getUserProfile(user.uid);
@@ -124,28 +107,24 @@ export default function App() {
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               {user ? (
-                // User is signed in
-                <Stack.Group>
+                //User signed in
+                <>
                   <Stack.Screen name="Inside" component={MainLayout} />
                   {isOnboarding && (
-                    <Stack.Group>
-                      <Stack.Screen name="Screen1" component={Screen1} />
-                      <Stack.Screen name="Screen2" component={Screen2} />
-                      <Stack.Screen name="Screen3" component={Screen3} />
-                      <Stack.Screen name="Screen4" component={Screen4} />
-                    </Stack.Group>
+                    <Stack.Screen
+                      name="Onboarding"
+                      component={OnboardingStack}
+                      options={{ headerShown: false }}
+                    />
                   )}
-                </Stack.Group>
+                </>
               ) : (
-                // No user, show auth screens
-                <Stack.Group>
-                  <Stack.Screen name="SignIn" component={SignIn} />
-                  <Stack.Screen
-                    name="SignUp"
-                    component={SignUp}
-                    options={{ headerShown: true }}
-                  />
-                </Stack.Group>
+                //No user so show auth stack
+                <Stack.Screen
+                  name="Auth"
+                  component={AuthStack}
+                  options={{ headerShown: false }}
+                />
               )}
             </Stack.Navigator>
           </NavigationContainer>
