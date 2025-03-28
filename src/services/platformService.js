@@ -110,8 +110,10 @@ export const openInPlatform = async (post) => {
 //Determines if platform link should be shown
 export const shouldShowPlatformLink = (post) => {
     if (!post || !post.platform) return false;
-    return post.platform !== 'gallery' && !!extractPostUrl(post);
-};
+    
+    //Only show platform links for social media platforms, not gallery
+    return ['instagram', 'tiktok', 'pinterest'].includes(post.platform.toLowerCase());
+  };
 
 //Formatted platform name
 export const getPlatformDisplayName = (post) => {
