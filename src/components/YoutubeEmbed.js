@@ -154,7 +154,7 @@ const YouTubeEmbed = ({ url, style, scale = 1 }) => {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    height: 200, //Increased height for better video viewing
+    height: 150,
     borderRadius: 8,
     marginBottom: 8,
     overflow: 'hidden',

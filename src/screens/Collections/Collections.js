@@ -5,6 +5,7 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import YouTubeEmbed from '../../components/YoutubeEmbed';
 import commonStyles from '../../styles/commonStyles';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -81,7 +82,16 @@ const Collections = ({ }) => {
           onError={(e) => console.log('Failed to load Pinterest thumbnail:', e.nativeEvent.error)}
         />
       );
-    } else {
+    } else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
+      return (
+        <YouTubeEmbed
+          url={thumbnail}
+          style={styles.instagramEmbed}
+          scale={0.3}
+        />
+      );
+    }
+    else {
       return (
         <Image
           source={{ uri: thumbnail || DEFAULT_THUMBNAIL }}

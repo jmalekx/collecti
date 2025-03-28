@@ -17,6 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 // Components
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
+import YouTubeEmbed from '../../components/YoutubeEmbed';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import ConfirmationModal from '../../components/ConfirmationModal';
@@ -347,7 +348,10 @@ const CollectionDetails = ({ route, navigation }) => {
       return <InstagramEmbed url={post.thumbnail} scale={0.42} />;
     } else if (post.thumbnail.includes('tiktok.com')) {
       return <TikTokEmbed url={post.thumbnail} scale={0.4} />;
-    } else {
+    } else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
+      return <YouTubeEmbed url={post.thumbnail} scale={0.4} />;
+    }
+    else {
       return (
         <Image
           source={{ uri: post.thumbnail }}
