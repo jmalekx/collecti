@@ -18,11 +18,6 @@ const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
     />
     <Text style={styles.username}>{username}</Text>
     <Text style={styles.stats}>{stats}</Text>
-    <TouchableOpacity
-      onPress={onEditProfile}
-      style={styles.button}>
-      <Text style={styles.buttonText}>Edit Profile</Text>
-    </TouchableOpacity>
   </View>
 );
 
@@ -104,7 +99,6 @@ const Collections = ({ }) => {
         username={username}
         stats={stats}
         profilePicture={profilePicture}
-        onEditProfile={() => navigation.navigate('EditProfile')}
       />
 
       {/* Search Bar */}
