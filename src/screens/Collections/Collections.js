@@ -1,33 +1,36 @@
+//React and React Native core imports
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+
+//Third-party library external imports
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+
+//Project services and utilities
 import { useUserData } from '../../hooks/useUserData';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
 import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import YouTubeEmbed from '../../components/YoutubeEmbed';
-import commonStyles from '../../styles/commonStyles';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import ProfileHeader from '../../components/ProfileHeader';
 
-const ProfileHeader = ({ username, stats, profilePicture, onEditProfile }) => (
-  <View style={styles.header}>
-    <Image
-      source={{ uri: profilePicture }}
-      style={styles.profilePicture}
-      onError={(e) => console.log('Failed to load profile picture:', e.nativeEvent.error)}
-    />
-    <Text style={styles.username}>{username}</Text>
-    <Text style={styles.stats}>{stats}</Text>
-  </View>
-);
+//Custom component imports and styling
+import commonStyles from '../../styles/commonStyles';
+
+/*
+    Collections component displays the user's collections and allows searching through them.
+    Props:
+    - userProfile: The user's profile data.
+    - collections: The user's collections data.
+*/
 
 const Collections = ({ }) => {
   const navigation = useNavigation();
   const { userProfile, collections } = useUserData();
   const [searchQuery, setSearchQuery] = useState('');
 
-  //header with settings button
+  //Header with settings button
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -41,20 +44,19 @@ const Collections = ({ }) => {
     });
   }, [navigation]);
 
-  // Derived values from userProfile and collections
   const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email?.split('@')[0] || 'User';
   const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
-  // Calculate stats directly from collections
+  //Calculate stats directly from collections
   const stats = `${collections.length} collections | ${collections.reduce((sum, collection) => sum + collection.items.length, 0)
     } posts`;
 
-  // Filter collections based on search query
+  //Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Improved renderThumbnail function to match CollectionDetails approach
+  //RENDERTHUMBNAIL - to separate later into component
   const renderThumbnail = (thumbnail) => {
     if (thumbnail && thumbnail.includes('instagram.com')) {
       return (
@@ -66,7 +68,8 @@ const Collections = ({ }) => {
           />
         </View>
       );
-    } else if (thumbnail && thumbnail.includes('tiktok.com')) {
+    } 
+    else if (thumbnail && thumbnail.includes('tiktok.com')) {
       return (
         <TikTokEmbed
           url={thumbnail}
@@ -74,7 +77,8 @@ const Collections = ({ }) => {
           scale={0.3}
         />
       );
-    } else if (thumbnail && thumbnail.includes('pinterest.com')) {
+    } 
+    else if (thumbnail && thumbnail.includes('pinterest.com')) {
       return (
         <Image
           source={{ uri: thumbnail }}
@@ -82,7 +86,8 @@ const Collections = ({ }) => {
           onError={(e) => console.log('Failed to load Pinterest thumbnail:', e.nativeEvent.error)}
         />
       );
-    } else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
+    } 
+    else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
       return (
         <YouTubeEmbed
           url={thumbnail}
@@ -104,6 +109,7 @@ const Collections = ({ }) => {
 
   return (
     <View style={styles.container}>
+      
       {/* Profile Header */}
       <ProfileHeader
         username={username}
