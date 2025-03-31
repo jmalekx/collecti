@@ -1,14 +1,16 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { getUserProfile, updateUserProfile } from '../../../services/users';
-import { getCurrentUserId } from '../../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
+import { uploadImageToCloudinary } from '../../../services/storage';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
@@ -27,13 +29,22 @@ const EditProfile = ({ navigation }) => {
   //State transitions
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   //Content managing
   const [username, setUsername] = useState('');
   const [profilePicture, setProfilePicture] = useState('');
+  const [localImage, setLocalImage] = useState(null); // For storing local image URI before upload
 
   //Context state
   const toast = useToast();
+
+  //Remove profile picture completely
+  const removeProfilePicture = () => {
+    setProfilePicture('');
+    setLocalImage(null);
+    showToast(toast, "Profile picture will be removed on save", { type: TOAST_TYPES.INFO });
+  };
   
   //Load user profile data on component mount
   useEffect(() => {
@@ -58,15 +69,75 @@ const EditProfile = ({ navigation }) => {
     fetchProfile();
   }, [toast]);
 
+  //Image selection handler
+  const selectImage = async () => {
+    try {
+      //Request permission to access media library
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        showToast(toast, "Permission to access media library is required", { type: TOAST_TYPES.WARNING });
+        return;
+      }
+
+      //Launch image picker with options
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1], //Square aspect ratio for profile picture
+        quality: 0.5,
+        compress: 0.5,
+        base64: false,
+      });
+
+      if (!result.canceled) {
+        setLocalImage(result.assets[0].uri);
+      }
+    } 
+    catch (error) {
+      console.error('Error picking image:', error);
+      showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
+    }
+  };
+
+  //Remove selected image
+  const removeSelectedImage = () => {
+    setLocalImage(null);
+  };
+
   //Handle profile save action
   const handleSaveProfile = async () => {
     try {
       setSaving(true);
       
+      let profileImageUrl = profilePicture;
+      
+      //Upload new image if selected
+      if (localImage) {
+        try {
+          setUploadingImage(true);
+          showToast(toast, "Uploading profile picture...", { type: TOAST_TYPES.INFO });
+          
+          //Upload to Cloudinary
+          const uploadedUrl = await uploadImageToCloudinary(localImage);
+          if (!uploadedUrl) {
+            throw new Error("Failed to upload image");
+          }
+          
+          profileImageUrl = uploadedUrl;
+          setUploadingImage(false);
+        } 
+        catch (uploadError) {
+          console.error('Error uploading image to Cloudinary:', uploadError);
+          showToast(toast, "Failed to upload profile picture", { type: TOAST_TYPES.DANGER });
+          setSaving(false);
+          return;
+        }
+      }
+      
       //Build update data object
       const updateData = {
         username: username,
-        profilePicture: profilePicture,
+        profilePicture: profileImageUrl, // This will be empty string if user removed profile pic
         updatedAt: new Date().toISOString()
       };
       
@@ -75,9 +146,11 @@ const EditProfile = ({ navigation }) => {
       
       showToast(toast, "Profile updated successfully", { type: TOAST_TYPES.SUCCESS });
       navigation.goBack();
-    } catch (error) {
+    } 
+    catch (error) {
       showToast(toast, "Failed to update profile", { type: TOAST_TYPES.DANGER });
-    } finally {
+    } 
+    finally {
       setSaving(false);
     }
   };
@@ -96,9 +169,44 @@ const EditProfile = ({ navigation }) => {
       <AppHeading>Edit Profile</AppHeading>
       
       {/* Profile picture section */}
-      <View style={styles.profilePictureContainer}>
-        <Text>Profile Picture (Currently Unchanged)</Text>
-        {/* Placeholder for profile picture component */}
+      <View style={styles.profilePictureSection}>
+        <Text style={styles.label}>Profile Picture</Text>
+        
+        {localImage ? (
+          <View style={styles.profileImageContainer}>
+            <Image source={{ uri: localImage }} style={styles.profileImage} />
+            <TouchableOpacity
+              style={styles.removeImageButton}
+              onPress={removeSelectedImage}
+            >
+              <Ionicons name="close-circle" size={24} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
+        ) : profilePicture ? (
+          <View style={styles.profileImageContainer}>
+            <Image source={{ uri: profilePicture }} style={styles.profileImage} />
+            <TouchableOpacity
+              style={styles.changeImageButton}
+              onPress={selectImage}
+            >
+              <Ionicons name="camera" size={24} color="#007AFF" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.removeProfilePictureButton}
+              onPress={removeProfilePicture}
+            >
+              <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={styles.pickImageButton}
+            onPress={selectImage}
+          >
+            <Ionicons name="person-circle-outline" size={60} color="#007AFF" />
+            <Text style={styles.pickImageText}>Select Profile Picture</Text>
+          </TouchableOpacity>
+        )}
       </View>
       
       {/* Username input */}
@@ -112,12 +220,17 @@ const EditProfile = ({ navigation }) => {
       
       {/* Save button with loading state */}
       <TouchableOpacity
-        style={[styles.button, saving && styles.disabledButton]}
+        style={[styles.button, (saving || uploadingImage) && styles.disabledButton]}
         onPress={handleSaveProfile}
-        disabled={saving}
+        disabled={saving || uploadingImage}
       >
-        {saving ? (
-          <ActivityIndicator size="small" color="#fff" />
+        {saving || uploadingImage ? (
+          <View style={styles.savingContainer}>
+            <ActivityIndicator size="small" color="#fff" />
+            <Text style={styles.savingText}>
+              {uploadingImage ? "Uploading image..." : "Saving..."}
+            </Text>
+          </View>
         ) : (
           <Text style={styles.buttonText}>Save Changes</Text>
         )}
@@ -138,12 +251,60 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  profilePictureContainer: {
-    marginBottom: 16,
-    height: 100,
+  profilePictureSection: {
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginTop: 12,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  pickImageButton: {
+    width: 120,
+    height: 120,
+    borderWidth: 2,
+    borderColor: '#e0e0e0',
+    borderStyle: 'dashed',
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f3f3f3',
+    backgroundColor: '#f9f9f9',
+    marginTop: 12,
+  },
+  pickImageText: {
+    marginTop: 8,
+    color: '#666',
+    fontSize: 14,
+  },
+  removeImageButton: {
+    position: 'absolute',
+    right: -5,
+    top: -5,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
+  },
+  changeImageButton: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    borderRadius: 18,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
   },
   label: {
     fontSize: 16,
@@ -163,7 +324,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 16,
   },
   disabledButton: {
     backgroundColor: '#A0C8FF', // Lighter blue for disabled state
@@ -171,6 +332,29 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  savingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  savingText: {
+    color: '#fff',
+    marginLeft: 8,
+    fontWeight: '500',
+  },
+  removeProfilePictureButton: {
+    position: 'absolute',
+    left: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    borderRadius: 18,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 2,
   },
 });
 
