@@ -1,0 +1,59 @@
+//Third-party library external imports
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+/*
+    Bookmarks Service
+    
+    Handles all bookmark-related data operations
+*/
+
+//Get all bookmarks for a user
+export const getBookmarks = async (userId) => {
+  try {
+    const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${userId}`);
+    return bookmarksJson ? JSON.parse(bookmarksJson) : [];
+  } 
+  catch (error) {
+    console.error('Error loading bookmarked collections:', error);
+    throw error;
+  }
+};
+
+//Add a bookmark
+export const addBookmark = async (userId, collection) => {
+  try {
+    const currentBookmarks = await getBookmarks(userId);
+    
+    //Check if already bookmarked
+    if (currentBookmarks.some(bookmark => bookmark.id === collection.id)) {
+      return currentBookmarks;
+    }
+    
+    const updatedBookmarks = [...currentBookmarks, collection];
+    await AsyncStorage.setItem(`bookmarkedCollections_${userId}`, JSON.stringify(updatedBookmarks));
+    
+    return updatedBookmarks;
+  } 
+  catch (error) {
+    console.error('Error adding bookmark:', error);
+    throw error;
+  }
+};
+
+//Remove a bookmark
+export const removeBookmark = async (userId, collectionId) => {
+  try {
+    const currentBookmarks = await getBookmarks(userId);
+    const updatedBookmarks = currentBookmarks.filter(
+      collection => collection.id !== collectionId
+    );
+    
+    await AsyncStorage.setItem(`bookmarkedCollections_${userId}`, JSON.stringify(updatedBookmarks));
+    
+    return updatedBookmarks;
+  } 
+  catch (error) {
+    console.error('Error removing bookmark:', error);
+    throw error;
+  }
+};

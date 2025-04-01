@@ -1,10 +1,9 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
@@ -16,23 +15,28 @@ import RenderThumbnail from '../../components/RenderThumbnail';
 import commonStyles from '../../styles/commonStyles';
 import { AppHeading } from '../../components/Typography';
 
+//Custom hooks
+import { useBookmarks } from '../../hooks/useBookmarks';
+
 /*
   Bookmarks Screen
 
   Displays a list of bookmarked collections for the current user
-  Implements persistence for bookmarks using Asyncstorage.
+  Implements persistence for bookmarks using custom useBookmarks hook.
 
-  -Read: Load bookmarked collections from AsyncStorage
-  -Delete: Remove bookmarked collection from AsyncStorage
+  -Read: Load bookmarked collections (via hook)
+  -Delete: Remove bookmarked collection (via hook)
   -Navigation: View the bookmarked collections
-
 */
 
 const Bookmarks = () => {
-
-  //State transitions
-  const [bookmarkedCollections, setBookmarkedCollections] = useState([]);
-  const [loading, setLoading] = useState(true);
+  //Use the custom bookmark hook for all bookmark operations
+  const { 
+    bookmarkedCollections, 
+    loading, 
+    loadBookmarks, 
+    removeBookmark 
+  } = useBookmarks();
 
   //Navigation hook
   const navigation = useNavigation();
@@ -40,57 +44,16 @@ const Bookmarks = () => {
   //User authentication
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
 
-  //Loads bookmarked collections when the component mounts
-  useEffect(() => {
-    if (currentUserId) {
-      loadBookmarkedCollections();
-    }
-
-    //Focus listener for data refresh
+  //Focus listener for data refresh using the hook's loadBookmarks function
+  React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (currentUserId) {
-        loadBookmarkedCollections();
+        loadBookmarks();
       }
     });
 
     return unsubscribe;
-  }, [navigation, currentUserId]);
-
-  //Bookmarked collections loader
-  const loadBookmarkedCollections = async () => {
-    try {
-      setLoading(true);
-      //User-scope storage key for multi-user support (everyone has own bookmarks)
-      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
-      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
-      setBookmarkedCollections(bookmarks);
-    }
-    catch (error) {
-      console.error('Error loading bookmarked collections:', error);
-    }
-    finally {
-      setLoading(false);
-    }
-  };
-
-  //Removes a bookmarked collection
-  const removeBookmark = async (collectionId) => {
-    try {
-      //Filter out collection to be removed
-      const updatedBookmarks = bookmarkedCollections.filter(
-        collection => collection.id !== collectionId
-      );
-
-      //Update UI state before storage operation completed
-      setBookmarkedCollections(updatedBookmarks);
-
-      //Persist to AsyncStorage with user-scoped key
-      await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
-    }
-    catch (error) {
-      console.error('Error removing bookmark:', error);
-    }
-  };
+  }, [navigation, currentUserId, loadBookmarks]);
 
   //Navigate to collection details screen of bookmarked collection
   const navigateToCollectionDetail = (collection) => {
@@ -109,11 +72,11 @@ const Bookmarks = () => {
       style={styles.collectionCard}
       onPress={() => navigateToCollectionDetail(item)}
     >
-      {/* Collection Thumbnail - Replace Image with RenderThumbnail */}
+      {/* Collection Thumbnail */}
       <View style={styles.thumbnailContainer}>
         <RenderThumbnail
           thumbnail={item.imageUrl || DEFAULT_THUMBNAIL}
-          scale={0.2} // Adjust scale as needed for Bookmarks
+          variant="card" // Using variant from preset instead of fixed scale
           containerStyle={styles.thumbnailWrapper}
           thumbnailStyle={styles.collectionImage}
         />
@@ -267,7 +230,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  // Update collectionImage style to match the new component
   collectionImage: {
     width: '100%',
     height: '100%',
