@@ -2,9 +2,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /*
-    Bookmarks Service
+  Bookmarks Service
     
-    Handles all bookmark-related data operations
+  Handles all bookmark-related data operations
 */
 
 //Get all bookmarks for a user

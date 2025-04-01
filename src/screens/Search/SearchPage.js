@@ -1,50 +1,70 @@
-import React, { useState, useEffect } from 'react';
+//React and React Native core imports
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+
+//Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
-import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
-import {
-  collectionGroup,
-  query,
-  where,
-  getDocs,
-  limit,
-  orderBy,
-  startAfter
-} from 'firebase/firestore';
-import { DEFAULT_THUMBNAIL } from '../../constants';
-// Remove AsyncStorage import as we'll use the hook instead
 import { useToast } from 'react-native-toast-notifications';
+
+//Project services and utilities
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
+import { DEFAULT_THUMBNAIL } from '../../constants';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import RenderThumbnail from '../../components/RenderThumbnail';
-// Import the useBookmarks hook
 import { useBookmarks } from '../../hooks/useBookmarks';
+import { useCollectionSearch } from '../../hooks/useCollectionSearch';
+
+//Custom component imports and styling
+import commonStyles from '../../styles/commonStyles';
+
+/*
+  SearchPage Component
+
+  Implements search functionality for collection discovery across platform
+  - Recent collections display on initial load
+  - Results are fetched based on user input in the search bar
+  - Infinite scroll pagination for loading more results as user scrolls down
+  - Bookmarking functionality for collections
+  - Collection details navigation
+  - Real-time search with debouncing for performance
+*/
 
 const SearchPage = ({ navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [lastVisible, setLastVisible] = useState(null); // Track last document for pagination
-  const [hasMore, setHasMore] = useState(true); // Track if more results exist
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [processedIds, setProcessedIds] = useState(new Set());
-  const [loadedIds] = useState(new Set());
-  const BATCH_SIZE = 6; // Number of items to load per batch
+  //Content managing
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
+  const BATCH_SIZE = 6;
+
+  //State transitions
+  const [searchQuery, setSearchQuery] = useState('');
+  const initialLoadComplete = useRef(false);
+
+  //Context states
   const toast = useToast();
 
-  // Use the bookmarks hook
+  //Collection search hook
+  const {
+    results,
+    loading,
+    loadingMore,
+    hasMore,
+    resetPagination,
+    fetchRecentCollections,
+    searchCollections
+  } = useCollectionSearch(BATCH_SIZE);
+
+  //Bookmarks hook
   const {
     isBookmarked,
     toggleBookmark,
     loadBookmarks
   } = useBookmarks();
 
+  //Load bookmarks when component mounts or screen comes into focus
   useEffect(() => {
     if (currentUserId) {
       loadBookmarks();
     }
 
-    // Refresh bookmarks when the screen comes into focus
     const unsubscribe = navigation.addListener('focus', () => {
       if (currentUserId) {
         loadBookmarks();
@@ -54,179 +74,66 @@ const SearchPage = ({ navigation }) => {
     return unsubscribe;
   }, [navigation, currentUserId, loadBookmarks]);
 
-
-  const fetchRecentCollections = async (loadMore = false) => {
-    try {
-      if (!hasMore && loadMore) return;
-
-      if (loadMore) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-        loadedIds.clear(); // Clear loaded IDs on fresh load
+  // Initial load of collections - only run once on mount
+  useEffect(() => {
+    const initialLoad = async () => {
+      //Initially load recent collections
+      if (results.length === 0) {
+        await fetchRecentCollections();
+        initialLoadComplete.current = true;
       }
+    };
+    initialLoad();
+  }, []); //Empty dependency array to ensure it only runs once
 
-      let recentCollectionsQuery;
-      if (loadMore && lastVisible) {
-        recentCollectionsQuery = query(
-          collectionGroup(FIREBASE_DB, 'collections'),
-          orderBy('createdAt', 'desc'),
-          startAfter(lastVisible),
-          limit(BATCH_SIZE)
-        );
-      } else {
-        recentCollectionsQuery = query(
-          collectionGroup(FIREBASE_DB, 'collections'),
-          orderBy('createdAt', 'desc'),
-          limit(BATCH_SIZE)
-        );
+  //Also fetch on screen focus if no search query is active
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (searchQuery.trim() === '' && results.length === 0) {
+        fetchRecentCollections();
+        initialLoadComplete.current = true;
       }
+    });
+    return unsubscribe;
+  }, [navigation, searchQuery, results.length, fetchRecentCollections]);
 
-      const snapshot = await getDocs(recentCollectionsQuery);
-      // Update lastVisible only if we have results
-      if (snapshot.docs.length > 0) {
-        setLastVisible(snapshot.docs[snapshot.docs.length - 1]);
-        setHasMore(snapshot.docs.length === BATCH_SIZE);
-      } else {
-        setHasMore(false);
-      }
-
-      const newCollections = snapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          ownerId: doc.ref.parent.parent.id,
-          uniqueId: `${doc.ref.parent.parent.id}_${doc.id}`
-        }))
-        .filter(collection => {
-          // Skip if we've already loaded this collection
-          if (loadedIds.has(collection.uniqueId)) {
-            return false;
-          }
-          // Add to loaded IDs
-          loadedIds.add(collection.uniqueId);
-
-          // Show user's own collections and other's non-Unsorted collections
-          return collection.ownerId === FIREBASE_AUTH.currentUser?.uid ||
-            !collection.name.includes('Unsorted');
-        });
-
-      setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
-    } catch (error) {
-      console.error('Error fetching recent collections:', error);
-      setHasMore(false);
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  };
-
-
-  const performSearch = async (term, loadMore = false) => {
-    try {
-      if (!hasMore && loadMore) return;
-      if (loadMore) {
-        setLoadingMore(true);
-      } else {
-        setLoading(true);
-      }
-      const normalizedSearchTerm = term.toLowerCase();
-
-      let collectionsQuery;
-      if (loadMore && lastVisible) {
-        collectionsQuery = query(
-          collectionGroup(FIREBASE_DB, 'collections'),
-          orderBy('name'),  // Just order by name
-          startAfter(lastVisible),
-          limit(BATCH_SIZE * 5)  // Fetch more to compensate for filtering
-        );
-      } else {
-        collectionsQuery = query(
-          collectionGroup(FIREBASE_DB, 'collections'),
-          orderBy('name'),  // Just order by name
-          limit(BATCH_SIZE * 5)  // Fetch more to compensate for filtering
-        );
-      }
-
-      const snapshot = await getDocs(collectionsQuery);
-
-      // Filter client-side to find collections containing the search term
-      // This will find matches regardless of where the term appears in the name
-      const filteredDocs = snapshot.docs.filter(doc => {
-        const name = doc.data().name.toLowerCase();
-        return name.includes(normalizedSearchTerm);
-      });
-
-      // Apply BATCH_SIZE limit to filtered results
-      const paginatedDocs = filteredDocs.slice(0, BATCH_SIZE);
-
-      // Update lastVisible only if we have results
-      if (paginatedDocs.length > 0) {
-        setLastVisible(paginatedDocs[paginatedDocs.length - 1]);
-        // Check if we've reached the end
-        setHasMore(filteredDocs.length > BATCH_SIZE);
-      } else {
-        setHasMore(false);
-      }
-
-      const newCollections = paginatedDocs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          ownerId: doc.ref.parent.parent.id
-        }))
-        .filter(collection => {
-          if (collection.ownerId === FIREBASE_AUTH.currentUser?.uid) {
-            return true;
-          }
-          return !collection.name.includes('Unsorted');
-        });
-
-      // Append or replace results
-      setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
-    } catch (error) {
-      console.error('Error searching collections:', error);
-    } finally {
-      if (loadMore) {
-        setLoadingMore(false);
-      } else {
-        setLoading(false);
-      }
-    }
-  };
-
-  // Handle end reached (infinite scroll)
-  const handleLoadMore = React.useCallback(() => {
-    if (loading || loadingMore || !hasMore) return;
+  //Handle infinite scroll
+  const handleLoadMore = useCallback(() => {
+    if (loading || loadingMore || !hasMore || !initialLoadComplete.current) return;
 
     if (searchQuery.trim() !== '') {
-      performSearch(searchQuery, true);
-    } else {
+      searchCollections(searchQuery, true);
+    } 
+    else {
       fetchRecentCollections(true);
     }
-  }, [loading, loadingMore, hasMore, searchQuery]);
+  }, [loading, loadingMore, hasMore, searchQuery, searchCollections, fetchRecentCollections]);
 
-
-  // Reset pagination when search query changes
+  //Handle search query changes with debounce
   useEffect(() => {
-    setLastVisible(null);
-    setHasMore(true);
-
     const delayDebounce = setTimeout(() => {
+      resetPagination();
+      initialLoadComplete.current = false;
+
       if (searchQuery.trim() !== '') {
-        performSearch(searchQuery);
-      } else {
-        fetchRecentCollections();
+        searchCollections(searchQuery).then(() => {
+          initialLoadComplete.current = true;
+        });
+      } 
+      else {
+        fetchRecentCollections().then(() => {
+          initialLoadComplete.current = true;
+        });
       }
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
+  }, [searchQuery]); //Minimal dependencies to avoid re-renders
 
-
+  //Handle bookmark toggle
   const handleBookmarkToggle = async (collectionId) => {
     try {
-      // Get the collection data
+      //Get collection data from results
       const collection = results.find(item => item.id === collectionId);
 
       if (!collection) {
@@ -234,7 +141,7 @@ const SearchPage = ({ navigation }) => {
         return;
       }
 
-      // Format collection data for bookmark
+      //Format collection data for bookmark
       const bookmarkData = {
         id: collectionId,
         ownerId: collection.ownerId,
@@ -243,38 +150,79 @@ const SearchPage = ({ navigation }) => {
         description: collection.description || ''
       };
 
-      // Use the toggleBookmark function from the hook
+      //Use toggle function from hook
       const result = await toggleBookmark(bookmarkData);
 
       if (result.success) {
-        // Show feedback to user based on whether the bookmark was added or removed
         if (result.added) {
           showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
-        } else {
+        } 
+        else {
           showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
         }
-      } else {
+      } 
+      else {
         showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error managing bookmark:", error);
       showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
     }
   };
 
+  //Navigation to collection details
   const navigateToCollection = (collectionId, ownerId) => {
-    // Navigate to the collection details screen
-    // Set isExternalCollection to true if the collection belongs to another user
     navigation.navigate('CollectionDetails', {
       collectionId,
       ownerId,
-      isExternalCollection: ownerId !== FIREBASE_AUTH.currentUser?.uid
+      isExternalCollection: ownerId !== currentUserId
     });
   };
 
+  //Render collection item
+  const renderCollectionItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.collectionCard}
+      onPress={() => navigateToCollection(item.id, item.ownerId)}
+    >
+      <View style={styles.thumbnailContainer}>
+        <RenderThumbnail
+          thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
+          scale={0.5}
+          containerStyle={styles.thumbnailWrapper}
+          thumbnailStyle={styles.thumbnail}
+        />
+      </View>
+      <View style={styles.cardContent}>
+        <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+        <Text style={styles.collectionSubtext} numberOfLines={1}>
+          {item.ownerId === currentUserId
+            ? 'Your Collection'
+            : 'Public Collection'}
+        </Text>
+
+        {item.ownerId !== currentUserId && (
+          <TouchableOpacity
+            onPress={() => handleBookmarkToggle(item.id)}
+            style={styles.bookmarkButton}
+          >
+            <Ionicons
+              name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
+              size={16}
+              color="#007AFF"
+            />
+            <Text style={styles.bookmarkText}>
+              {isBookmarked(item.id) ? "Bookmarked" : "Bookmark"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
-
       <View style={styles.searchContainer}>
         {loading && !loadingMore && (
           <View style={styles.fullScreenLoader}>
@@ -298,10 +246,9 @@ const SearchPage = ({ navigation }) => {
         )}
       </View>
 
-      {/* Display search results */}
       <FlatList
         data={results}
-        keyExtractor={item => item.uniqueId}
+        keyExtractor={(item, index) => item.uniqueId || `${item.id}_${index}`} // Fallback key
         numColumns={2}
         columnWrapperStyle={styles.resultGrid}
         onEndReached={handleLoadMore}
@@ -320,54 +267,13 @@ const SearchPage = ({ navigation }) => {
             </View>
           ) : null
         )}
-
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.collectionCard}
-            onPress={() => navigateToCollection(item.id, item.ownerId)}
-          >
-            <View style={styles.thumbnailContainer}>
-              <RenderThumbnail
-                thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
-                scale={0.5}
-                containerStyle={styles.thumbnailWrapper}
-                thumbnailStyle={styles.thumbnail}
-              />
-            </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-              <Text style={styles.collectionSubtext} numberOfLines={1}>
-                {item.ownerId === FIREBASE_AUTH.currentUser?.uid
-                  ? 'Your Collection'
-                  : 'Public Collection'}
-              </Text>
-
-              {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
-                <TouchableOpacity
-                  onPress={() => handleBookmarkToggle(item.id)}
-                  style={styles.bookmarkButton}
-                >
-                  <Ionicons
-                    name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
-                    size={16}
-                    color="#007AFF"
-                  />
-                  <Text style={styles.bookmarkText}>
-                    {isBookmarked(item.id) ? "Bookmarked" : "Bookmark"}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
-
+        renderItem={renderCollectionItem}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Ionicons name="search" size={64} color="#ccc" />
             <Text style={styles.emptyText}>
-              {searchQuery.trim() === ''
-                ? 'Try searching for collections'
-                : 'No results found'}
+              {loading ? 'Loading collections...' :
+                searchQuery.trim() === '' ? 'Recent collections will appear here' : 'No results found'}
             </Text>
           </View>
         }
@@ -377,6 +283,7 @@ const SearchPage = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     flex: 1,
     padding: 16,
@@ -413,10 +320,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-  thumbnail: {
-    width: '100%',
+  thumbnailContainer: {
     height: 120,
     backgroundColor: '#eee',
+  },
+  thumbnailWrapper: {
+    width: '100%',
+    height: '100%',
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   cardContent: {
     padding: 12,
@@ -463,7 +378,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 1,
   },
-
   loadingFooter: {
     paddingVertical: 20,
     alignItems: 'center',
