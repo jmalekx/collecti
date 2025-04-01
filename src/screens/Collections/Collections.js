@@ -10,9 +10,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '../../hooks/useUserData';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
-import InstagramEmbed from '../../components/InstagramEmbed';
-import TikTokEmbed from '../../components/TiktokEmbed';
-import YouTubeEmbed from '../../components/YoutubeEmbed';
 import ProfileHeader from '../../components/ProfileHeader';
 import RenderThumbnail from '../../components/RenderThumbnail';
 
@@ -20,10 +17,10 @@ import RenderThumbnail from '../../components/RenderThumbnail';
 import commonStyles from '../../styles/commonStyles';
 
 /*
-    Collections component displays the user's collections and allows searching through them.
-    Props:
-    - userProfile: The user's profile data.
-    - collections: The user's collections data.
+  Collections component displays the user's collections and allows searching through them.
+  Props:
+  - userProfile: The user's profile data.
+  - collections: The user's collections data.
 */
 
 const Collections = ({ }) => {
@@ -45,6 +42,7 @@ const Collections = ({ }) => {
     });
   }, [navigation]);
 
+  //Username and pfp
   const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email?.split('@')[0] || 'User';
   const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
@@ -57,20 +55,9 @@ const Collections = ({ }) => {
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  //RENDERTHUMBNAIL - to separate later into component
-  const renderThumbnail = (thumbnail) => {
-    return (
-      <RenderThumbnail 
-        thumbnail={thumbnail}
-        containerStyle={styles.thumbnailContainer}
-        thumbnailStyle={styles.thumbnail}
-      />
-    );
-  };
-
   return (
     <View style={styles.container}>
-      
+
       {/* Profile Header */}
       <ProfileHeader
         username={username}
@@ -102,7 +89,12 @@ const Collections = ({ }) => {
             style={styles.collectionCard}
             onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
           >
-            {renderThumbnail(item.thumbnail)}
+            {/* Collection Thumbnail */}
+            <RenderThumbnail
+              thumbnail={item.thumbnail}
+              containerStyle={styles.thumbnailContainer}
+              thumbnailStyle={styles.thumbnail}
+            />
             <Text style={styles.collectionName}>{item.name}</Text>
             <Text style={styles.collectionStats}>{item.items.length} posts</Text>
           </TouchableOpacity>
