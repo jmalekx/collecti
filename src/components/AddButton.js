@@ -1,6 +1,6 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
-import { View, Text, Modal, TextInput, StyleSheet, ScrollView, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, Modal, TextInput, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -45,6 +45,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const optionsRef = useRef(null);
 
   //Content managing
   const [image, setImage] = useState(null); //Image URI from local device gallery
@@ -221,7 +222,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           setIsLoading(false);
           return;
         }
-      } 
+      }
       else {
         //Use URL directly
         imageToUse = imageUrl;
@@ -354,7 +355,12 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   };
 
   return (
-    <View>
+    <View style={styles.container}>
+      {isOptionsOpen && (
+        <TouchableWithoutFeedback onPress={() => setIsOptionsOpen(false)}>
+          <View style={styles.backdrop} />
+        </TouchableWithoutFeedback>
+      )}
       {/* Collection Creation Modal */}
       <Modal
         animationType="slide"
@@ -647,7 +653,10 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
       {/* Add Options */}
       {isOptionsOpen && (
-        <View style={styles.addOptions}>
+        <View
+          ref={optionsRef}
+          style={styles.addOptions}
+        >
           <TouchableOpacity
             style={styles.optionItem}
             onPress={() => {
@@ -680,6 +689,20 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 //STYLES NEED TO BE ACTUALLY DONE AND ORGANISED EVENTUALLY; THIS IS ALL TMP LAYOUTS TIGHT NOW
 const styles = StyleSheet.create({
   ...commonStyles,
+  container: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    pointerEvents: 'box-none',
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+  },
   modalBg: {
     flex: 1,
     justifyContent: 'center',
