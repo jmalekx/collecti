@@ -1,29 +1,40 @@
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+
+//Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 import { Picker } from '@react-native-picker/picker';
 
-// Components
+//Project services and utilities
 import { AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import RenderThumbnail from '../../components/RenderThumbnail';
-
-// Constants and styles
 import { DEFAULT_THUMBNAIL } from '../../constants';
-import commonStyles from '../../styles/commonStyles';
-
-// Custom hooks
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
 
+//Custom component imports and styling
+import commonStyles from '../../styles/commonStyles';
+
+/*
+  CollectionDetails Component
+
+  Displays details of a specific collection, including posts and options to edit or delete the collection.
+  Allows users to search for posts, move or delete multiple posts, and view post details. Acts
+  as coordinayor between data management hooks and presentational ui elements.
+*/
+
 const CollectionDetails = ({ route, navigation }) => {
   const { collectionId, ownerId, isExternalCollection } = route.params;
+
+  //Context states
   const toast = useToast();
 
-  // Use custom hooks
+  //Use custom hooks
   const {
     posts,
     filteredPosts,
@@ -55,7 +66,7 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsSelectionMode
   } = useSelectionMode();
 
-  // Local UI state
+  //State trabnsitions
   const [numColumns, setNumColumns] = useState(2);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -69,53 +80,55 @@ const CollectionDetails = ({ route, navigation }) => {
   
   const isFocused = useIsFocused();
 
-  // Fetch data when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
       
-      // Set up an event listener for post additions
+      //Set up an event listener for post additions
       const unsubscribe = navigation.addListener('postAdded', (data) => {
-        // If the event data matches current collection, refresh posts
+        //If the event data matches current collection, refresh posts
         if (data && data.collectionId === collectionId) {
           fetchData();
         }
       });
       
-      // Clean up the event listener
+      //Clean up the event listener
       return () => {
         unsubscribe();
       };
     }, [collectionId, fetchData, navigation])
   );
 
-  // Setup realtime listener for posts
+  //Setup realtime listener for posts
   useEffect(() => {
     const unsubscribe = setupPostsListener();
     return () => unsubscribe();
   }, [setupPostsListener]);
 
-  // UI Helper functions
+  //UI Helper functions
   const getPlatformIcon = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
       return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
-    } else if (post.thumbnail.includes('tiktok.com')) {
+    } 
+    else if (post.thumbnail.includes('tiktok.com')) {
       return <Ionicons name="logo-tiktok" size={20} color="#000000" />;
-    } else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
+    } 
+    else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
       return <Ionicons name="logo-youtube" size={20} color="#FF0000" />;
-    } else {
+    } 
+    else {
       return <Ionicons name="images-outline" size={20} color="#4CAF50" />;
     }
   };
 
-  // Action handlers - these focus on UI interaction, not business logic
+  //Action handlers focus on UI interaction not business logic
   const handleGroupMove = () => {
     if (selectedPosts.length === 0) {
       showToast(toast, "No posts selected", { type: TOAST_TYPES.WARNING });
       return;
     }
 
-    // Set the first collection as default if available
+    //Set first collection as default if available
     if (collections.length > 0 && !selectedTargetCollection) {
       setSelectedTargetCollection(collections[0].id);
     }
@@ -185,7 +198,7 @@ const CollectionDetails = ({ route, navigation }) => {
     }
   };
 
-  // UI helpers
+  //UI helpers
   const openMenu = (post) => {
     setSelectedPost(post);
     setIsMenuVisible(true);
