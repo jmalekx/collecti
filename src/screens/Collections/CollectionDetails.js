@@ -1,95 +1,101 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 import { Picker } from '@react-native-picker/picker';
 
 // Components
-import InstagramEmbed from '../../components/InstagramEmbed';
-import TikTokEmbed from '../../components/TiktokEmbed';
-import YouTubeEmbed from '../../components/YoutubeEmbed';
-import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+import { AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import ConfirmationModal from '../../components/ConfirmationModal';
-
-// Services
-import {
-  getCollection,
-  getAllCollections,
-  updateCollection,
-  deleteCollection as deleteCollectionService,
-  createCollection
-} from '../../services/collections';
-import {
-  getCollectionPosts,
-  deletePost as deletePostService,
-  updateCollectionThumbnail, subscribeToPosts
-} from '../../services/posts';
-
-// Firebase helpers
-import { getCurrentUserId } from '../../services/firebase';
-import { FIREBASE_DB } from '../../../FirebaseConfig';
-import { collection, doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
-
-// Constants
-import { DEFAULT_THUMBNAIL } from '../../constants';
-import commonStyles from '../../styles/commonStyles';
 import RenderThumbnail from '../../components/RenderThumbnail';
 
+// Constants and styles
+import { DEFAULT_THUMBNAIL } from '../../constants';
+import commonStyles from '../../styles/commonStyles';
+
+// Custom hooks
+import { useCollectionDetails } from '../../hooks/useCollectionDetails';
+import { useSelectionMode } from '../../hooks/useSelectionMode';
+
 const CollectionDetails = ({ route, navigation }) => {
-  const [searchQuery, setSearchQuery] = useState('');
   const { collectionId, ownerId, isExternalCollection } = route.params;
-  const [posts, setPosts] = useState([]);
-  const [collectionName, setCollectionName] = useState('');
-  const [collectionDescription, setCollectionDescription] = useState('');
+  const toast = useToast();
+
+  // Use custom hooks
+  const {
+    posts,
+    filteredPosts,
+    collections,
+    collectionName,
+    collectionDescription,
+    loading,
+    searchQuery,
+    setSearchQuery,
+    canEditCollection,
+    effectiveUserId,
+    currentUserId,
+    fetchData,
+    deleteCollection,
+    deletePost,
+    deleteMultiplePosts,
+    movePostsToCollection,
+    createCollectionAndMovePosts,
+    setupPostsListener
+  } = useCollectionDetails(collectionId, ownerId, isExternalCollection);
+
+  const {
+    isSelectionMode,
+    selectedItems: selectedPosts,
+    toggleSelectionMode,
+    toggleItemSelection,
+    selectSingleItem,
+    clearSelections,
+    setIsSelectionMode
+  } = useSelectionMode();
+
+  // Local UI state
+  const [numColumns, setNumColumns] = useState(2);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const [numColumns, setNumColumns] = useState(2);
-
-  // Group selection state
-  const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [selectedPosts, setSelectedPosts] = useState([]);
+  const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
+  const [showDeletePostModal, setShowDeletePostModal] = useState(false);
+  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const [isGroupActionModalVisible, setIsGroupActionModalVisible] = useState(false);
   const [selectedTargetCollection, setSelectedTargetCollection] = useState('');
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
-  const [collections, setCollections] = useState([]);
-
-  // Get the current user ID
-  const currentUserId = getCurrentUserId();
-  // Use the owner ID if viewing an external collection, otherwise use current user ID
-  const effectiveUserId = isExternalCollection ? ownerId : currentUserId;
-  const userId = currentUserId; // Use for operations on the user's own collections
-  const toast = useToast();
-  const canEditCollection = !isExternalCollection && collectionName !== "Unsorted";
-
-  const [showDeleteCollectionModal, setShowDeleteCollectionModal] = useState(false);
-  const [showDeletePostModal, setShowDeletePostModal] = useState(false);
-  const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
-
-  const isFocused = useIsFocused();
   
+  const isFocused = useIsFocused();
 
+  // Fetch data when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+      
+      // Set up an event listener for post additions
+      const unsubscribe = navigation.addListener('postAdded', (data) => {
+        // If the event data matches current collection, refresh posts
+        if (data && data.collectionId === collectionId) {
+          fetchData();
+        }
+      });
+      
+      // Clean up the event listener
+      return () => {
+        unsubscribe();
+      };
+    }, [collectionId, fetchData, navigation])
+  );
 
-  // Fetch collection details and posts
-  const fetchData = async () => {
-    if (userId && collectionId) {
-      await fetchCollectionDetails();
-      await fetchPosts();
-      await fetchAllCollections();
-    }
-  }
+  // Setup realtime listener for posts
+  useEffect(() => {
+    const unsubscribe = setupPostsListener();
+    return () => unsubscribe();
+  }, [setupPostsListener]);
 
+  // UI Helper functions
   const getPlatformIcon = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
       return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
@@ -102,101 +108,7 @@ const CollectionDetails = ({ route, navigation }) => {
     }
   };
 
-  // Filter posts based on search query
-  const filteredPosts = posts.filter((post) =>
-    post.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
-
-  // Fetch collection details using collection service
-  const fetchCollectionDetails = async () => {
-    try {
-      const collectionData = await getCollection(collectionId, effectiveUserId);
-      if (collectionData) {
-        setCollectionName(collectionData.name);
-        setCollectionDescription(collectionData.description || 'No description available');
-      } else {
-        console.error('Collection not found');
-      }
-    } catch (error) {
-      console.error('Error fetching collection details: ', error);
-      showToast(toast, "Error fetching collection details", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
-  // Fetch all collections for move operation using collections service
-  const fetchAllCollections = async () => {
-    try {
-      const collectionsData = await getAllCollections();
-      // Filter out the current collection
-      const filteredCollections = collectionsData.filter(coll => coll.id !== collectionId);
-      setCollections(filteredCollections);
-    } catch (error) {
-      console.error('Error fetching collections: ', error);
-      showToast(toast, "Error fetching collections", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
-  // Fetch posts using posts service
-  const fetchPosts = async () => {
-    try {
-      const postsData = await getCollectionPosts(collectionId, effectiveUserId);
-      setPosts(postsData);
-    } catch (error) {
-      console.error('Error fetching posts: ', error);
-      showToast(toast, "Error fetching posts", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
-  // Refetch data when the screen comes into focus
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-      
-      // Set up an event listener for post additions
-      const unsubscribe = navigation.addListener('postAdded', (data) => {
-        // If the event data matches current collection, refresh posts
-        if (data && data.collectionId === collectionId) {
-          fetchPosts();
-        }
-      });
-      
-      // Clean up the event listener
-      return () => {
-        unsubscribe();
-      };
-    }, [collectionId, userId])
-  );
-
-  useEffect(() => {
-    if (collectionId && effectiveUserId) {
-      // Set up real-time listener for posts in this collection
-      const unsubscribe = subscribeToPosts(collectionId, (updatedPosts) => {
-        setPosts(updatedPosts);
-      }, effectiveUserId);
-      
-      return () => unsubscribe();
-    }
-  }, [collectionId, effectiveUserId]);
-
-  // Toggle selection mode
-  const toggleSelectionMode = () => {
-    setIsSelectionMode(!isSelectionMode);
-    setSelectedPosts([]);
-  };
-
-  // Toggle post selection
-  const togglePostSelection = (postId) => {
-    setSelectedPosts(prevSelected => {
-      if (prevSelected.includes(postId)) {
-        return prevSelected.filter(id => id !== postId);
-      } else {
-        return [...prevSelected, postId];
-      }
-    });
-  };
-
-  // Handle group move action
+  // Action handlers - these focus on UI interaction, not business logic
   const handleGroupMove = () => {
     if (selectedPosts.length === 0) {
       showToast(toast, "No posts selected", { type: TOAST_TYPES.WARNING });
@@ -211,7 +123,6 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsGroupActionModalVisible(true);
   };
 
-  // Handle group delete action
   const handleGroupDelete = () => {
     if (selectedPosts.length === 0) {
       showToast(toast, "No posts selected", { type: TOAST_TYPES.WARNING });
@@ -221,152 +132,65 @@ const CollectionDetails = ({ route, navigation }) => {
   };
 
   const handleConfirmGroupDelete = async () => {
-    try {
-      const batchPromises = selectedPosts.map(postId =>
-        deletePostService(collectionId, postId)
-      );
-
-      await Promise.all(batchPromises);
+    const success = await deleteMultiplePosts(selectedPosts);
+    if (success) {
       setShowDeleteGroupModal(false);
-      showToast(toast, `${selectedPosts.length} posts deleted`, { type: TOAST_TYPES.SUCCESS });
-      setSelectedPosts([]);
       setIsSelectionMode(false);
-      fetchPosts();
-    } catch (error) {
-      console.error('Error deleting posts: ', error);
-      showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
-      setShowDeleteGroupModal(false);
+      clearSelections();
     }
   };
 
-
-  // Create new collection and move posts there
-  const handleCreateCollectionAndMove = async () => {
-    if (!newCollectionName.trim()) {
-      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
-      return;
-    }
-
-    try {
-      // Create new collection using service
-      const newCollectionData = {
-        name: newCollectionName.trim(),
-        description: ''
-      };
-
-      const newCollection = await createCollection(newCollectionData);
-
-      // Move posts to the new collection
-      await movePostsToCollection(newCollection.id);
-
-      showToast(toast, `Posts moved to new collection: ${newCollectionName}`, { type: TOAST_TYPES.SUCCESS });
-      setNewCollectionName('');
-      setIsAddingNewCollection(false);
-      setIsGroupActionModalVisible(false);
-      setIsSelectionMode(false);
-      setSelectedPosts([]);
-      fetchPosts();
-    } catch (error) {
-      console.error('Error creating collection and moving posts: ', error);
-      showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
+  const handleDeleteCollection = async () => {
+    const success = await deleteCollection();
+    if (success) {
+      setShowDeleteCollectionModal(false);
+      navigation.goBack();
     }
   };
 
-  // Move posts to selected collection
-  const movePostsToCollection = async (targetCollectionId) => {
-    try {
-      const movePromises = selectedPosts.map(async (postId) => {
-        // Get the post data
-        const postRef = doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
-        const postDoc = await getDoc(postRef);
-
-        if (postDoc.exists()) {
-          const postData = postDoc.data();
-
-          // Add post to target collection
-          const newPostRef = doc(collection(FIREBASE_DB, 'users', userId, 'collections', targetCollectionId, 'posts'));
-          await setDoc(newPostRef, postData);
-
-          // Delete post from current collection
-          await deleteDoc(postRef);
-        }
-      });
-
-      await Promise.all(movePromises);
-
-      // Update both collections' thumbnails
-      await updateCollectionThumbnail(collectionId);
-      await updateCollectionThumbnail(targetCollectionId);
-
-      return true;
-    } catch (error) {
-      console.error('Error moving posts: ', error);
-      throw error;
+  const handleDeletePost = async () => {
+    const success = await deletePost(selectedPost.id);
+    if (success) {
+      setShowDeletePostModal(false);
     }
   };
 
-  // Handle move to existing collection
   const handleMoveToExistingCollection = async () => {
     if (!selectedTargetCollection) {
       showToast(toast, "Please select a target collection", { type: TOAST_TYPES.WARNING });
       return;
     }
 
-    try {
-      await movePostsToCollection(selectedTargetCollection);
-      showToast(toast, `${selectedPosts.length} posts moved successfully`, { type: TOAST_TYPES.SUCCESS });
+    const success = await movePostsToCollection(selectedPosts, selectedTargetCollection);
+    if (success) {
       setIsGroupActionModalVisible(false);
       setIsSelectionMode(false);
-      setSelectedPosts([]);
-      fetchPosts();
-    } catch (error) {
-      showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
+      clearSelections();
     }
   };
 
-  // Delete collection with confirmation
-  const deleteCollection = () => {
-    setShowDeleteCollectionModal(true);
-  };
+  const handleCreateCollectionAndMove = async () => {
+    if (!newCollectionName.trim()) {
+      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
+      return;
+    }
 
-  const handleDeleteCollection = async () => {
-    try {
-      await deleteCollectionService(collectionId);
-      setShowDeleteCollectionModal(false);
-      navigation.goBack();
-    } catch (error) {
-      console.error('Error deleting collection: ', error);
-      showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
-      setShowDeleteCollectionModal(false);
+    const success = await createCollectionAndMovePosts(selectedPosts, newCollectionName);
+    if (success) {
+      setNewCollectionName('');
+      setIsAddingNewCollection(false);
+      setIsGroupActionModalVisible(false);
+      setIsSelectionMode(false);
+      clearSelections();
     }
   };
 
-  // Delete post with confirmation
-  const deletePost = (postId) => {
-    setSelectedPost({ id: postId });
-    setShowDeletePostModal(true);
-    setIsMenuVisible(false);
-  };
-
-  const handleDeletePost = async () => {
-    try {
-      await deletePostService(collectionId, selectedPost.id);
-      setShowDeletePostModal(false);
-      fetchPosts();
-    } catch (error) {
-      console.error('Error deleting post: ', error);
-      showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
-      setShowDeletePostModal(false);
-    }
-  };
-
-  // Open the menu for a specific post
+  // UI helpers
   const openMenu = (post) => {
     setSelectedPost(post);
     setIsMenuVisible(true);
   };
 
-  // Close the menu
   const closeMenu = () => {
     setSelectedPost(null);
     setIsMenuVisible(false);
@@ -431,7 +255,7 @@ const CollectionDetails = ({ route, navigation }) => {
                     <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
                       <Ionicons name="create-outline" size={24} color="#000" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={deleteCollection} style={styles.selectionButton}>
+                    <TouchableOpacity onPress={() => setShowDeleteCollectionModal(true)} style={styles.selectionButton}>
                       <Ionicons name="trash" size={24} color="red" />
                     </TouchableOpacity>
                   </>
@@ -490,7 +314,7 @@ const CollectionDetails = ({ route, navigation }) => {
 
             onPress={() => {
               if (isSelectionMode) {
-                togglePostSelection(item.id);
+                toggleItemSelection(item.id);
               } else {
                 navigation.navigate('PostDetails', {
                   postId: item.id,
@@ -501,8 +325,7 @@ const CollectionDetails = ({ route, navigation }) => {
             }}
             onLongPress={() => {
               if (!isSelectionMode) {
-                setIsSelectionMode(true);
-                setSelectedPosts([item.id]);
+                selectSingleItem(item.id);
               }
             }}
           >

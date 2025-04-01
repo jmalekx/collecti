@@ -171,10 +171,6 @@ const MainLayout = () => {
         thumbnail: DEFAULT_THUMBNAIL,
       });
 
-      if (toast) {
-        showToast(toast, "Collection created successfully", { type: TOAST_TYPES.SUCCESS });
-      }
-
       fetchCollections();
       return newCollection.id;
     } 
