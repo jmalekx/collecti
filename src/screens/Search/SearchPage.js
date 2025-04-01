@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../../FirebaseConfig';
 import {
@@ -12,10 +12,12 @@ import {
   startAfter
 } from 'firebase/firestore';
 import { DEFAULT_THUMBNAIL } from '../../constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// Remove AsyncStorage import as we'll use the hook instead
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import RenderThumbnail from '../../components/RenderThumbnail';
+// Import the useBookmarks hook
+import { useBookmarks } from '../../hooks/useBookmarks';
 
 const SearchPage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,37 +29,31 @@ const SearchPage = ({ navigation }) => {
   const [processedIds, setProcessedIds] = useState(new Set());
   const [loadedIds] = useState(new Set());
   const BATCH_SIZE = 6; // Number of items to load per batch
-  const [bookmarkedCollections, setBookmarkedCollections] = useState(new Set());
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
   const toast = useToast();
 
+  // Use the bookmarks hook
+  const {
+    isBookmarked,
+    toggleBookmark,
+    loadBookmarks
+  } = useBookmarks();
+
   useEffect(() => {
     if (currentUserId) {
-      loadBookmarkedCollections();
+      loadBookmarks();
     }
 
-    // Also refresh bookmarked collections when the screen comes into focus
+    // Refresh bookmarks when the screen comes into focus
     const unsubscribe = navigation.addListener('focus', () => {
       if (currentUserId) {
-        loadBookmarkedCollections();
+        loadBookmarks();
       }
     });
 
     return unsubscribe;
-  }, [navigation, currentUserId]);
+  }, [navigation, currentUserId, loadBookmarks]);
 
-  const loadBookmarkedCollections = async () => {
-    try {
-      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
-      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
-
-      // Create a Set of bookmarked collection IDs for efficient lookup
-      const bookmarkedIds = new Set(bookmarks.map(item => item.id));
-      setBookmarkedCollections(bookmarkedIds);
-    } catch (error) {
-      console.error('Error loading bookmarked collections:', error);
-    }
-  };
 
   const fetchRecentCollections = async (loadMore = false) => {
     try {
@@ -227,7 +223,8 @@ const SearchPage = ({ navigation }) => {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
-  const bookmarkCollection = async (collectionId) => {
+
+  const handleBookmarkToggle = async (collectionId) => {
     try {
       // Get the collection data
       const collection = results.find(item => item.id === collectionId);
@@ -237,7 +234,7 @@ const SearchPage = ({ navigation }) => {
         return;
       }
 
-      // Collection data to save in the bookmark
+      // Format collection data for bookmark
       const bookmarkData = {
         id: collectionId,
         ownerId: collection.ownerId,
@@ -246,37 +243,18 @@ const SearchPage = ({ navigation }) => {
         description: collection.description || ''
       };
 
-      // Get existing bookmarks with user-specific key
-      const bookmarksJson = await AsyncStorage.getItem(`bookmarkedCollections_${currentUserId}`);
-      const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
+      // Use the toggleBookmark function from the hook
+      const result = await toggleBookmark(bookmarkData);
 
-      // Check if already bookmarked
-      const isAlreadyBookmarked = bookmarks.some(item => item.id === collectionId);
-
-      if (!isAlreadyBookmarked) {
-        // Add to bookmarks and save with user-specific key
-        const updatedBookmarks = [...bookmarks, bookmarkData];
-        await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
-
-        // Update the bookmarked collections set
-        setBookmarkedCollections(prev => new Set([...prev, collectionId]));
-
-        // Show feedback to user
-        showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
+      if (result.success) {
+        // Show feedback to user based on whether the bookmark was added or removed
+        if (result.added) {
+          showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
+        } else {
+          showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
+        }
       } else {
-        // Remove from bookmarks
-        const updatedBookmarks = bookmarks.filter(item => item.id !== collectionId);
-        await AsyncStorage.setItem(`bookmarkedCollections_${currentUserId}`, JSON.stringify(updatedBookmarks));
-
-        // Update the bookmarked collections set
-        setBookmarkedCollections(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(collectionId);
-          return newSet;
-        });
-
-        // Show feedback to user
-        showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
+        showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
       }
     } catch (error) {
       console.error("Error managing bookmark:", error);
@@ -343,56 +321,56 @@ const SearchPage = ({ navigation }) => {
           ) : null
         )}
 
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.collectionCard}
-          onPress={() => navigateToCollection(item.id, item.ownerId)}
-        >
-          <View style={styles.thumbnailContainer}>
-            <RenderThumbnail
-              thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
-              scale={0.5} // Adjust scale based on how large you want embeds to appear
-              containerStyle={styles.thumbnailWrapper}
-              thumbnailStyle={styles.thumbnail}
-            />
-          </View>
-          <View style={styles.cardContent}>
-            <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-            <Text style={styles.collectionSubtext} numberOfLines={1}>
-              {item.ownerId === FIREBASE_AUTH.currentUser?.uid
-                ? 'Your Collection'
-                : 'Public Collection'}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.collectionCard}
+            onPress={() => navigateToCollection(item.id, item.ownerId)}
+          >
+            <View style={styles.thumbnailContainer}>
+              <RenderThumbnail
+                thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
+                scale={0.5}
+                containerStyle={styles.thumbnailWrapper}
+                thumbnailStyle={styles.thumbnail}
+              />
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+              <Text style={styles.collectionSubtext} numberOfLines={1}>
+                {item.ownerId === FIREBASE_AUTH.currentUser?.uid
+                  ? 'Your Collection'
+                  : 'Public Collection'}
+              </Text>
+
+              {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
+                <TouchableOpacity
+                  onPress={() => handleBookmarkToggle(item.id)}
+                  style={styles.bookmarkButton}
+                >
+                  <Ionicons
+                    name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
+                    size={16}
+                    color="#007AFF"
+                  />
+                  <Text style={styles.bookmarkText}>
+                    {isBookmarked(item.id) ? "Bookmarked" : "Bookmark"}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="search" size={64} color="#ccc" />
+            <Text style={styles.emptyText}>
+              {searchQuery.trim() === ''
+                ? 'Try searching for collections'
+                : 'No results found'}
             </Text>
-
-            {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
-              <TouchableOpacity
-                onPress={() => bookmarkCollection(item.id)}
-                style={styles.bookmarkButton}
-              >
-                <Ionicons
-                  name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"}
-                  size={16}
-                  color="#007AFF"
-                />
-                <Text style={styles.bookmarkText}>
-                  {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
-                </Text>
-              </TouchableOpacity>
-            )}
           </View>
-        </TouchableOpacity>
-      )}
-
-      ListEmptyComponent={
-        <View style={styles.emptyContainer}>
-          <Ionicons name="search" size={64} color="#ccc" />
-          <Text style={styles.emptyText}>
-            {searchQuery.trim() === ''
-              ? 'Try searching for collections'
-              : 'No results found'}
-          </Text>
-        </View>
-      }
+        }
       />
     </View>
   );

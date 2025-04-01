@@ -57,3 +57,28 @@ export const removeBookmark = async (userId, collectionId) => {
     throw error;
   }
 };
+
+//Toggle bookmark state
+export const toggleBookmark = async (userId, collection) => {
+  try {
+    const currentBookmarks = await getBookmarks(userId);
+    const isBookmarked = currentBookmarks.some(bookmark => bookmark.id === collection.id);
+    
+    if (isBookmarked) {
+      //If bookmarked, remove it
+      const updatedBookmarks = currentBookmarks.filter(bookmark => bookmark.id !== collection.id);
+      await AsyncStorage.setItem(`bookmarkedCollections_${userId}`, JSON.stringify(updatedBookmarks));
+      return { bookmarks: updatedBookmarks, added: false };
+    } 
+    else {
+      //If not bookmarked, add it
+      const updatedBookmarks = [...currentBookmarks, collection];
+      await AsyncStorage.setItem(`bookmarkedCollections_${userId}`, JSON.stringify(updatedBookmarks));
+      return { bookmarks: updatedBookmarks, added: true };
+    }
+  } 
+  catch (error) {
+    console.error('Error toggling bookmark:', error);
+    throw error;
+  }
+};
