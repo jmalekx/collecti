@@ -66,8 +66,6 @@ const MainLayout = () => {
   //Detecting which platform a shared URL belongs to
   const detectPlatform = (url) => {
     if (!url) return;
-
-    setCurrentUrl(url);
   
     //Lowercase and trim the URL for consistency
     const lowerUrl = url.toLowerCase().trim();
