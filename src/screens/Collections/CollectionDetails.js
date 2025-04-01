@@ -44,6 +44,7 @@ import { collection, doc, getDoc, deleteDoc, setDoc } from 'firebase/firestore';
 // Constants
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import commonStyles from '../../styles/commonStyles';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 const CollectionDetails = ({ route, navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -371,25 +372,17 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsMenuVisible(false);
   };
 
-  // Render post content based on the platform
-  const renderPostContent = (post) => {
-    if (post.thumbnail.includes('instagram.com')) {
-      return <InstagramEmbed url={post.thumbnail} scale={0.42} />;
-    } else if (post.thumbnail.includes('tiktok.com')) {
-      return <TikTokEmbed url={post.thumbnail} scale={0.4} />;
-    } else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
-      return <YouTubeEmbed url={post.thumbnail} scale={0.4} />;
-    }
-    else {
-      return (
-        <Image
-          source={{ uri: post.thumbnail }}
-          style={styles.thumbnail}
-          onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
-        />
-      );
-    }
+  const renderThumbnail = (item) => {
+    return (
+      <RenderThumbnail 
+        thumbnail={item.thumbnail}
+        containerStyle={styles.postContentContainer}
+        thumbnailStyle={styles.thumbnail}
+        scale={0.42}
+      />
+    );
   };
+
   return (
     <View style={styles.container}>
       {/* Collection Header */}
@@ -529,7 +522,7 @@ const CollectionDetails = ({ route, navigation }) => {
             )}
 
             {/* Post Content */}
-            {renderPostContent(item)}
+            {renderThumbnail(item)}
             <Text style={styles.postTitle}>{item.notes}</Text>
 
           </TouchableOpacity>

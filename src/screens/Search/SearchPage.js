@@ -15,6 +15,7 @@ import { DEFAULT_THUMBNAIL } from '../../constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 const SearchPage = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -341,53 +342,57 @@ const SearchPage = ({ navigation }) => {
             </View>
           ) : null
         )}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.collectionCard}
-            onPress={() => navigateToCollection(item.id, item.ownerId)}
-          >
-            <Image
-              source={{ uri: item.thumbnail || DEFAULT_THUMBNAIL }}
-              style={styles.thumbnail}
-              resizeMode="cover"
+
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.collectionCard}
+          onPress={() => navigateToCollection(item.id, item.ownerId)}
+        >
+          <View style={styles.thumbnailContainer}>
+            <RenderThumbnail
+              thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
+              scale={0.5} // Adjust scale based on how large you want embeds to appear
+              containerStyle={styles.thumbnailWrapper}
+              thumbnailStyle={styles.thumbnail}
             />
-            <View style={styles.cardContent}>
-              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-              <Text style={styles.collectionSubtext} numberOfLines={1}>
-                {item.ownerId === FIREBASE_AUTH.currentUser?.uid
-                  ? 'Your Collection'
-                  : 'Public Collection'}
-              </Text>
-
-              {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
-                <TouchableOpacity
-                  onPress={() => bookmarkCollection(item.id)}
-                  style={styles.bookmarkButton}
-                >
-                  <Ionicons
-                    name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"}
-                    size={16}
-                    color="#007AFF"
-                  />
-                  <Text style={styles.bookmarkText}>
-                    {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </View>
-          </TouchableOpacity>
-        )}
-
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="search" size={64} color="#ccc" />
-            <Text style={styles.emptyText}>
-              {searchQuery.trim() === ''
-                ? 'Try searching for collections'
-                : 'No results found'}
-            </Text>
           </View>
-        }
+          <View style={styles.cardContent}>
+            <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+            <Text style={styles.collectionSubtext} numberOfLines={1}>
+              {item.ownerId === FIREBASE_AUTH.currentUser?.uid
+                ? 'Your Collection'
+                : 'Public Collection'}
+            </Text>
+
+            {item.ownerId !== FIREBASE_AUTH.currentUser?.uid && (
+              <TouchableOpacity
+                onPress={() => bookmarkCollection(item.id)}
+                style={styles.bookmarkButton}
+              >
+                <Ionicons
+                  name={bookmarkedCollections.has(item.id) ? "bookmark" : "bookmark-outline"}
+                  size={16}
+                  color="#007AFF"
+                />
+                <Text style={styles.bookmarkText}>
+                  {bookmarkedCollections.has(item.id) ? "Bookmarked" : "Bookmark"}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
+      )}
+
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <Ionicons name="search" size={64} color="#ccc" />
+          <Text style={styles.emptyText}>
+            {searchQuery.trim() === ''
+              ? 'Try searching for collections'
+              : 'No results found'}
+          </Text>
+        </View>
+      }
       />
     </View>
   );

@@ -14,6 +14,7 @@ import InstagramEmbed from '../../components/InstagramEmbed';
 import TikTokEmbed from '../../components/TiktokEmbed';
 import YouTubeEmbed from '../../components/YoutubeEmbed';
 import ProfileHeader from '../../components/ProfileHeader';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
@@ -58,53 +59,13 @@ const Collections = ({ }) => {
 
   //RENDERTHUMBNAIL - to separate later into component
   const renderThumbnail = (thumbnail) => {
-    if (thumbnail && thumbnail.includes('instagram.com')) {
-      return (
-        <View style={styles.instagramContainer}>
-          <InstagramEmbed
-            url={thumbnail}
-            style={styles.instagramEmbed}
-            scale={0.1}
-          />
-        </View>
-      );
-    } 
-    else if (thumbnail && thumbnail.includes('tiktok.com')) {
-      return (
-        <TikTokEmbed
-          url={thumbnail}
-          style={styles.instagramEmbed}
-          scale={0.3}
-        />
-      );
-    } 
-    else if (thumbnail && thumbnail.includes('pinterest.com')) {
-      return (
-        <Image
-          source={{ uri: thumbnail }}
-          style={styles.thumbnail}
-          onError={(e) => console.log('Failed to load Pinterest thumbnail:', e.nativeEvent.error)}
-        />
-      );
-    } 
-    else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
-      return (
-        <YouTubeEmbed
-          url={thumbnail}
-          style={styles.instagramEmbed}
-          scale={0.3}
-        />
-      );
-    }
-    else {
-      return (
-        <Image
-          source={{ uri: thumbnail || DEFAULT_THUMBNAIL }}
-          style={styles.thumbnail}
-          onError={(e) => console.log('Failed to load thumbnail:', e.nativeEvent.error)}
-        />
-      );
-    }
+    return (
+      <RenderThumbnail 
+        thumbnail={thumbnail}
+        containerStyle={styles.thumbnailContainer}
+        thumbnailStyle={styles.thumbnail}
+      />
+    );
   };
 
   return (

@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 //Project services and utilities
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../../constants';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
@@ -108,11 +109,15 @@ const Bookmarks = () => {
       style={styles.collectionCard}
       onPress={() => navigateToCollectionDetail(item)}
     >
-      {/* Collection Thumbnail */}
-      <Image
-        source={{ uri: item.imageUrl || DEFAULT_THUMBNAIL }}
-        style={styles.collectionImage}
-      />
+      {/* Collection Thumbnail - Replace Image with RenderThumbnail */}
+      <View style={styles.thumbnailContainer}>
+        <RenderThumbnail
+          thumbnail={item.imageUrl || DEFAULT_THUMBNAIL}
+          scale={0.2} // Adjust scale as needed for Bookmarks
+          containerStyle={styles.thumbnailWrapper}
+          thumbnailStyle={styles.collectionImage}
+        />
+      </View>
 
       {/* Collection Metadata */}
       <View style={styles.collectionInfo}>
@@ -250,7 +255,24 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  thumbnailContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#e0e0e0',
+  },
+  thumbnailWrapper: {
+    width: '100%',
+    height: '100%',
+  },
+  // Update collectionImage style to match the new component
+  collectionImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8,
+  },
 });
 
 export default Bookmarks;
