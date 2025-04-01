@@ -9,6 +9,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
+import { DEFAULT_PROFILE_PICTURE } from '../../constants'; // Add this import
 
 // Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
@@ -25,7 +26,7 @@ import commonStyles from '../../styles/commonStyles';
 
 const HomePage = () => {
 
-  //Stae transitions
+  //State transitions
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +50,7 @@ const HomePage = () => {
         if (userProfile) {
           //Prefer data from user profile
           setUserName(userProfile.username || 'User');
+          // Store empty string as null to trigger default image logic
           setProfileImage(userProfile.profilePicture || null);
         } 
         else {
@@ -84,9 +86,11 @@ const HomePage = () => {
           {profileImage ? (
             <Image source={{ uri: profileImage }} style={styles.profileImage} />
           ) : (
-            <View style={styles.defaultProfileImage}>
-              <Text style={styles.profileInitial}>{userName.charAt(0).toUpperCase()}</Text>
-            </View>
+            //Use DEFAULT_PROFILE_PICTURE instead of initials when no profile image
+            <Image 
+              source={{ uri: DEFAULT_PROFILE_PICTURE }} 
+              style={styles.profileImage} 
+            />
           )}
         </View>
       </View>
