@@ -10,13 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import RenderThumbnail from '../../components/RenderThumbnail';
+import { useBookmarks } from '../../hooks/useBookmarks';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
 import { AppHeading } from '../../components/Typography';
-
-//Custom hooks
-import { useBookmarks } from '../../hooks/useBookmarks';
 
 /*
   Bookmarks Screen

@@ -4,12 +4,10 @@ import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, Activity
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
-import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../../constants';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import RenderThumbnail from '../../components/RenderThumbnail';
 import { useBookmarks } from '../../hooks/useBookmarks';
 import { useCollectionSearch } from '../../hooks/useCollectionSearch';
@@ -37,9 +35,6 @@ const SearchPage = ({ navigation }) => {
   //State transitions
   const [searchQuery, setSearchQuery] = useState('');
   const initialLoadComplete = useRef(false);
-
-  //Context states
-  const toast = useToast();
 
   //Collection search hook
   const {
@@ -74,10 +69,9 @@ const SearchPage = ({ navigation }) => {
     return unsubscribe;
   }, [navigation, currentUserId, loadBookmarks]);
 
-  // Initial load of collections - only run once on mount
+  //Initial load of collections - only run once on mount
   useEffect(() => {
     const initialLoad = async () => {
-      //Initially load recent collections
       if (results.length === 0) {
         await fetchRecentCollections();
         initialLoadComplete.current = true;
@@ -103,7 +97,7 @@ const SearchPage = ({ navigation }) => {
 
     if (searchQuery.trim() !== '') {
       searchCollections(searchQuery, true);
-    } 
+    }
     else {
       fetchRecentCollections(true);
     }
@@ -119,7 +113,7 @@ const SearchPage = ({ navigation }) => {
         searchCollections(searchQuery).then(() => {
           initialLoadComplete.current = true;
         });
-      } 
+      }
       else {
         fetchRecentCollections().then(() => {
           initialLoadComplete.current = true;
@@ -150,24 +144,11 @@ const SearchPage = ({ navigation }) => {
         description: collection.description || ''
       };
 
-      //Use toggle function from hook
-      const result = await toggleBookmark(bookmarkData);
-
-      if (result.success) {
-        if (result.added) {
-          showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
-        } 
-        else {
-          showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
-        }
-      } 
-      else {
-        showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
-      }
-    } 
+      //Use toggle function from hook - toast is now handled within the hook
+      await toggleBookmark(bookmarkData);
+    }
     catch (error) {
       console.error("Error managing bookmark:", error);
-      showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
     }
   };
 
