@@ -13,7 +13,6 @@ import { AppHeading, AppButton, AppTextInput } from '../../components/Typography
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import RenderThumbnail from '../../components/RenderThumbnail';
-import { DEFAULT_THUMBNAIL } from '../../constants';
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
 
@@ -164,13 +163,6 @@ const CollectionDetails = ({ route, navigation }) => {
     }
   };
 
-  const handleDeletePost = async () => {
-    const success = await deletePost(selectedPost.id);
-    if (success) {
-      setShowDeletePostModal(false);
-    }
-  };
-
   const handleMoveToExistingCollection = async () => {
     if (!selectedTargetCollection) {
       showToast(toast, "Please select a target collection", { type: TOAST_TYPES.WARNING });
@@ -202,11 +194,6 @@ const CollectionDetails = ({ route, navigation }) => {
   };
 
   //UI helpers
-  const openMenu = (post) => {
-    setSelectedPost(post);
-    setIsMenuVisible(true);
-  };
-
   const closeMenu = () => {
     setSelectedPost(null);
     setIsMenuVisible(false);

@@ -15,31 +15,31 @@ import { isDirectPinterestImage, openPinterestUrl } from './pinterest/pinterestH
 export const extractPostUrl = (post) => {
     if (!post) return null;
 
-   //If Pinterest 
-   if (post.platform === 'pinterest') {
-    //For user's own pins (direct images from API), use the image URL for display
-    if (post.image && isDirectPinterestImage(post.image)) {
-        return post.image;
+    //If Pinterest 
+    if (post.platform === 'pinterest') {
+        //For user's own pins (direct images from API), use the image URL for display
+        if (post.image && isDirectPinterestImage(post.image)) {
+            return post.image;
+        }
+
+        //For pins with sourceUrl (for oembed), use that for linking
+        if (post.sourceUrl) {
+            return post.sourceUrl;
+        }
     }
-    
-    //For pins with sourceUrl (for oembed), use that for linking
-    if (post.sourceUrl) {
-        return post.sourceUrl;
-    }
-}
-    
+
     return post.image || post.thumbnail || post.originalUrl || null;
 };
 
 //Extract source URL for opening in the platform
 export const extractSourceUrl = (post) => {
     if (!post) return null;
-    
+
     //For Pinterest, prioritise sourceUrl for opening in the platform
     if (post.platform === 'pinterest' && post.sourceUrl) {
         return post.sourceUrl;
     }
-    
+
     return post.sourceUrl || post.image || post.thumbnail || post.originalUrl || null;
 };
 
@@ -141,17 +141,17 @@ export const createPlatformLink = (platform) => {
         'youtube': new YouTubeLink(),
         'default': new DefaultLink()
     };
-    
+
     return strategies[platform] || strategies.default;
 };
 
 //Open post in native platform
 export const openInPlatform = async (post) => {
     if (!post) throw new Error('Invalid post data');
-    
+
     const url = extractPostUrl(post);
     if (!url) throw new Error('No URL available to open');
-    
+
     const strategy = createPlatformLink(post.platform);
     return await strategy.openUrl(url);
 };
@@ -159,15 +159,15 @@ export const openInPlatform = async (post) => {
 //Determines if platform link should be shown
 export const shouldShowPlatformLink = (post) => {
     if (!post || !post.platform) return false;
-    
+
     //Only show platform links for social media platforms, not gallery
-    return ['instagram', 'tiktok', 'pinterest','youtube'].includes(post.platform.toLowerCase());
-  };
+    return ['instagram', 'tiktok', 'pinterest', 'youtube'].includes(post.platform.toLowerCase());
+};
 
 //Formatted platform name
 export const getPlatformDisplayName = (post) => {
     if (!post || !post.platform) return 'Gallery';
-    
+
     const strategy = createPlatformLink(post.platform);
     return strategy.getDisplayName();
 };

@@ -282,8 +282,6 @@ class PinterestService {
   }
 
   //Pinterest Pin data fetching
-  /// Make sure getUserInfo is implemented correctly
-
   async getUserInfo() {
     try {
       console.log('Pinterest API: Fetching user info');

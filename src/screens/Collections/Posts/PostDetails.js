@@ -100,11 +100,13 @@ const PostDetails = ({ route, navigation }) => {
               console.error('Error opening Pinterest URL:', err);
               showToast(toast, "Could not open Pinterest URL", { type: TOAST_TYPES.DANGER });
             });
-          } else {
+          } 
+          else {
             // Use the correctly imported function
             await handleOpenInPlatform(post, toast);
           }
-        } catch (error) {
+        } 
+        catch (error) {
           console.error('Error in handlePlatformLink:', error);
           showToast(toast, "Error opening link", { type: TOAST_TYPES.DANGER });
         }

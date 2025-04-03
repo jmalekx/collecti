@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
 //Project services and utilities
 import InstagramEmbed from './InstagramEmbed';
@@ -8,7 +8,6 @@ import TikTokEmbed from './TiktokEmbed';
 import YouTubeEmbed from './YoutubeEmbed';
 import PinterestEmbed from './PinterestEmbed';
 import { extractPostUrl } from '../services/platformService';
-import { handleOpenInPlatform } from '../services/postActionService';
 import { isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
 
 /*
@@ -60,9 +59,6 @@ const RenderPosts = ({ post, toast }) => {
     //Pinterest posts
     if (post.platform === 'pinterest' || postUrl.includes('pin.it') || postUrl.includes('pinterest.com')) {
         const isDirectImage = isDirectPinterestImage(postUrl);
-
-        //Use sourceUrl for the "Open in Pinterest" button
-        const sourceUrl = post.sourceUrl || postUrl;
         
         return (
             <View style={styles.embedContainer}>
@@ -78,6 +74,7 @@ const RenderPosts = ({ post, toast }) => {
                     <PinterestEmbed
                         url={postUrl}
                         style={styles.thumbnail}
+                        scale={1.15}
                     />
                 )}
             </View>

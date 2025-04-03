@@ -21,12 +21,7 @@ import PinterestEmbed from './PinterestEmbed';
   - thumbnailStyle: Style for the image/embed (passed from parent)
 */
 
-const RenderThumbnail = ({ 
-  thumbnail, 
-  scale,
-  containerStyle, 
-  thumbnailStyle 
-}) => {
+const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) => {
   if (!thumbnail) {
     return null;
   }
@@ -42,8 +37,8 @@ const RenderThumbnail = ({
         />
       </View>
     );
-  } 
-  
+  }
+
   //TikTok handling
   else if (thumbnail && thumbnail.includes('tiktok.com')) {
     return (
@@ -55,8 +50,8 @@ const RenderThumbnail = ({
         />
       </View>
     );
-  } 
-  
+  }
+
   //Pinterest handling
   else if (thumbnail && thumbnail.includes('pinterest.com') || thumbnail && thumbnail.includes('pin.it')) {
     return (
@@ -64,12 +59,12 @@ const RenderThumbnail = ({
         <PinterestEmbed
           url={thumbnail}
           style={thumbnailStyle}
-          scale={scale || 0.3}
+          scale={scale || 0.45}
         />
       </View>
     );
   }
-  
+
   //YouTube handling
   else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
     return (
@@ -81,8 +76,8 @@ const RenderThumbnail = ({
         />
       </View>
     );
-  } 
-  
+  }
+
   //Default image handling
   else {
     return (
