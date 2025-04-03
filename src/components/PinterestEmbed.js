@@ -6,7 +6,7 @@ import {
     extractPinId, 
     resolveShortUrl, 
     isDirectPinterestImage, 
-    createCanonicalPinUrl 
+    createPinUrl 
   } from '../services/pinterest/pinterestHelpers';
   
 
@@ -54,7 +54,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
 
       if (extractedPinId) {
         // Create a clean Pinterest URL using helper
-        const cleanUrl = createCanonicalPinUrl(extractedPinId);
+        const cleanUrl = createPinUrl(extractedPinId);
         console.log('Pinterest: Using canonical URL:', cleanUrl);
         setPinId(extractedPinId);
         setCanonicalUrl(cleanUrl);

@@ -15,7 +15,7 @@ import { uploadImageToCloudinary } from '../services/storage';
 import {
   extractPinId,
   resolveShortUrl,
-  createCanonicalPinUrl,
+  createPinUrl,
   isDirectPinterestImage
 } from '../services/pinterest/pinterestHelpers';
 
@@ -204,7 +204,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       }
 
       // Create canonical Pinterest URL using helper
-      const canonicalPinUrl = createCanonicalPinUrl(pinId);
+      const canonicalPinUrl = createPinUrl(pinId);
 
       // Try to fetch pin data via API
       try {
