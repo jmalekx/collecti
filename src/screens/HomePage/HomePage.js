@@ -10,8 +10,6 @@ import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
-import { getAllCollections } from '../../services/collections';
-
 import SuggestedCollections from '../../components/SuggestedCollections';
 
 //Custom component imports and styling
@@ -53,7 +51,7 @@ const HomePage = () => {
         if (userProfile) {
           //Prefer data from user profile
           setUserName(userProfile.username || 'User');
-          // Store empty string as null to trigger default image logic
+          //Store empty string as null to trigger default image logic
           setProfileImage(userProfile.profilePicture || null);
         }
         else {
