@@ -5,13 +5,16 @@ import { View, StyleSheet, Text, Image } from 'react-native';
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
 
-// Project services and utilities
+//Project services and utilities
 import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
-import { DEFAULT_PROFILE_PICTURE } from '../../constants'; // Add this import
+import { DEFAULT_PROFILE_PICTURE } from '../../constants';
+import { getAllCollections } from '../../services/collections';
 
-// Custom component imports and styling
+import SuggestedCollections from '../../components/SuggestedCollections';
+
+//Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
 
 /* 
@@ -30,7 +33,7 @@ const HomePage = () => {
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   //Context states
   const toast = useToast();
 
@@ -40,30 +43,30 @@ const HomePage = () => {
       try {
         setIsLoading(true);
         const userId = getCurrentUserId();
-        
+
         if (!userId) {
           return;
         }
-        
+
         const userProfile = await getUserProfile(userId);
-        
+
         if (userProfile) {
           //Prefer data from user profile
           setUserName(userProfile.username || 'User');
           // Store empty string as null to trigger default image logic
           setProfileImage(userProfile.profilePicture || null);
-        } 
+        }
         else {
           //Fallback to auth data using service layer
           const currentUser = getCurrentUser();
           setUserName(currentUser?.displayName || 'User');
           setProfileImage(currentUser?.photoURL || null);
         }
-      } 
+      }
       catch (error) {
         console.error("Error loading user profile:", error);
         showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
-      } 
+      }
       finally {
         setIsLoading(false);
       }
@@ -74,7 +77,7 @@ const HomePage = () => {
 
   return (
     <View style={styles.container}>
-      
+
       {/* Header with greeting and profile image */}
       <View style={styles.header}>
         <View style={styles.greetingContainer}>
@@ -87,15 +90,18 @@ const HomePage = () => {
             <Image source={{ uri: profileImage }} style={styles.profileImage} />
           ) : (
             //Use DEFAULT_PROFILE_PICTURE instead of initials when no profile image
-            <Image 
-              source={{ uri: DEFAULT_PROFILE_PICTURE }} 
-              style={styles.profileImage} 
+            <Image
+              source={{ uri: DEFAULT_PROFILE_PICTURE }}
+              style={styles.profileImage}
             />
           )}
         </View>
       </View>
-      
-      {/* Content for the home page would go here */}
+
+      {/* Content sections */}
+      <View style={styles.section}>
+        <SuggestedCollections />
+      </View>
     </View>
   );
 };

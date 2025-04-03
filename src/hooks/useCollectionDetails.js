@@ -13,7 +13,14 @@ import { getCollectionPosts, deletePost as deletePostService, updateCollectionTh
 
 /*
     useCollectionDetails Hook
+
     Custom React hook for managing collection details and posts in a user's collection
+    - Loading collection details and posts
+    - Filtering posts with search
+    - Creating, updating, and deleting collections
+    - Moving posts between collections
+    - Deleting single or multiple posts
+    - Real-time updates through Firebase subscriptions
 */
 
 export const useCollectionDetails = (collectionId, ownerId, isExternalCollection) => {

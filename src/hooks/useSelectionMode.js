@@ -2,9 +2,14 @@
 import { useState, useCallback } from 'react';
 
 /* 
-    useSelectionMode Hook
-    Custom hook to manage selection mode and selected items in a list or grid.
-    Provides functions to toggle selection mode, select/deselect items, and clear selections.
+  useSelectionMode Hook
+
+  Custom hook to manage selection mode and selected items in a list or grid.
+  Provides functions to toggle selection mode, select/deselect items, and clear selections.
+
+  - Maintains selection mode state boolean
+  - Tracks selected items as an array of IDs
+  - Provides memoised callback functions for selection operations
 */
 
 export const useSelectionMode = () => {
@@ -22,7 +27,7 @@ export const useSelectionMode = () => {
     setSelectedItems(prevSelected => {
       if (prevSelected.includes(itemId)) {
         return prevSelected.filter(id => id !== itemId);
-      } 
+      }
       else {
         return [...prevSelected, itemId];
       }

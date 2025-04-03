@@ -13,8 +13,7 @@ import * as ImagePicker from 'expo-image-picker';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../services/storage';
 
-
-
+//Custom component imports and styling
 import { showToast, TOAST_TYPES } from './Toasts';
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../styles/commonStyles';

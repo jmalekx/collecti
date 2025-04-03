@@ -123,46 +123,46 @@ export const useBookmarks = () => {
       if (isCurrentlyBookmarked) {
         //If currently bookmarked, remove it
         await removeBookmarkService(currentUserId, collection.id);
-            
+
         //Update UI state
         setBookmarkedCollections(prev =>
           prev.filter(item => item.id !== collection.id)
         );
-        
+
         setBookmarkedIds(prev => {
           const newSet = new Set(prev);
           newSet.delete(collection.id);
           return newSet;
         });
-        
+
         showToast(toast, "Collection removed from bookmarks", { type: TOAST_TYPES.INFO });
         return { success: true, added: false };
-      } 
+      }
       else {
         //If not bookmarked, add it
         await addBookmarkService(currentUserId, collection);
-        
+
         setBookmarkedCollections(prev => {
           if (prev.some(item => item.id === collection.id)) {
             return prev;
           }
           return [...prev, collection];
         });
-        
+
         setBookmarkedIds(prev => {
           const newSet = new Set(prev);
           newSet.add(collection.id);
           return newSet;
         });
-        
+
         showToast(toast, "Collection added to bookmarks", { type: TOAST_TYPES.SUCCESS });
         return { success: true, added: true };
       }
     }
     catch (error) {
       console.error('Error toggling bookmark:', error);
-      loadBookmarks(); 
-      
+      loadBookmarks();
+
       showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });
       return { success: false, error };
     }
