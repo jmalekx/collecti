@@ -19,6 +19,7 @@ import { WebView } from 'react-native-webview';
 
 const InstagramEmbed = ({ url, style, scale = 1 }) => {
 
+  //State transitions
   const [loading, setLoading] = useState(true);
   const [key, setKey] = useState(Date.now());
   const [initialUrl, setInitialUrl] = useState('');

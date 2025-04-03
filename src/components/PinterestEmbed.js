@@ -1,82 +1,90 @@
+//React and React Native core imports
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, Linking, Image } from 'react-native';
+
+//Third-party library external imports
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { 
-    extractPinId, 
-    resolveShortUrl, 
-    isDirectPinterestImage, 
-    createPinUrl 
-  } from '../services/pinterest/pinterestHelpers';
-  
+
+//Project services and utilities
+import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } from '../services/pinterest/pinterestHelpers';
+
+/*
+    PinterestEmbed Component
+
+    A component for embedding Pinterest pins, handling various URL formats:
+    - Direct pinterest pin urls
+    - Pinterest short urls (pin.it)
+    - Direct image urls from Pinterest (using api)
+
+    Renders content in one of three ways:
+    - 1. A WebView with an embedded Pinterest pin
+    - 2. A direct Image component (for direct image urls) 
+*/
 
 const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [pinId, setPinId] = useState(null);
-  const [canonicalUrl, setCanonicalUrl] = useState('');
-  const [isDirectImageUrl, setIsDirectImageUrl] = useState(false);
-  
-  useEffect(() => {
-    if (url) {
-      processUrl(url);
-    }
-  }, [url]);
 
-  const processUrl = async (inputUrl) => {
-    try {
-      console.log('Pinterest: Processing URL:', inputUrl);
-      setLoading(true);
-      setError(null);
-      
-      // Check if this is a direct image URL using helper
-      if (isDirectPinterestImage(inputUrl)) {
-        console.log('Pinterest: This is a direct image URL from user\'s own pin');
-        setIsDirectImageUrl(true);
-        setLoading(false);
-        return;
-      }
-      
-      // Otherwise, this is a Pinterest link that needs embedding
-      // Extract pin ID using helper
-      let extractedPinId = extractPinId(inputUrl);
-      
-      // If not found and it's a short URL, resolve it first
-      if (!extractedPinId && inputUrl.includes('pin.it')) {
-        try {
-          const resolvedUrl = await resolveShortUrl(inputUrl);
-          console.log('Pinterest: Resolved short URL to:', resolvedUrl);
-          extractedPinId = extractPinId(resolvedUrl);
-        } catch (err) {
-          console.error('Pinterest: Failed to resolve short URL:', err);
+    //State transitions`
+    const [loading, setLoading] = useState(true);
+    const [pinId, setPinId] = useState(null);
+    const [pinUrl, setPinUrl] = useState('');
+    const [isDirectImageUrl, setIsDirectImageUrl] = useState(false);
+
+    useEffect(() => {
+        if (url) {
+            processUrl(url);
         }
-      }
+    }, [url]);
 
-      if (extractedPinId) {
-        // Create a clean Pinterest URL using helper
-        const cleanUrl = createPinUrl(extractedPinId);
-        console.log('Pinterest: Using canonical URL:', cleanUrl);
-        setPinId(extractedPinId);
-        setCanonicalUrl(cleanUrl);
-      } else {
-        // If we couldn't extract a pin ID, use the original URL
-        console.log('Pinterest: No pin ID found, using original URL');
-        setCanonicalUrl(inputUrl);
-        setError('Could not extract Pinterest pin ID');
-      }
-      
-      setLoading(false);
-    } catch (err) {
-      console.error('Pinterest: Error processing URL:', err);
-      setError('Could not load Pinterest pin');
-      setLoading(false);
-    }
-  };
-  
-  const generateHtml = () => {
-    if (!pinId) return '';
+    const processUrl = async (inputUrl) => {
+        try {
+            setLoading(true);
 
-    return `
+            //Check if direct image
+            if (isDirectPinterestImage(inputUrl)) {
+                setIsDirectImageUrl(true);
+                setLoading(false);
+                return;
+            }
+
+            //Otherwise oembed
+            let extractedPinId = extractPinId(inputUrl);
+
+            //Resolve short url if not found
+            if (!extractedPinId && inputUrl.includes('pin.it')) {
+                try {
+                    const resolvedUrl = await resolveShortUrl(inputUrl);
+                    extractedPinId = extractPinId(resolvedUrl);
+                } 
+                catch (error) {
+                    console.error('Pinterest: Failed to resolve short URL:', error);
+                }
+            }
+
+            if (extractedPinId) {
+                //Create clean pin url
+                const cleanUrl = createPinUrl(extractedPinId);
+                setPinId(extractedPinId);
+                setPinUrl(cleanUrl);
+            } 
+            else {
+                //Use original url if no id
+                setPinUrl(inputUrl);
+            }
+
+            setLoading(false);
+        } 
+        catch (error) {
+            console.error('Pinterest: Error processing URL:', error);
+            setLoading(false);
+        }
+    };
+
+    //Custom HTMl embed
+    const generateHtml = () => {
+        if (!pinId) return '';
+
+        return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -134,14 +142,14 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         </div>
 
         <script>
-          // Add Pinterest embed script
+          //Add Pinterest embed script
           (function() {
             const script = document.createElement('script');
             script.async = true;
             script.src = "https://assets.pinterest.com/js/pinit.js";
             document.body.appendChild(script);
             
-            // Block all interactions if not interactive
+            //Block all interactions if not interactive
             if (!${isInteractive}) {
               // Make all links non-clickable
               const disableLinks = function() {
@@ -151,16 +159,16 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
                 }
               };
               
-              // Run once initially
+              //Run once initially
               disableLinks();
               
-              // Run again after Pinterest script has loaded
+              //Run again after Pinterest script has loaded
               script.onload = disableLinks;
               
-              // Run continuously to catch dynamically added links
+              //Run continuously to catch dynamically added links
               setInterval(disableLinks, 500);
               
-              // Block all clicks
+              //Block all clicks
               document.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -172,202 +180,176 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
       </body>
       </html>
     `;
-  };
-  
-  const handleOpenPinterest = () => {
-    if (canonicalUrl) {
-      Linking.openURL(canonicalUrl);
-    } else if (url) {
-      Linking.openURL(url);
+    };
+
+    const handleOpenPinterest = () => {
+        if (pinUrl) {
+            Linking.openURL(pinUrl);
+        } 
+        else if (url) {
+            Linking.openURL(url);
+        }
+    };
+
+    if (loading) {
+        return (
+            <View style={[styles.container, style]}>
+                <View style={styles.loaderContainer}>
+                    <ActivityIndicator size="large" color="#E60023" />
+                </View>
+            </View>
+        );
     }
-  };
 
-  const handleRetry = () => {
-    if (url) {
-      processUrl(url);
+    //For users own pins display image directly
+    if (isDirectImageUrl) {
+        return (
+            <View style={[styles.container, style]}>
+                <Image
+                    source={{ uri: url }}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+                <View style={styles.pinterestBadge}>
+                    <Icon name="pinterest-p" size={16} color="white" />
+                </View>
+                {!isInteractive && (
+                    <TouchableOpacity
+                        style={styles.overlay}
+                        activeOpacity={1}
+                        onPress={() => {/* Prevent interaction */ }}
+                    />
+                )}
+            </View>
+        );
     }
-  };
 
-  if (loading) {
+    //Fallback view if cant get the pin ID
+    if (!pinId) {
+        return (
+            <TouchableOpacity
+                style={[styles.container, style]}
+                onPress={handleOpenPinterest}
+                activeOpacity={0.8}
+            >
+                <View style={styles.fallbackContainer}>
+                    <Icon name="pinterest-p" size={36} color="#E60023" />
+                    <Text style={styles.fallbackTitle}>Pinterest Pin</Text>
+                    <Text style={styles.fallbackSubtitle}>Tap to view on Pinterest</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+
+    //Web view with Pinterest embed
     return (
-      <View style={[styles.container, style]}>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#E60023" />
+        <View style={[styles.container, style]}>
+            <WebView
+                source={{ html: generateHtml() }}
+                style={styles.webview}
+                onLoadEnd={() => setLoading(false)}
+                onLoad={() => setLoading(false)}
+                originWhitelist={['*']}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                onError={() => {
+                    console.error('Pinterest: WebView error');
+                }}
+                scrollEnabled={false}
+                cacheEnabled={false}
+                incognito={true}
+            />
         </View>
-      </View>
     );
-  }
-
-  // For user's own pins, display the image directly
-  if (isDirectImageUrl) {
-    return (
-      <View style={[styles.container, style]}>
-        <Image 
-          source={{ uri: url }} 
-          style={styles.image}
-          resizeMode="cover"
-        />
-        <View style={styles.pinterestBadge}>
-          <Icon name="pinterest-p" size={16} color="white" />
-        </View>
-        {!isInteractive && (
-          <TouchableOpacity 
-            style={styles.overlay} 
-            activeOpacity={1}
-            onPress={() => {/* Prevent interaction */}}
-          />
-        )}
-      </View>
-    );
-  }
-
-  // For error state
-  if (error) {
-    return (
-      <TouchableOpacity 
-        style={[styles.container, style]} 
-        onPress={handleOpenPinterest}
-        activeOpacity={0.8}
-      >
-        <View style={styles.fallbackContainer}>
-          <Icon name="pinterest-p" size={36} color="#E60023" />
-          <Text style={styles.fallbackTitle}>Pinterest Pin</Text>
-          <Text style={styles.fallbackSubtitle}>Tap to view on Pinterest</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
-            <Text style={styles.retryText}>Retry</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  // Fallback view if we can't get the pin ID
-  if (!pinId) {
-    return (
-      <TouchableOpacity 
-        style={[styles.container, style]} 
-        onPress={handleOpenPinterest}
-        activeOpacity={0.8}
-      >
-        <View style={styles.fallbackContainer}>
-          <Icon name="pinterest-p" size={36} color="#E60023" />
-          <Text style={styles.fallbackTitle}>Pinterest Pin</Text>
-          <Text style={styles.fallbackSubtitle}>Tap to view on Pinterest</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  // Web view with Pinterest embed
-  return (
-    <View style={[styles.container, style]}>
-      <WebView
-        source={{ html: generateHtml() }}
-        style={styles.webview}
-        onLoadEnd={() => setLoading(false)}
-        onLoad={() => setLoading(false)}
-        originWhitelist={['*']}
-        javaScriptEnabled={true}
-        domStorageEnabled={true}
-        onError={() => {
-          console.error('Pinterest: WebView error');
-          setError('Failed to load Pinterest content');
-        }}
-        scrollEnabled={false}
-        cacheEnabled={false}
-        incognito={true}
-      />
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 350,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlayButton: {
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(230, 0, 35, 0.9)',
-    paddingVertical: 8,
-    margin: 10,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  overlayButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  fallbackContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8',
-  },
-  fallbackTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 16,
-    color: '#333',
-  },
-  fallbackSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 20,
-    backgroundColor: '#E60023',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 4,
-  },
-  retryText: {
-    color: 'white',
-    fontWeight: '500',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  pinterestBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#E60023',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-    zIndex: 1
-  }
+    container: {
+        width: '100%',
+        height: 350,
+        backgroundColor: '#f8f8f8',
+        borderRadius: 8,
+        overflow: 'hidden',
+        position: 'relative',
+    },
+    webview: {
+        flex: 1,
+        backgroundColor: 'transparent',
+    },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    overlayButton: {
+        position: 'absolute',
+        bottom: 10,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(230, 0, 35, 0.9)',
+        paddingVertical: 8,
+        margin: 10,
+        borderRadius: 4,
+        alignItems: 'center',
+    },
+    overlayButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
+    fallbackContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+        backgroundColor: '#f8f8f8',
+    },
+    fallbackTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginTop: 16,
+        color: '#333',
+    },
+    fallbackSubtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginTop: 8,
+        textAlign: 'center',
+    },
+    retryButton: {
+        marginTop: 20,
+        backgroundColor: '#E60023',
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        borderRadius: 4,
+    },
+    retryText: {
+        color: 'white',
+        fontWeight: '500',
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+    },
+    pinterestBadge: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: '#E60023',
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    overlay: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: 'transparent',
+        zIndex: 1
+    }
 });
 
 export default PinterestEmbed;
