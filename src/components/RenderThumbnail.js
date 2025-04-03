@@ -64,6 +64,7 @@ const RenderThumbnail = ({
         <PinterestEmbed
           url={thumbnail}
           style={thumbnailStyle}
+          scale={scale || 0.3}
         />
       </View>
     );

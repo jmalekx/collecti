@@ -1,6 +1,9 @@
 //Third-party library external imports
 import { Linking } from 'react-native';
 
+//Project services and utilities
+import { isDirectPinterestImage, openPinterestUrl } from './pinterest/pinterestHelpers';
+
 /* 
     Platform Service Module
 
@@ -12,30 +15,32 @@ import { Linking } from 'react-native';
 export const extractPostUrl = (post) => {
     if (!post) return null;
 
-    // For Pinterest posts from the user's own account
-    if (post.platform === 'pinterest') {
-        // If the image contains pinimg.com (direct Pinterest image) 
-        // and has sourceUrl, use the image for display
-        if ((post.image && (
-            post.image.includes('pinimg.com') ||
-            post.image.includes('.jpg') || 
-            post.image.includes('.jpeg') || 
-            post.image.includes('.png') || 
-            post.image.includes('.webp')
-        )) && post.sourceUrl) {
-            return post.image; // Use direct image for display
-        }
-        
-        // For Pinterest URLs, check if sourceUrl exists
-        if (post.sourceUrl) {
-            // Only use sourceUrl if it's not already a direct image
-            if (!post.sourceUrl.includes('pinimg.com')) {
-                return post.image || post.sourceUrl;
-            }
-        }
+   //If Pinterest 
+   if (post.platform === 'pinterest') {
+    //For user's own pins (direct images from API), use the image URL for display
+    if (post.image && isDirectPinterestImage(post.image)) {
+        return post.image;
     }
     
+    //For pins with sourceUrl (for oembed), use that for linking
+    if (post.sourceUrl) {
+        return post.sourceUrl;
+    }
+}
+    
     return post.image || post.thumbnail || post.originalUrl || null;
+};
+
+//Extract source URL for opening in the platform
+export const extractSourceUrl = (post) => {
+    if (!post) return null;
+    
+    //For Pinterest, prioritise sourceUrl for opening in the platform
+    if (post.platform === 'pinterest' && post.sourceUrl) {
+        return post.sourceUrl;
+    }
+    
+    return post.sourceUrl || post.image || post.thumbnail || post.originalUrl || null;
 };
 
 //Platform Strategy Base Class

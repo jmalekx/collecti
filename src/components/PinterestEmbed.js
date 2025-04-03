@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, Linking, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { 
+    extractPinId, 
+    resolveShortUrl, 
+    isDirectPinterestImage, 
+    createCanonicalPinUrl 
+  } from '../services/pinterest/pinterestHelpers';
+  
 
-const PinterestEmbed = ({ url, style }) => {
+const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pinId, setPinId] = useState(null);
@@ -21,15 +28,9 @@ const PinterestEmbed = ({ url, style }) => {
       console.log('Pinterest: Processing URL:', inputUrl);
       setLoading(true);
       setError(null);
-
-      // Check if this is a direct image URL (for user's own pins)
-      if (
-        inputUrl.includes('.jpg') || 
-        inputUrl.includes('.jpeg') || 
-        inputUrl.includes('.png') || 
-        inputUrl.includes('.webp') ||
-        inputUrl.includes('pinimg.com')
-      ) {
+      
+      // Check if this is a direct image URL using helper
+      if (isDirectPinterestImage(inputUrl)) {
         console.log('Pinterest: This is a direct image URL from user\'s own pin');
         setIsDirectImageUrl(true);
         setLoading(false);
@@ -37,7 +38,7 @@ const PinterestEmbed = ({ url, style }) => {
       }
       
       // Otherwise, this is a Pinterest link that needs embedding
-      // Extract pin ID from the URL
+      // Extract pin ID using helper
       let extractedPinId = extractPinId(inputUrl);
       
       // If not found and it's a short URL, resolve it first
@@ -52,8 +53,8 @@ const PinterestEmbed = ({ url, style }) => {
       }
 
       if (extractedPinId) {
-        // Create a clean Pinterest URL
-        const cleanUrl = `https://www.pinterest.com/pin/${extractedPinId}/`;
+        // Create a clean Pinterest URL using helper
+        const cleanUrl = createCanonicalPinUrl(extractedPinId);
         console.log('Pinterest: Using canonical URL:', cleanUrl);
         setPinId(extractedPinId);
         setCanonicalUrl(cleanUrl);
@@ -71,45 +72,7 @@ const PinterestEmbed = ({ url, style }) => {
       setLoading(false);
     }
   };
-
-  const extractPinId = (url) => {
-    try {
-      // Match pin ID from various Pinterest URL formats
-      const patterns = [
-        /pinterest\.com\/pin\/(\d+)/i,
-        /\/pin\/(\d+)/i
-      ];
-      
-      for (const pattern of patterns) {
-        const match = url.match(pattern);
-        if (match && match[1]) {
-          console.log('Pinterest: Extracted pin ID:', match[1]);
-          return match[1];
-        }
-      }
-      
-      return null;
-    } catch (err) {
-      console.error('Pinterest: Error extracting pin ID:', err);
-      return null;
-    }
-  };
-
-  const resolveShortUrl = async (shortUrl) => {
-    // Make a HEAD request to follow redirects
-    try {
-      const response = await fetch(shortUrl, {
-        method: 'HEAD',
-        redirect: 'follow'
-      });
-      
-      return response.url;
-    } catch (err) {
-      console.error('Pinterest: Error resolving URL:', err);
-      throw err;
-    }
-  };
-
+  
   const generateHtml = () => {
     if (!pinId) return '';
 
@@ -118,17 +81,28 @@ const PinterestEmbed = ({ url, style }) => {
       <html>
       <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <style>
-          body {
+          body, html {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            width: 100%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: transparent;
+            overflow: hidden;
+            background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          }
+          .embed-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
           }
           .pinterest-container {
             width: 100%;
@@ -136,28 +110,70 @@ const PinterestEmbed = ({ url, style }) => {
             display: flex;
             justify-content: center;
             align-items: center;
+            transform: scale(${scale});
+            transform-origin: center;
+          }
+          .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+            background-color: transparent;
+            display: ${isInteractive ? 'none' : 'block'};
           }
         </style>
       </head>
       <body>
-        <div class="pinterest-container">
-          <a data-pin-do="embedPin" href="https://www.pinterest.com/pin/${pinId}/" data-pin-width="large"></a>
+        <div class="embed-container">
+          <div class="pinterest-container">
+            <a data-pin-do="embedPin" href="https://www.pinterest.com/pin/${pinId}/" data-pin-width="large"></a>
+          </div>
+          ${!isInteractive ? '<div class="overlay"></div>' : ''}
         </div>
 
         <script>
           // Add Pinterest embed script
-          window.onload = function() {
+          (function() {
             const script = document.createElement('script');
             script.async = true;
             script.src = "https://assets.pinterest.com/js/pinit.js";
             document.body.appendChild(script);
-          }
+            
+            // Block all interactions if not interactive
+            if (!${isInteractive}) {
+              // Make all links non-clickable
+              const disableLinks = function() {
+                const links = document.getElementsByTagName('a');
+                for (let i = 0; i < links.length; i++) {
+                  links[i].style.pointerEvents = 'none';
+                }
+              };
+              
+              // Run once initially
+              disableLinks();
+              
+              // Run again after Pinterest script has loaded
+              script.onload = disableLinks;
+              
+              // Run continuously to catch dynamically added links
+              setInterval(disableLinks, 500);
+              
+              // Block all clicks
+              document.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+              }, true);
+            }
+          })();
         </script>
       </body>
       </html>
     `;
   };
-
+  
   const handleOpenPinterest = () => {
     if (canonicalUrl) {
       Linking.openURL(canonicalUrl);
@@ -194,6 +210,13 @@ const PinterestEmbed = ({ url, style }) => {
         <View style={styles.pinterestBadge}>
           <Icon name="pinterest-p" size={16} color="white" />
         </View>
+        {!isInteractive && (
+          <TouchableOpacity 
+            style={styles.overlay} 
+            activeOpacity={1}
+            onPress={() => {/* Prevent interaction */}}
+          />
+        )}
       </View>
     );
   }
@@ -251,6 +274,8 @@ const PinterestEmbed = ({ url, style }) => {
           setError('Failed to load Pinterest content');
         }}
         scrollEnabled={false}
+        cacheEnabled={false}
+        incognito={true}
       />
     </View>
   );
@@ -333,6 +358,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 1
   }
 });
 
