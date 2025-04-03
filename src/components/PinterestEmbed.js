@@ -75,7 +75,6 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
             setLoading(false);
         } 
         catch (error) {
-            console.error('Pinterest: Error processing URL:', error);
             setLoading(false);
         }
     };
@@ -252,9 +251,6 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
                 originWhitelist={['*']}
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
-                onError={() => {
-                    console.error('Pinterest: WebView error');
-                }}
                 scrollEnabled={false}
                 cacheEnabled={false}
                 incognito={true}

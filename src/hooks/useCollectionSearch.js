@@ -112,7 +112,6 @@ export const useCollectionSearch = (batchSize = 6) => {
       setResults(prev => loadMore ? [...prev, ...newCollections] : newCollections);
     }
     catch (error) {
-      console.error('Error fetching recent collections:', error);
       setHasMore(false);
     }
     finally {
@@ -216,7 +215,6 @@ export const useCollectionSearch = (batchSize = 6) => {
       setResults(prev => loadMore ? [...prev, ...paginatedResults] : paginatedResults);
     }
     catch (error) {
-      console.error('Error searching collections:', error);
       setHasMore(false);
     }
     finally {

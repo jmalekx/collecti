@@ -50,8 +50,6 @@ class PinterestService {
       }
 
       const result = await this.exchangeCodeForToken(authCode);
-      //Debug loggin - not logged in production
-      console.log('[Pinterest Debug] Access Token:', result.accessToken);
       return result;
     }
     catch (error) {
@@ -113,7 +111,6 @@ class PinterestService {
       };
     }
     catch (error) {
-      console.error('Error exchanging code for token:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -156,7 +153,6 @@ class PinterestService {
       return false;
     }
     catch (error) {
-      console.error('Error loading tokens from AsyncStorage:', error);
       return false;
     }
   }
@@ -248,7 +244,6 @@ class PinterestService {
       return response.data;
     }
     catch (error) {
-      console.error('API request error:', error.response?.data || error.message);
       throw error;
     }
   }
@@ -268,7 +263,6 @@ class PinterestService {
       return true;
     }
     catch (error) {
-      console.error('Error during logout:', error);
       return false;
     }
   }
@@ -295,7 +289,6 @@ class PinterestService {
         profileUrl: `https://www.pinterest.com/${response.username}/`
       };
     } catch (error) {
-      console.error('Error fetching user info:', error);
       throw error;
     }
   }

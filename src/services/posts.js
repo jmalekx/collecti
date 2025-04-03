@@ -29,7 +29,8 @@ export const getCollectionPosts = async (collectionId, userId = getCurrentUserId
     try {
         const snapshot = await getDocs(getPostsRef(collectionId, userId));
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (error) {
+    } 
+    catch (error) {
         console.error('Error fetching posts:', error);
         throw error;
     }

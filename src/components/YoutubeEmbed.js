@@ -51,7 +51,6 @@ const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
     };
 
     const videoId = extractVideoId(url);
-    console.log('YouTube video ID extracted:', videoId);
 
     if (!videoId) {
         return (

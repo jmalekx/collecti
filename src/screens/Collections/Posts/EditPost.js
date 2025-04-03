@@ -8,7 +8,6 @@ import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
 import { loadPostForEditing, saveEditedPost } from '../../../services/postActionService';
-import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';

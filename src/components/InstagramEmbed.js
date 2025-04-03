@@ -34,7 +34,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   //URL validation and parsing
   let postId;
   if (!url) {
-    console.error('Invalid Instagram URL: URL is undefined');
     return null;
   }
 
@@ -55,7 +54,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 
   //Error handling
   if (!postId) {
-    console.error('Could not extract Instagram post ID from:', url);
     return (
       <View style={[styles.errorContainer, style]}>
         <Text style={styles.errorText}>Invalid Instagram URL</Text>
@@ -65,7 +63,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 
   //Clean up post ID
   postId = postId.split('?')[0].split('/')[0];
-  console.log('Loading Instagram embed with post ID:', postId);
 
   //Using direct embed URL
   const embedUrl = `https://www.instagram.com/p/${postId}/embed/captioned`;
@@ -202,7 +199,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
           }
 
           //Any other URL, prevent loading and return to custom HTML
-          console.log('Blocking navigation to:', request.url);
           setTimeout(() => {
             if (webViewRef.current) {
               webViewRef.current.stopLoading();
@@ -231,7 +227,6 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             !navState.url.startsWith('about:blank') &&
             !navState.url.startsWith('data:text/html')) {
 
-            console.log('Detected navigation to:', navState.url);
             if (webViewRef.current) {
               webViewRef.current.stopLoading();
               setTimeout(() => {
@@ -245,16 +240,13 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}
         onLoad={() => setLoading(false)}
-        onError={(syntheticEvent) => {
-          console.warn('WebView error: ', syntheticEvent.nativeEvent);
+        onError={() => {
           setLoading(false);
         }}
-        onHttpError={(syntheticEvent) => {
-          console.warn('WebView HTTP error: ', syntheticEvent.nativeEvent);
+        onHttpError={() => {
           setLoading(false);
         }}
-        renderError={(errorName) => {
-          console.warn('WebView render error: ', errorName);
+        renderError={() => {
           setLoading(false);
           return (
             <View style={styles.errorContainer}>

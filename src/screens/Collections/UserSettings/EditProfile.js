@@ -59,9 +59,11 @@ const EditProfile = ({ navigation }) => {
           setUsername(userData.username || '');
           setProfilePicture(userData.profilePicture || '');
         }
-      } catch (error) {
+      } 
+      catch (error) {
         showToast(toast, "Failed to load profile", { type: TOAST_TYPES.DANGER });
-      } finally {
+      } 
+      finally {
         setLoading(false);
       }
     };
@@ -94,7 +96,6 @@ const EditProfile = ({ navigation }) => {
       }
     } 
     catch (error) {
-      console.error('Error picking image:', error);
       showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
     }
   };
@@ -127,7 +128,6 @@ const EditProfile = ({ navigation }) => {
           setUploadingImage(false);
         } 
         catch (uploadError) {
-          console.error('Error uploading image to Cloudinary:', uploadError);
           showToast(toast, "Failed to upload profile picture", { type: TOAST_TYPES.DANGER });
           setSaving(false);
           return;

@@ -56,7 +56,6 @@ const MainLayout = () => {
       setCollections(collectionsData);
     }
     catch (error) {
-      console.error("Error fetching collections:", error);
       if (toast) {
         showToast(toast, "Could not load collections", { type: TOAST_TYPES.WARNING });
       }
@@ -72,23 +71,18 @@ const MainLayout = () => {
 
     if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
       setPlatform('youtube');
-      console.log('Platform set to: youtube');
     }
     else if (lowerUrl.includes('instagram.com')) {
       setPlatform('instagram');
-      console.log('Platform set to: instagram');
     }
     else if (lowerUrl.includes('pinterest.com') || lowerUrl.includes('pin.it')) {
       setPlatform('pinterest');
-      console.log('Platform set to: pinterest');
     }
     else if (lowerUrl.includes('tiktok.com')) {
       setPlatform('tiktok');
-      console.log('Platform set to: tiktok');
     }
     else {
       setPlatform('gallery');
-      console.log('Platform set to: gallery (default)');
     }
   };
 
@@ -154,7 +148,6 @@ const MainLayout = () => {
       return true;
     }
     catch (error) {
-      console.error('Error adding post:', error);
       if (toast) {
         showToast(toast, "Failed to add post", { type: TOAST_TYPES.DANGER });
       }
@@ -176,7 +169,6 @@ const MainLayout = () => {
       return newCollection.id;
     }
     catch (error) {
-      console.error('Error adding collection:', error);
       if (toast) {
         showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
       }

@@ -38,9 +38,6 @@ export const useBookmarks = () => {
       const ids = new Set(bookmarks.map(bookmark => bookmark.id));
       setBookmarkedIds(ids);
     }
-    catch (error) {
-      console.error('Error in useBookmarks:', error);
-    }
     finally {
       setLoading(false);
     }
@@ -78,7 +75,6 @@ export const useBookmarks = () => {
       return true;
     }
     catch (error) {
-      console.error('Error adding bookmark:', error);
       //If there's an error, reload to ensure UI and storage are in sync
       loadBookmarks();
       showToast(toast, "Could not save bookmark", { type: TOAST_TYPES.DANGER });
@@ -106,7 +102,6 @@ export const useBookmarks = () => {
       return true;
     }
     catch (error) {
-      console.error('Error removing bookmark:', error);
       loadBookmarks();
       showToast(toast, "Could not remove bookmark", { type: TOAST_TYPES.DANGER });
       return false;
@@ -160,7 +155,6 @@ export const useBookmarks = () => {
       }
     }
     catch (error) {
-      console.error('Error toggling bookmark:', error);
       loadBookmarks();
 
       showToast(toast, "Could not save or remove this bookmark", { type: TOAST_TYPES.DANGER });

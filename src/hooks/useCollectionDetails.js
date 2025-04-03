@@ -49,11 +49,8 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
                 setCollectionName(collectionData.name);
                 setCollectionDescription(collectionData.description || 'No description available');
             } 
-            else {
-                console.error('Collection not found');
-            }
-        } catch (error) {
-            console.error('Error fetching collection details: ', error);
+        } 
+        catch (error) {
             showToast(toast, "Error fetching collection details", { type: TOAST_TYPES.DANGER });
         }
     }, [collectionId, effectiveUserId, toast]);
@@ -67,7 +64,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             setCollections(filteredCollections);
         } 
         catch (error) {
-            console.error('Error fetching collections: ', error);
             showToast(toast, "Error fetching collections", { type: TOAST_TYPES.DANGER });
         }
     }, [collectionId, toast]);
@@ -79,7 +75,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             setPosts(postsData);
         } 
         catch (error) {
-            console.error('Error fetching posts: ', error);
             showToast(toast, "Error fetching posts", { type: TOAST_TYPES.DANGER });
         }
     }, [collectionId, effectiveUserId, toast]);
@@ -102,7 +97,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             return true;
         } 
         catch (error) {
-            console.error('Error deleting collection: ', error);
             showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
             return false;
         }
@@ -116,7 +110,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             return true;
         } 
         catch (error) {
-            console.error('Error deleting post: ', error);
             showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
             return false;
         }
@@ -134,7 +127,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             return true;
         } 
         catch (error) {
-            console.error('Error deleting posts: ', error);
             showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
             return false;
         }
@@ -172,7 +164,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             return true;
         } 
         catch (error) {
-            console.error('Error moving posts: ', error);
             showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
             return false;
         }
@@ -196,7 +187,6 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             return true;
         } 
         catch (error) {
-            console.error('Error creating collection and moving posts: ', error);
             showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
             return false;
         }

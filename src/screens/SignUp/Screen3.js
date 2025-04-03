@@ -39,7 +39,8 @@ const Screen3 = ({ route, navigation }) => {
       {/* Main content */}
       {selectedOptions.includes('Pinterest') ? (
         <View>
-          <Text style={styles.title}>Connect to Pinterest</Text>
+          <AppText>Connect to Pinterest</AppText>
+          <AppText>This way you can directly save your pins</AppText>
           <PinterestButton />
         </View>
       ) : (

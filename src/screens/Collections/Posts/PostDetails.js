@@ -61,7 +61,6 @@ const PostDetails = ({ route, navigation }) => {
             }
         }
         catch (error) {
-            console.error('Error fetching post:', error);
             showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
         }
         finally {
@@ -96,8 +95,7 @@ const PostDetails = ({ route, navigation }) => {
     const handlePlatformLink = async () => {
         try {
           if (post.platform === 'pinterest' && post.sourceUrl) {
-            Linking.openURL(post.sourceUrl).catch(err => {
-              console.error('Error opening Pinterest URL:', err);
+            Linking.openURL(post.sourceUrl).catch(error => {
               showToast(toast, "Could not open Pinterest URL", { type: TOAST_TYPES.DANGER });
             });
           } 
@@ -107,7 +105,6 @@ const PostDetails = ({ route, navigation }) => {
           }
         } 
         catch (error) {
-          console.error('Error in handlePlatformLink:', error);
           showToast(toast, "Error opening link", { type: TOAST_TYPES.DANGER });
         }
       };

@@ -31,12 +31,6 @@ const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '
 
     //Form submission handler
     const handleSubmit = () => {
-        //Input validations
-        if (!notes.trim()) {
-            showToast(toast, "Notes cannot be empty", { type: TOAST_TYPES.WARNING });
-            return;
-        }
-
         //Data transform and submit (comma-sepparated string to clean array)
         onSubmit({
             notes,

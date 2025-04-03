@@ -62,7 +62,6 @@ const HomePage = () => {
         }
       }
       catch (error) {
-        console.error("Error loading user profile:", error);
         showToast(toast, "Could not load profile", { type: TOAST_TYPES.WARNING });
       }
       finally {

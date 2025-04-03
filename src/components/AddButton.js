@@ -155,7 +155,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       if (!isPinterestAuthenticated) {
         setImageUrl(url);
         setOriginalSourceUrl(url); 
-        showToast(toast, "Pinterest not connected - using direct link", { type: TOAST_TYPES.INFO });
+        showToast(toast, "Pinterest not connected. Using link instead", { type: TOAST_TYPES.INFO });
         return;
       }
 
@@ -177,7 +177,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       const pinId = extractPinId(resolvedUrl);
       if (!pinId) {
         setImageUrl(url);
-        showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
         return;
       }
 
@@ -215,7 +214,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       } 
       catch (apiError) {
         setImageUrl(PinUrl);
-        showToast(toast, "Using Pinterest link", { type: TOAST_TYPES.INFO });
       }
     } 
     catch (error) {
@@ -223,7 +221,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       if (url) {
         setImageUrl(url);
         setOriginalSourceUrl(url);
-        showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
       } 
     }
   };
@@ -232,11 +229,11 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   const handleAddPost = async () => {
     //Input validations
     if (!image && !imageUrl) {
-      showToast(toast, "Please select an image or paste an Image URL", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Select an image or paste Image URL", { type: TOAST_TYPES.WARNING });
       return;
     }
     if (!selectedCollection) {
-      showToast(toast, "Please select a collection", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Select a collection", { type: TOAST_TYPES.WARNING });
       return;
     }
     try {
@@ -257,7 +254,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           collectionToUse = createdCollectionId;
         }
         catch (collectionError) {
-          console.error('Failed to create collection:', collectionError);
           showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
           setIsLoading(false);
           return;
@@ -273,24 +269,17 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         //If we have the original source URL (from Pinterest API) use it
         if (originalSourceUrl) {
           sourceUrl = originalSourceUrl;
-          console.log("Saving original Pinterest URL as sourceUrl:", sourceUrl);
         }
-        //Otherwise, try create a Pinterest URL from the pin ID
+        //Otherwise try create Pinterest URL from the pin ID
         else if (imageUrl && (imageUrl.includes('pinterest.com/pin/') || isDirectPinterestImage(imageUrl))) {
-          // If this is a direct image, extract the pin ID from originalSourceUrl
+          //If this is a direct image extract the pin ID from originalSourceUrl
           if (isDirectPinterestImage(imageUrl)) {
             sourceUrl = originalSourceUrl;
-          } else {
+          } 
+          else {
             sourceUrl = imageUrl;
           }
-          console.log("Using pin URL as sourceUrl:", sourceUrl);
         }
-
-        // Add additional logging to debug
-        console.log("Final Pinterest post data:");
-        console.log("- Platform:", platformToUse);
-        console.log("- Image URL:", imageToUse);
-        console.log("- Source URL:", sourceUrl);
       }
 
       //If image from gallery upload to Cloudinary first
@@ -305,7 +294,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           imageToUse = uploadedUrl;
         }
         catch (uploadError) {
-          console.error('Error uploading image to Cloudinary:', uploadError);
           showToast(toast, "Failed to upload image", { type: TOAST_TYPES.DANGER });
           setIsLoading(false);
           return;
@@ -324,8 +312,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       setIsOptionsOpen(false);
     }
     catch (error) {
-      console.error('Error adding post:', error);
-      showToast(toast, `Error adding post: ${error.message}`, { type: TOAST_TYPES.DANGER });
+      showToast(toast, "Error adding post}", { type: TOAST_TYPES.DANGER });
     }
     finally {
       setIsLoading(false);
@@ -337,11 +324,11 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     //Input validations
     const trimmedName = name.trim();
     if (!trimmedName) {
-      showToast(toast, "Collection name cannot be empty!", { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;
     }
     if (trimmedName.toLowerCase() === 'unsorted') {
-      showToast(toast, 'Cannot use "Unsorted" as a collection name', { type: TOAST_TYPES.WARNING });
+      showToast(toast, "Cannot use Unsorted as a collection name", { type: TOAST_TYPES.WARNING });
       return;
     }
     try {
@@ -362,7 +349,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       return collectionId;
     }
     catch (error) {
-      console.error('Error creating collection:', error);
       showToast(toast, "Failed to create collection", { type: TOAST_TYPES.DANGER });
       return null;
     }
@@ -421,7 +407,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       }
     }
     catch (error) {
-      console.error('Error picking image:', error);
       showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
     }
   };

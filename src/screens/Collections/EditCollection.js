@@ -59,7 +59,6 @@ const EditCollection = ({ route, navigation }) => {
         }
       }
       catch (error) {
-        console.error('Error fetching collection details:', error);
         showToast(toast, "Failed to load collection details", { type: TOAST_TYPES.DANGER });
       }
       finally {
@@ -97,7 +96,6 @@ const EditCollection = ({ route, navigation }) => {
       navigation.goBack();
     } 
     catch (error) {
-      console.error('Error updating collection:', error);
       showToast(toast, "Failed to update collection", { type: TOAST_TYPES.DANGER });
     } 
     finally {

@@ -27,7 +27,6 @@ import commonStyles from '../styles/commonStyles';
 */
 
 const SuggestedCollections = () => {
-
   const { recommendations, loading, refreshRecommendations } = useRecommendations(6);
   const navigation = useNavigation();
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
@@ -49,7 +48,7 @@ const SuggestedCollections = () => {
   }
   
   if (recommendations.length === 0) {
-    return null; //Don't show section if no recommendations
+    return null; //Dont show section if no recommendations
   }
   
   return (

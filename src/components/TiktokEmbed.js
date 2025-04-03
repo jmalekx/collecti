@@ -86,7 +86,6 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         setLoading(false);
       }
       catch (error) {
-        console.error("Failed to fetch TikTok embed code:", error);
         setLoading(false);
       }
     };

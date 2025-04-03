@@ -55,7 +55,6 @@ export const useRecommendations = (maxResults = 6) => {
             }
         }
         catch (error) {
-            console.error('Error in useRecommendations:', error);
             showToast(toast, "Could not load recommendations", { type: TOAST_TYPES.WARNING });
 
             //Tier 3: Error recovery - fallback to recent collections
@@ -64,7 +63,6 @@ export const useRecommendations = (maxResults = 6) => {
                 setRecommendations(popularCollections);
             } 
             catch (fallbackError) {
-                console.error('Error loading fallback recommendations:', fallbackError);
                 setRecommendations([]);
             }
         }

@@ -131,7 +131,6 @@ const SearchPage = ({ navigation }) => {
       const collection = results.find(item => item.id === collectionId);
 
       if (!collection) {
-        console.error("Collection not found in results");
         return;
       }
 
@@ -148,7 +147,7 @@ const SearchPage = ({ navigation }) => {
       await toggleBookmark(bookmarkData);
     }
     catch (error) {
-      console.error("Error managing bookmark:", error);
+      //Error handling done within hook
     }
   };
 

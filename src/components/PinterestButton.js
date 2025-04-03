@@ -42,7 +42,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       }
     }
     catch (error) {
-      console.error('Error checking Pinterest auth status:', error);
+      setPinterestConnected(false);
     }
   };
 
@@ -54,14 +54,13 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
         const result = await pinterestService.handleRedirect(url);
         if (result.success) {
           setPinterestConnected(true);
-          showToast(toast, "Pinterest connected successfully!", { type: TOAST_TYPES.SUCCESS });
+          showToast(toast, "Pinterest connected successfully", { type: TOAST_TYPES.SUCCESS });
           if (onConnected) {
             onConnected();
           }
         }
       } 
       catch (error) {
-        console.error('Error handling Pinterest redirect:', error);
         showToast(toast, "Failed to connect Pinterest", { type: TOAST_TYPES.DANGER });
       }
     }
@@ -95,7 +94,6 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       await Linking.openURL(authUrl);
     } 
     catch (error) {
-      console.error('Error starting Pinterest auth:', error);
       showToast(toast, "Failed to open Pinterest authorization", { type: TOAST_TYPES.DANGER });
     }
   };
@@ -111,8 +109,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       }
     } 
     catch (error) {
-      console.error('Error disconnecting Pinterest:', error);
-      toast.show("Failed to disconnect Pinterest", { type: "error" });
+      showToast(toast,"Failed to disconnect Pinterest", { type: TOAST_TYPES.DANGER });
     }
   };
 

@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 
 //Third-party library external imports
@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 //Project services and utilities
 import { useUserData } from '../../hooks/useUserData';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
-import { DEFAULT_PROFILE_PICTURE, DEFAULT_THUMBNAIL } from '../../constants';
+import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 import ProfileHeader from '../../components/ProfileHeader';
 import RenderThumbnail from '../../components/RenderThumbnail';
 

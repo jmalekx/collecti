@@ -55,8 +55,6 @@ const Screen4 = ({ navigation }) => {
       });
     }
     catch (error) {
-      console.error('Error completing onboarding:', error);
-
       //Error handling
       if (error.message.includes('No authenticated user found')) {
         showToast(toast, 'Authentication error. Please sign in again.', { type: TOAST_TYPES.DANGER });
@@ -83,7 +81,6 @@ const Screen4 = ({ navigation }) => {
       });
     } 
     catch (error) {
-      console.error('Error skipping onboarding:', error);
       showToast(toast, 'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
     } 
     finally {

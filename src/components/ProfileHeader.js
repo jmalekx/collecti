@@ -18,7 +18,6 @@ const ProfileHeader = ({ username, stats, profilePicture }) => (
     <Image
       source={{ uri: profilePicture }}
       style={styles.profilePicture}
-      onError={(e) => console.log('Failed to load profile picture:', e.nativeEvent.error)}
     />
     <Text style={styles.username}>{username}</Text>
     <Text style={styles.stats}>{stats}</Text>
