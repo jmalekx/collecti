@@ -55,6 +55,15 @@ const Collections = ({ }) => {
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  //Sort collections by creation date (newest first), with "Unsorted" always at the top
+  const sortedCollections = [...filteredCollections].sort((a, b) => {
+    //Always keep "Unsorted" collection at the top
+    if (a.name === "Unsorted") return -1;
+    if (b.name === "Unsorted") return 1;
+
+    return b.createdAt - a.createdAt;
+  });
+
   return (
     <View style={styles.container}>
 
@@ -79,7 +88,7 @@ const Collections = ({ }) => {
 
       {/* Collection Grid */}
       <FlatList
-        data={filteredCollections}
+        data={sortedCollections}
         keyExtractor={(item) => item.id}
         numColumns={2}
         contentContainerStyle={styles.grid}
