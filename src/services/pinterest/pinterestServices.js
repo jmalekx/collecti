@@ -281,22 +281,136 @@ class PinterestService {
   }
 
   //Pinterest Pin data fetching
-  async fetchPinData(pinId) {
-    try {
-      const endpoint = `/pins/${pinId}`;
-      const response = await this.apiRequest(endpoint);
+/// Make sure getUserInfo is implemented correctly
 
-      //Normalising data
-      return {
-        image: response.media.images.original.url,
-        description: response.description,
-        url: `https://pinterest.com/pin/${pinId}`
-      };
-    } catch (error) {
-      console.error('Error fetching pin data:', error);
-      throw error;
-    }
+async getUserInfo() {
+  try {
+    console.log('Pinterest API: Fetching user info');
+    const endpoint = '/user_account';
+    const response = await this.apiRequest(endpoint);
+    
+    console.log('Pinterest API: User info retrieved successfully');
+    return {
+      id: response.id,
+      username: response.username,
+      profileUrl: `https://www.pinterest.com/${response.username}/`
+    };
+  } catch (error) {
+    console.error('Error fetching user info:', error);
+    throw error;
   }
+}
+
+// Also add this helper method for resolving short URLs if not already present
+async resolveShortUrl(shortUrl) {
+  try {
+    console.log('Resolving Pinterest short URL:', shortUrl);
+    
+    // Use fetch API with HEAD request to follow redirects
+    const response = await fetch(shortUrl, {
+      method: 'HEAD',
+      redirect: 'follow'
+    });
+    
+    const finalUrl = response.url;
+    console.log('Final URL after redirects:', finalUrl);
+    
+    return finalUrl;
+  } catch (error) {
+    console.error('Error resolving short URL:', error);
+    throw error;
+  }
+}
+// Method to fetch pin details from the Pinterest API
+// Improve the fetchPinData method to be more verbose and handle specific cases
+
+async fetchPinData(pinId) {
+  try {
+    console.log(`Pinterest API: Attempting to fetch pin data for ID: ${pinId}`);
+    
+    // First, get user info to confirm ownership context
+    const userInfo = await this.getUserInfo();
+    console.log(`Pinterest API: Authenticated as user ID: ${userInfo.id}, username: ${userInfo.username}`);
+    
+    // Make API request
+    const endpoint = `/pins/${pinId}`;
+    console.log(`Pinterest API: Making request to ${endpoint}`);
+    
+    const response = await this.apiRequest(endpoint);
+    console.log(`Pinterest API: Successfully fetched pin data`);
+    
+    // Log the response structure to understand the data format
+    console.log('Pinterest API: Response data structure:', JSON.stringify(response, null, 2));
+    
+    // Try to extract the image URL from various possible locations
+    let imageUrl = null;
+    
+    // Check multiple possible paths for the image URL
+    if (response.media && response.media.images) {
+      // Try original image first
+      if (response.media.images.original && response.media.images.original.url) {
+        imageUrl = response.media.images.original.url;
+      } 
+      // Then try other possible image keys
+      else if (response.media.images.orig && response.media.images.orig.url) {
+        imageUrl = response.media.images.orig.url;
+      }
+      else if (response.media.images['1200x'] && response.media.images['1200x'].url) {
+        imageUrl = response.media.images['1200x'].url;
+      }
+      else if (response.media.images['600x'] && response.media.images['600x'].url) {
+        imageUrl = response.media.images['600x'].url;
+      }
+      else {
+        // If we haven't found an image yet, check all keys in the images object
+        const imageKeys = Object.keys(response.media.images);
+        for (const key of imageKeys) {
+          if (response.media.images[key] && response.media.images[key].url) {
+            imageUrl = response.media.images[key].url;
+            break;
+          }
+        }
+      }
+    }
+    
+    // If we still don't have an image, check if there's an image_cover field
+    if (!imageUrl && response.image_cover) {
+      imageUrl = response.image_cover.url;
+    }
+    
+    // If we still don't have an image, check if there's an image field
+    if (!imageUrl && response.image) {
+      imageUrl = response.image.url || response.image;
+    }
+    
+    console.log(`Pinterest API: Found image URL: ${imageUrl}`);
+    
+    return {
+      id: response.id,
+      title: response.title || '',
+      description: response.description || '',
+      image: imageUrl,
+      link: response.link || `https://www.pinterest.com/pin/${pinId}/`,
+      isUserPin: true,
+      // Return the raw response for debugging purposes
+      raw: response
+    };
+  } catch (error) {
+    console.error('Pinterest API: Error fetching pin data:', error);
+    console.error('Pinterest API: Error details:', error.response?.data || error.message);
+    
+    // Check for specific error codes
+    if (error.response) {
+      if (error.response.status === 404) {
+        console.error('Pinterest API: Pin not found (404)');
+      } else if (error.response.status === 403) {
+        console.error('Pinterest API: Permission denied (403)');
+      }
+    }
+    
+    throw error;
+  }
+}
 
   async apiRequest(endpoint, method = 'GET', data = null) {
     try {

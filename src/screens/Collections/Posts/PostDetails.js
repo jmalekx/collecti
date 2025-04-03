@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -38,9 +38,9 @@ const PostDetails = ({ route, navigation }) => {
 
     //Content managing
     const { collectionId, postId, ownerId } = route.params;
-    
+
     //User authentication
-    const currentUserId = getAuth().currentUser?.uid; 
+    const currentUserId = getAuth().currentUser?.uid;
     const effectiveUserId = ownerId || currentUserId; //Use owner ID from params otherwise current
     const isExternalCollection = ownerId && ownerId !== currentUserId;
 
@@ -54,16 +54,16 @@ const PostDetails = ({ route, navigation }) => {
             const postData = await getPost(collectionId, postId, effectiveUserId);
             if (postData) {
                 setPost(postData);
-            } 
+            }
             else {
                 showToast(toast, "Post not found", { type: TOAST_TYPES.DANGER });
                 navigation.goBack();
             }
-        } 
+        }
         catch (error) {
             console.error('Error fetching post:', error);
             showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
-        } 
+        }
         finally {
             setLoading(false);
         }
@@ -86,16 +86,29 @@ const PostDetails = ({ route, navigation }) => {
         if (success) {
             setShowDeleteModal(false);
             navigation.goBack();
-        } 
+        }
         else {
             setShowDeleteModal(false);
         }
     };
 
     //Platform-specific link handling using service
-    const handlePlatformLink = () => {
-        handleOpenInPlatform(post, toast);
-    };
+    const handlePlatformLink = async () => {
+        try {
+          if (post.platform === 'pinterest' && post.sourceUrl) {
+            Linking.openURL(post.sourceUrl).catch(err => {
+              console.error('Error opening Pinterest URL:', err);
+              showToast(toast, "Could not open Pinterest URL", { type: TOAST_TYPES.DANGER });
+            });
+          } else {
+            // Use the correctly imported function
+            await handleOpenInPlatform(post, toast);
+          }
+        } catch (error) {
+          console.error('Error in handlePlatformLink:', error);
+          showToast(toast, "Error opening link", { type: TOAST_TYPES.DANGER });
+        }
+      };
 
     //Loading state render
     if (loading) {
@@ -108,7 +121,7 @@ const PostDetails = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-             {/* Header Section */}
+            {/* Header Section */}
             <View style={styles.header}>
                 {/* Back Navigation Button */}
                 <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -169,7 +182,7 @@ const PostDetails = ({ route, navigation }) => {
                     From {formatPlatform(post?.platform)}
                 </Text>
             </View>
-            
+
             {/* Post Tags Section */}
             <View style={styles.tagsContainer}>
                 {post?.tags?.map((tag, index) => (

@@ -6,6 +6,7 @@ import { View, Image, StyleSheet } from 'react-native';
 import InstagramEmbed from './InstagramEmbed';
 import TikTokEmbed from './TiktokEmbed';
 import YouTubeEmbed from './YoutubeEmbed';
+import PinterestEmbed from './PinterestEmbed';
 
 /*
   RenderThumbnail Component
@@ -57,17 +58,16 @@ const RenderThumbnail = ({
   } 
   
   //Pinterest handling
-  else if (thumbnail && thumbnail.includes('pinterest.com')) {
+  else if (thumbnail && thumbnail.includes('pinterest.com') || thumbnail && thumbnail.includes('pin.it')) {
     return (
       <View style={[styles.container, containerStyle]}>
-        <Image
-          source={{ uri: thumbnail }}
+        <PinterestEmbed
+          url={thumbnail}
           style={thumbnailStyle}
-          onError={(e) => console.log('Failed to load Pinterest thumbnail:', e.nativeEvent.error)}
         />
       </View>
     );
-  } 
+  }
   
   //YouTube handling
   else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {

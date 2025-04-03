@@ -116,6 +116,9 @@ const CollectionDetails = ({ route, navigation }) => {
     else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
       return <Ionicons name="logo-youtube" size={20} color="#FF0000" />;
     } 
+    else if (post.platform === 'pinterest' || post.thumbnail.includes('pinterest.com') || post.thumbnail.includes('pin.it')) {
+      return <Ionicons name="logo-pinterest" size={20} color="#E60023" />;
+    }
     else {
       return <Ionicons name="images-outline" size={20} color="#4CAF50" />;
     }

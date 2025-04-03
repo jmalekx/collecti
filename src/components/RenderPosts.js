@@ -6,6 +6,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import InstagramEmbed from './InstagramEmbed';
 import TikTokEmbed from './TiktokEmbed';
 import YouTubeEmbed from './YoutubeEmbed';
+import PinterestEmbed from './PinterestEmbed';
 import { extractPostUrl } from '../services/platformService';
 import { handleOpenInPlatform } from '../services/postActionService';
 
@@ -56,13 +57,36 @@ const RenderPosts = ({ post, toast }) => {
     }
 
     //Pinterest posts
-    if (post.platform === 'pinterest') {
+    // In the Pinterest posts section
+    if (post.platform === 'pinterest' || postUrl.includes('pin.it') || postUrl.includes('pinterest.com')) {
+        // Check if this is a direct image URL (user's own pin)
+        // First check if the image contains pinimg.com which is Pinterest's image server
+        const isDirectImage = postUrl.includes('pinimg.com') ||
+            postUrl.includes('.jpg') ||
+            postUrl.includes('.jpeg') ||
+            postUrl.includes('.png') ||
+            postUrl.includes('.webp');
+
+        // Add check for sourceUrl to ensure we have a link back to Pinterest
+        const linkUrl = post.sourceUrl || postUrl;
+
         return (
-            <View>
-                <Image
-                    source={{ uri: postUrl }}
-                    style={styles.thumbnail}
-                />
+            <View style={styles.embedContainer}>
+                {isDirectImage ? (
+                    // For user's own pins, show the direct image
+                    <Image
+                        source={{ uri: postUrl }}
+                        style={styles.thumbnail}
+                        resizeMode="contain"
+                    />
+                ) : (
+                    // For other pins, use the embed
+                    <PinterestEmbed
+                        url={postUrl}
+                        style={styles.thumbnail}
+                        scale={0.64}
+                    />
+                )}
                 <TouchableOpacity onPress={() => handleOpenInPlatform(post, toast)}>
                     <Text style={styles.linkText}>Open in Pinterest</Text>
                 </TouchableOpacity>

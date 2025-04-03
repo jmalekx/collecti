@@ -54,7 +54,7 @@ const MainLayout = () => {
     try {
       const collectionsData = await getAllCollections(userId);
       setCollections(collectionsData);
-    } 
+    }
     catch (error) {
       console.error("Error fetching collections:", error);
       if (toast) {
@@ -66,26 +66,26 @@ const MainLayout = () => {
   //Detecting which platform a shared URL belongs to
   const detectPlatform = (url) => {
     if (!url) return;
-  
+
     //Lowercase and trim the URL for consistency
     const lowerUrl = url.toLowerCase().trim();
 
     if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
       setPlatform('youtube');
       console.log('Platform set to: youtube');
-    } 
+    }
     else if (lowerUrl.includes('instagram.com')) {
       setPlatform('instagram');
       console.log('Platform set to: instagram');
-    } 
-    else if (lowerUrl.includes('pinterest.com')) {
+    }
+    else if (lowerUrl.includes('pinterest.com') || lowerUrl.includes('pin.it')) {
       setPlatform('pinterest');
       console.log('Platform set to: pinterest');
-    } 
+    }
     else if (lowerUrl.includes('tiktok.com')) {
       setPlatform('tiktok');
       console.log('Platform set to: tiktok');
-    } 
+    }
     else {
       setPlatform('gallery');
       console.log('Platform set to: gallery (default)');
@@ -105,7 +105,7 @@ const MainLayout = () => {
         if (pIndex !== -1 && parts.length > pIndex + 1) {
           postId = parts[pIndex + 1];
         }
-      } 
+      }
       else if (url.includes('instagram.com')) {
         const match = url.match(/instagram\.com\/(?:p|reel)\/([^\/\?]+)/);
         postId = match ? match[1] : null;
@@ -121,7 +121,7 @@ const MainLayout = () => {
   };
 
   //Handle post creation using posts service
-  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform) => {
+  const handleAddPost = async (notes, tags, image, selectedCollection, postPlatform, sourceUrl) => {
     try {
       let thumbnail = processContentThumbnail(image, postPlatform);
 
@@ -132,6 +132,7 @@ const MainLayout = () => {
         image,
         platform: postPlatform,
         thumbnail,
+        sourceUrl,
       };
 
       //Use posts service to create post
@@ -151,7 +152,7 @@ const MainLayout = () => {
       setUrl(null);
 
       return true;
-    } 
+    }
     catch (error) {
       console.error('Error adding post:', error);
       if (toast) {
@@ -173,7 +174,7 @@ const MainLayout = () => {
 
       fetchCollections();
       return newCollection.id;
-    } 
+    }
     catch (error) {
       console.error('Error adding collection:', error);
       if (toast) {

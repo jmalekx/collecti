@@ -45,6 +45,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const optionsRef = useRef(null);
+  const [originalSourceUrl, setOriginalSourceUrl] = useState(null);
 
   //Content managing
   const [image, setImage] = useState(null); //Image URI from local device gallery
@@ -114,6 +115,9 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       setActiveTab('url'); //Switch to URL tab if shared from different platform
       setIsModalOpen(true);
     }
+    if (platform === 'pinterest') {
+      fetchPinterestData(sharedUrl);
+    }
   }, [sharedUrl, platform]);
 
   ///Pinterest data fetch
@@ -144,25 +148,150 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       setSelectedCollection(collections[0].id);
     }
   };
+ // Around line 125-224 (in the fetchPinterestData function)
 
-  //Pinterest data fetch - still need to get this to workk with API tokens adn stuff
-  const fetchPinterestData = async (url) => {
-    try {
-      if (platform === 'pinterest' && url) {
-        const pinId = url.match(/pin\/(\d+)/)?.[1];
-        if (pinId) {
-          const pinData = await pinterestService.fetchPinData(pinId);
-          setImageUrl(pinData.image);
-          setNotes(pinData.description || '');
-        }
+ const fetchPinterestData = async (url) => {
+  try {
+    console.log("Starting Pinterest data fetch for URL:", url);
+
+    // Check if URL is null or empty
+    if (!url) {
+      console.log("No URL provided for Pinterest");
+      showToast(toast, "Please enter a Pinterest URL", { type: TOAST_TYPES.ERROR });
+      return;
+    }
+
+    // Check if user is authenticated with Pinterest
+    const isPinterestAuthenticated = await pinterestService.isAuthenticated();
+    console.log("Pinterest authenticated:", isPinterestAuthenticated);
+
+    if (!isPinterestAuthenticated) {
+      console.log("Pinterest not authenticated, using direct URL");
+      setImageUrl(url);
+      setOriginalSourceUrl(url); // Store the original URL
+      showToast(toast, "Pinterest not connected - using direct link", { type: TOAST_TYPES.INFO });
+      return;
+    }
+
+    // Extract pin ID from the URL
+    let pinId = null;
+    let resolvedUrl = url;
+
+    // Resolve short URL if needed
+    if (url.includes('pin.it/')) {
+      try {
+        console.log("Resolving Pinterest short URL:", url);
+        resolvedUrl = await pinterestService.resolveShortUrl(url);
+        console.log("Resolved Pinterest URL:", resolvedUrl);
+      } catch (err) {
+        console.error("Error resolving short URL:", err);
       }
     }
-    catch (error) {
-      console.error('Error fetching Pinterest data:', error);
-      showToast(toast, "Failed to fetch Pinterest data", { type: TOAST_TYPES.WARNING });
-    }
-  };
 
+    // Store the original source URL
+    setOriginalSourceUrl(resolvedUrl);
+
+    // Try to extract pin ID from the URL
+    const patterns = [
+      /pinterest\.com\/pin\/(\d+)/i,
+      /\/pin\/(\d+)/i
+    ];
+
+    for (const pattern of patterns) {
+      const match = resolvedUrl.match(pattern);
+      if (match && match[1]) {
+        pinId = match[1];
+        console.log("Extracted pin ID:", pinId);
+        break;
+      }
+    }
+
+    if (!pinId) {
+      console.log("Could not extract pin ID, using direct URL");
+      setImageUrl(url);
+      showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
+      return;
+    }
+
+    // Create canonical Pinterest URL for this pin
+    const canonicalPinUrl = `https://www.pinterest.com/pin/${pinId}/`;
+    setOriginalSourceUrl(canonicalPinUrl);
+    
+    // Try to fetch pin data via API
+    try {
+      console.log("Attempting to fetch pin data via API for ID:", pinId);
+      const pinData = await pinterestService.fetchPinData(pinId);
+    
+      if (pinData) {
+        console.log("Successfully fetched pin data via API:");
+        console.log("- Pin ID:", pinData.id);
+        console.log("- Image URL:", pinData.image);
+        console.log("- Title:", pinData.title);
+      
+        // Store the original Pinterest URL for the "View on Pinterest" button
+        setOriginalSourceUrl(canonicalPinUrl);
+      
+        // This is the user's own pin since we were able to fetch data via API
+        if (pinData.image) {
+          // For user's own pins, use the direct image URL
+          console.log("Using direct image URL for own pin:", pinData.image);
+          setImageUrl(pinData.image);
+          
+          // We need to set both the current platform AND a flag for own pin
+          setCurrentPlatform('pinterest');
+          
+          // We can add this to session storage or state if needed
+          try {
+            AsyncStorage.setItem('pin_' + pinId + '_isOwn', 'true');
+          } catch (storageError) {
+            console.log("Error saving pin ownership status:", storageError);
+          }
+        } else {
+          // Fallback if no image found
+          console.log("No image URL found in API response, using canonical URL");
+          setImageUrl(canonicalPinUrl);
+        }
+    
+        // Set notes/description if available
+        if (pinData.title) {
+          setNotes(pinData.title);
+        } else if (pinData.description) {
+          setNotes(pinData.description);
+        }
+    
+        // Check if we have a title field and a setter for it
+        if (pinData.title && typeof setTitle === 'function') {
+          try {
+            setTitle(pinData.title);
+          } catch (titleError) {
+            console.log("No setTitle function available, skipping title");
+          }
+        }
+    
+        showToast(toast, "Pinterest pin imported", { type: TOAST_TYPES.SUCCESS });
+        return;
+      }
+    } catch (apiError) {
+      console.error("Pinterest API error:", apiError.message);
+
+      // Create canonical URL for embeds
+      console.log("Using canonical URL for embedding:", canonicalPinUrl);
+      setImageUrl(canonicalPinUrl);
+      showToast(toast, "Using Pinterest link", { type: TOAST_TYPES.INFO });
+    }
+
+  } catch (error) {
+    console.error("Error processing Pinterest data:", error);
+
+    if (url) {
+      setImageUrl(url);
+      setOriginalSourceUrl(url);
+      showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
+    } else {
+      showToast(toast, "Error retrieving Pinterest data", { type: TOAST_TYPES.ERROR });
+    }
+  }
+};
 
   //Post submission handler
   const handleAddPost = async () => {
@@ -201,7 +330,28 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       }
 
       let imageToUse;
-      let platformToUse;
+      let platformToUse = currentPlatform;
+
+      //For Pinterest content store original pin URL as sourceUrl
+      let sourceUrl = null;
+      if (platformToUse === 'pinterest') {
+        //If we have the original source URL (from Pinterest API) use it
+        if (originalSourceUrl) {
+          sourceUrl = originalSourceUrl;
+          console.log("Saving original Pinterest URL as sourceUrl:", sourceUrl);
+        }
+        //Otherwise, try create a Pinterest URL from the pin ID
+        else if (imageUrl && imageUrl.includes('pinterest.com/pin/')) {
+          sourceUrl = imageUrl;
+          console.log("Using pin URL as sourceUrl:", sourceUrl);
+        }
+        
+        // Add additional logging to debug
+        console.log("Final Pinterest post data:");
+        console.log("- Platform:", platformToUse);
+        console.log("- Image URL:", imageToUse);
+        console.log("- Source URL:", sourceUrl);
+      }
 
       //If image from gallery upload to Cloudinary first
       if (image) {
@@ -213,7 +363,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
             throw new Error("Failed to upload image");
           }
           imageToUse = uploadedUrl;
-          platformToUse = 'gallery';
         }
         catch (uploadError) {
           console.error('Error uploading image to Cloudinary:', uploadError);
@@ -226,25 +375,9 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         //Use URL directly
         imageToUse = imageUrl;
 
-        //Platform detection based on URL
-        if (imageUrl.includes('instagram.com')) {
-          platformToUse = 'instagram';
-        }
-        else if (imageUrl.includes('tiktok.com')) {
-          platformToUse = 'tiktok';
-        }
-        else if (imageUrl.includes('pinterest.com')) {
-          platformToUse = 'pinterest';
-        }
-        else if (imageUrl.includes('youtube.com') || imageUrl.includes('youtu.be')) {
-          platformToUse = 'youtube';
-        }
-        else {
-          platformToUse = 'other';
-        }
       }
 
-      await onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse);
+      await onAddPost(notes, tags, imageToUse, collectionToUse, platformToUse, sourceUrl);
 
       resetModalStates();
       setIsModalOpen(false);

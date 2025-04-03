@@ -11,6 +11,30 @@ import { Linking } from 'react-native';
 //Extract URL helper
 export const extractPostUrl = (post) => {
     if (!post) return null;
+
+    // For Pinterest posts from the user's own account
+    if (post.platform === 'pinterest') {
+        // If the image contains pinimg.com (direct Pinterest image) 
+        // and has sourceUrl, use the image for display
+        if ((post.image && (
+            post.image.includes('pinimg.com') ||
+            post.image.includes('.jpg') || 
+            post.image.includes('.jpeg') || 
+            post.image.includes('.png') || 
+            post.image.includes('.webp')
+        )) && post.sourceUrl) {
+            return post.image; // Use direct image for display
+        }
+        
+        // For Pinterest URLs, check if sourceUrl exists
+        if (post.sourceUrl) {
+            // Only use sourceUrl if it's not already a direct image
+            if (!post.sourceUrl.includes('pinimg.com')) {
+                return post.image || post.sourceUrl;
+            }
+        }
+    }
+    
     return post.image || post.thumbnail || post.originalUrl || null;
 };
 
@@ -66,6 +90,10 @@ class TiktokLink extends PlatformLink {
 class PinterestLink extends PlatformLink {
     async openUrl(url) {
         return Linking.openURL(url);
+    }
+
+    isValidUrl(url) {
+        return !!url && (url.toLowerCase().includes('pinterest.com') || url.toLowerCase().includes('pin.it'));
     }
 
     getDisplayName() {
