@@ -12,12 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 //Project services and utilities
 import pinterestService from '../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../services/storage';
-import {
-  extractPinId,
-  resolveShortUrl,
-  createPinUrl,
-  isDirectPinterestImage
-} from '../services/pinterest/pinterestHelpers';
+import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from './Toasts';
@@ -110,11 +105,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
   //External content sharing - auto open modal and prefill with urls from shared source
   useEffect(() => {
-    console.log("==== ADD BUTTON EFFECT ====");
-    console.log("sharedUrl:", sharedUrl);
-    console.log("platform:", platform);
-    console.log("Should open modal:", Boolean(sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest')));
-
+  
     if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest' || platform === 'youtube')) {
       setImageUrl(sharedUrl);
       setCurrentPlatform(platform);
@@ -150,118 +141,90 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
     if (unsortedCollection) {
       setSelectedCollection(unsortedCollection.id);
-    } else if (collections.length > 0) {
+    } 
+    else if (collections.length > 0) {
       setSelectedCollection(collections[0].id);
     }
   };
-  // Around line 125-224 (in the fetchPinterestData function)
 
   const fetchPinterestData = async (url) => {
     try {
-      console.log("Starting Pinterest data fetch for URL:", url);
-
-      // Check if URL is null or empty
-      if (!url) {
-        console.log("No URL provided for Pinterest");
-        showToast(toast, "Please enter a Pinterest URL", { type: TOAST_TYPES.ERROR });
-        return;
-      }
-
-      // Check if user is authenticated with Pinterest
+      //Check if user is authenticated with Pinterest
       const isPinterestAuthenticated = await pinterestService.isAuthenticated();
-      console.log("Pinterest authenticated:", isPinterestAuthenticated);
 
       if (!isPinterestAuthenticated) {
-        console.log("Pinterest not authenticated, using direct URL");
         setImageUrl(url);
-        setOriginalSourceUrl(url); // Store the original URL
+        setOriginalSourceUrl(url); 
         showToast(toast, "Pinterest not connected - using direct link", { type: TOAST_TYPES.INFO });
         return;
       }
 
-      // Resolve short URL if needed using helper
+      //Resolve short URL 
       let resolvedUrl = url;
       if (url.includes('pin.it/')) {
         try {
-          console.log("Resolving Pinterest short URL:", url);
           resolvedUrl = await resolveShortUrl(url);
-          console.log("Resolved Pinterest URL:", resolvedUrl);
-        } catch (err) {
-          console.error("Error resolving short URL:", err);
+        } 
+        catch (error) {
+          console.error("Error resolving short URL:", error);
         }
       }
 
-      // Store the original source URL
+      //Store the original source URL
       setOriginalSourceUrl(resolvedUrl);
 
-      // Try to extract pin ID using helper
+      //Extract pin
       const pinId = extractPinId(resolvedUrl);
       if (!pinId) {
-        console.log("Could not extract pin ID, using direct URL");
         setImageUrl(url);
         showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
         return;
       }
 
-      // Create canonical Pinterest URL using helper
-      const canonicalPinUrl = createPinUrl(pinId);
+      //Create url
+      const PinUrl = createPinUrl(pinId);
 
-      // Try to fetch pin data via API
+      //Try to fetch pin data via API
       try {
-        console.log("Attempting to fetch pin data via API for ID:", pinId);
         const pinData = await pinterestService.fetchPinData(pinId);
 
         if (pinData) {
-          console.log("Successfully fetched pin data via API:");
-          console.log("- Pin ID:", pinData.id);
-          console.log("- Image URL:", pinData.image);
-          console.log("- Title:", pinData.title);
-          console.log("- Is owner:", pinData.is_owner);
+          //Always store the Pinterest URL for the "View on Pinterest" button
+          setOriginalSourceUrl(PinUrl);
 
-          // Always store the canonical Pinterest URL for the "View on Pinterest" button
-          setOriginalSourceUrl(canonicalPinUrl);
-
-          // If this is the user's own pin and we have an image URL, use it directly
           if (pinData.is_owner && pinData.image) {
-            // For user's own pins, use the direct image URL
-            console.log("Using direct image URL for own pin:", pinData.image);
             setImageUrl(pinData.image);
-          } else {
-            // For other pins, use the canonical embed URL
-            console.log("Using canonical URL for embed:", canonicalPinUrl);
-            setImageUrl(canonicalPinUrl);
+          } 
+          else {
+            setImageUrl(PinUrl);
           }
 
-          // Always set platform to Pinterest
           setCurrentPlatform('pinterest');
 
-          // Set notes/description if available
+          //Set notes/description if available
           if (pinData.title) {
             setNotes(pinData.title);
-          } else if (pinData.description) {
+          } 
+          else if (pinData.description) {
             setNotes(pinData.description);
           }
 
           showToast(toast, "Pinterest pin imported", { type: TOAST_TYPES.SUCCESS });
           return;
         }
-      } catch (apiError) {
-        console.error("Pinterest API error:", apiError.message);
-        // Create canonical URL for embeds
-        console.log("Using canonical URL for embedding:", canonicalPinUrl);
-        setImageUrl(canonicalPinUrl);
+      } 
+      catch (apiError) {
+        setImageUrl(PinUrl);
         showToast(toast, "Using Pinterest link", { type: TOAST_TYPES.INFO });
       }
-    } catch (error) {
-      console.error("Error processing Pinterest data:", error);
+    } 
+    catch (error) {
 
       if (url) {
         setImageUrl(url);
         setOriginalSourceUrl(url);
         showToast(toast, "Using Pinterest URL directly", { type: TOAST_TYPES.INFO });
-      } else {
-        showToast(toast, "Error retrieving Pinterest data", { type: TOAST_TYPES.ERROR });
-      }
+      } 
     }
   };
 
