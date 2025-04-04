@@ -16,6 +16,7 @@ import { DEFAULT_THUMBNAIL } from '../constants';
 //Custom component imports and styling
 import TabNavigator from '../navigation/TabNavigator';
 import AddButton from './AddButton';
+import UnsupportedPlatformModal from './UnsupportedPlatformModal';
 
 /*
   MainLayout Component
@@ -33,6 +34,9 @@ const MainLayout = () => {
   //State transition
   const [collections, setCollections] = useState([]);
   const [platform, setPlatform] = useState('gallery');
+  const [unsupportedModalVisible, setUnsupportedModalVisible] = useState(false);
+  const [unsupportedPlatformName, setUnsupportedPlatformName] = useState('this app');
+
 
   //Context states
   const toast = useToast();
@@ -66,25 +70,62 @@ const MainLayout = () => {
   const detectPlatform = (url) => {
     if (!url) return;
 
-    //Lowercase and trim the URL for consistency
-    const lowerUrl = url.toLowerCase().trim();
+    //Lowercase and trim URL for consistency
+    const normalizedUrl = url.toLowerCase().trim();
 
-    if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
-      setPlatform('youtube');
+    //List of supported platforms
+    const supportedPlatforms = [
+      { name: 'instagram', patterns: ['instagram.com'] },
+      { name: 'tiktok', patterns: ['tiktok.com'] },
+      { name: 'pinterest', patterns: ['pinterest.com', 'pin.it'] },
+      { name: 'youtube', patterns: ['youtube.com', 'youtu.be'] },
+    ];
+
+    //Check if the URL matches supported platforms
+    for (const platform of supportedPlatforms) {
+      if (platform.patterns.some(pattern => normalizedUrl.includes(pattern))) {
+        setPlatform(platform.name);
+        return platform.name;
+      }
     }
-    else if (lowerUrl.includes('instagram.com')) {
-      setPlatform('instagram');
+
+    //If unsupported platform, show modal - try extract for better ux
+    let detectedPlatformName = 'this app';
+
+    //Other common platforms to check for
+    if (normalizedUrl.includes('twitter.com') || normalizedUrl.includes('x.com')) {
+      detectedPlatformName = 'Twitter/X';
     }
-    else if (lowerUrl.includes('pinterest.com') || lowerUrl.includes('pin.it')) {
-      setPlatform('pinterest');
+    else if (normalizedUrl.includes('facebook.com')) {
+      detectedPlatformName = 'Facebook';
     }
-    else if (lowerUrl.includes('tiktok.com')) {
-      setPlatform('tiktok');
+    else if (normalizedUrl.includes('snapchat.com')) {
+      detectedPlatformName = 'Snapchat';
+    }
+    else if (normalizedUrl.includes('reddit.com')) {
+      detectedPlatformName = 'Reddit';
     }
     else {
-      setPlatform('gallery');
+      //Try extract domain name
+      try {
+        const urlObj = new URL(normalizedUrl);
+        detectedPlatformName = urlObj.hostname.replace('www.', '');
+      }
+      catch (error) {
+        //If URL parsing fails, use generic name
+        detectedPlatformName = "this app";
+      }
     }
+
+    //Show the unsupported platform modal
+    setUnsupportedPlatformName(detectedPlatformName);
+    setUnsupportedModalVisible(true);
+
+    //Set platform to 'unsupported'
+    setPlatform('unsupported');
+    return 'unsupported';
   };
+
 
   //Process thumbnail from URL based on platform
   const processContentThumbnail = (url, platform) => {
@@ -185,6 +226,13 @@ const MainLayout = () => {
         platform={platform}
         onAddPost={handleAddPost}
         onCreateCollection={handleCreateCollection}
+      />
+
+      {/* Unsupported Platform Modal */}
+      <UnsupportedPlatformModal
+        visible={unsupportedModalVisible}
+        onClose={() => setUnsupportedModalVisible(false)}
+        platformName={unsupportedPlatformName}
       />
     </View>
   );
