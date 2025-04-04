@@ -7,6 +7,17 @@ const typography = {
   fontBold: 'Inter_700Bold',
 };
 
+const colours = {
+  primary: '#F5D6E0',
+  secondary: '#FCF5E8',
+  tertiary: '#fffbf4',
+
+  buttons: '#f7d89b',
+  buttonsHighlight: '#8a6620',
+  buttonsText: '#aa790f',
+  buttonsTextPink: '#D67A98',
+}
+
 const layoutStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -86,7 +97,7 @@ const buttonStyles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
-    color: 'white',
+    color: 'white', 
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -110,11 +121,20 @@ const buttonStyles = StyleSheet.create({
   pinterestConnected: {
     backgroundColor: '#666',
   },
+  authButton:{
+    backgroundColor: colours.buttons,
+  },
+  authButtonText:{
+    color: colours.buttonsText,
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
 });
 
 const inputStyles = StyleSheet.create({
   inputContainer: {
-    width: 300,
+    width: 320,
     marginVertical: 8,
     borderRadius: 15,
     shadowColor: '#000',
@@ -124,10 +144,10 @@ const inputStyles = StyleSheet.create({
     elevation: 2,                        
   },
   input: {
-    backgroundColor: '#fffdf9',
+    backgroundColor: 'white',
     height: 55,
-    borderColor: 'white',
-    borderWidth: 1,
+    borderColor: colours.secondary,
+    borderWidth: 2,
     borderRadius: 15,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -164,7 +184,7 @@ const optionStyles = StyleSheet.create({
 const Bg = React.memo(({ children, style }) => {
   return (
     <LinearGradient
-      colors={['#F5D6E0', '#FCF5E8', '#fffbf4',]}
+      colors={[colours.primary, colours.secondary, colours.tertiary,]}
       style={[{ flex: 1 }, style]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
@@ -181,7 +201,7 @@ const headerStyles = {
       fontSize: 22,
     },
     headerStyle: {
-      backgroundColor: '#F5D6E0',
+      backgroundColor: colours.primary,
       elevation: 0,
       shadowOpacity: 0,
       borderBottomWidth: 0,
@@ -202,5 +222,5 @@ const commonStyles = {
   Bg,
 };
 
-export { typography, headerStyles };
+export { typography, headerStyles, colours};
 export default commonStyles;

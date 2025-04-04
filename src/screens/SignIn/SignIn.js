@@ -112,7 +112,8 @@ const SignIn = ({ navigation }) => {
                         <>
                             {/* Login button */}
                             <AppButton
-                                style={styles.button}
+                                style={styles.authButton}
+                                textStyle={styles.authButtonText}
                                 title="Login"
                                 onPress={handleSignIn}
                             />

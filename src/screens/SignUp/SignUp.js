@@ -103,7 +103,8 @@ const SignUp = ({ navigation }) => {
                     ) : (
                         <>
                             <AppButton
-                                style={styles.button}
+                                style={styles.authButton}
+                                textStyle={styles.authButtonText}
                                 title='Sign Up'
                                 onPress={handleSignUp}
                             />

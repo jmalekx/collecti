@@ -105,7 +105,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
   //External content sharing - auto open modal and prefill with urls from shared source
   useEffect(() => {
-  
+
     if (sharedUrl && (platform === 'instagram' || platform === 'tiktok' || platform === 'pinterest' || platform === 'youtube')) {
       setImageUrl(sharedUrl);
       setCurrentPlatform(platform);
@@ -141,7 +141,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
     const unsortedCollection = collections.find(coll => coll.name === 'Unsorted');
     if (unsortedCollection) {
       setSelectedCollection(unsortedCollection.id);
-    } 
+    }
     else if (collections.length > 0) {
       setSelectedCollection(collections[0].id);
     }
@@ -154,7 +154,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
       if (!isPinterestAuthenticated) {
         setImageUrl(url);
-        setOriginalSourceUrl(url); 
+        setOriginalSourceUrl(url);
         showToast(toast, "Pinterest not connected. Using link instead", { type: TOAST_TYPES.INFO });
         return;
       }
@@ -164,7 +164,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       if (url.includes('pin.it/')) {
         try {
           resolvedUrl = await resolveShortUrl(url);
-        } 
+        }
         catch (error) {
           console.log("Error resolving short URL:", error);
         }
@@ -193,7 +193,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
 
           if (pinData.is_owner && pinData.image) {
             setImageUrl(pinData.image);
-          } 
+          }
           else {
             setImageUrl(PinUrl);
           }
@@ -203,7 +203,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           //Set notes/description if available
           if (pinData.title) {
             setNotes(pinData.title);
-          } 
+          }
           else if (pinData.description) {
             setNotes(pinData.description);
           }
@@ -211,17 +211,17 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           showToast(toast, "Pinterest pin imported", { type: TOAST_TYPES.SUCCESS });
           return;
         }
-      } 
+      }
       catch (apiError) {
         setImageUrl(PinUrl);
       }
-    } 
+    }
     catch (error) {
 
       if (url) {
         setImageUrl(url);
         setOriginalSourceUrl(url);
-      } 
+      }
     }
   };
 
@@ -275,7 +275,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           //If this is a direct image extract the pin ID from originalSourceUrl
           if (isDirectPinterestImage(imageUrl)) {
             sourceUrl = originalSourceUrl;
-          } 
+          }
           else {
             sourceUrl = imageUrl;
           }
@@ -700,13 +700,15 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* Actual Add Button*/}
-      <TouchableOpacity
-        style={styles.addBtn}
-        onPress={() => setIsOptionsOpen(!isOptionsOpen)}
-      >
-        <Ionicons name="add-outline" size={30} color="#fff" />
-      </TouchableOpacity>
+      {/* Add Button */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }}>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setIsOptionsOpen(!isOptionsOpen)}
+        >
+          <Ionicons name="add-outline" size={30} color="#D67A98" />
+        </TouchableOpacity>
+      </View>
 
       {/* Add Options */}
       {isOptionsOpen && (
@@ -751,6 +753,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     pointerEvents: 'box-none',
+    zIndex: 1000,
   },
   backdrop: {
     position: 'absolute',
@@ -975,27 +978,31 @@ const styles = StyleSheet.create({
   addBtn: {
     position: 'absolute',
     bottom: 40,
-    backgroundColor: '#007AFF',
+    left: '50%',
+    marginLeft: -30, 
+    backgroundColor: '#F5D6E0',
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    zIndex: 1001, 
+    pointerEvents: 'auto',
   },
   addOptions: {
     position: 'absolute',
     bottom: 110,
+    left: '50%', 
+    marginLeft: -100, 
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#eee',
-    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -1003,6 +1010,8 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: 200,
     overflow: 'hidden',
+    zIndex: 1001, 
+    pointerEvents: 'auto',
   },
   optionItem: {
     padding: 14,
@@ -1029,6 +1038,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: '#666',
     fontSize: 14,
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+    pointerEvents: 'auto',
   },
 });
 
