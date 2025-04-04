@@ -73,14 +73,12 @@ const SignUp = ({ navigation }) => {
                 <KeyboardAvoidingView behavior='padding'>
                     <AppTextInput
                         value={username}
-                        style={styles.input}
                         placeholder="Username"
                         autoCapitalize="none"
                         onChangeText={setUsername}
                     />
                     <AppTextInput
                         value={email}
-                        style={styles.input}
                         placeholder="Email"
                         autoCapitalize="none"
                         onChangeText={setEmail}
@@ -88,7 +86,6 @@ const SignUp = ({ navigation }) => {
                     <AppTextInput
                         secureTextEntry={true}
                         value={password}
-                        style={styles.input}
                         placeholder="Password"
                         autoCapitalize="none"
                         onChangeText={setPassword}
@@ -96,7 +93,6 @@ const SignUp = ({ navigation }) => {
                     <AppTextInput
                         secureTextEntry={true}
                         value={confirmPassword}
-                        style={styles.input}
                         placeholder="Confirm Password"
                         autoCapitalize="none"
                         onChangeText={setConfirmPassword}

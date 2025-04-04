@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { Text, TouchableOpacity, TextInput } from 'react-native';
+import { Text, TouchableOpacity, TextInput, View } from 'react-native';
 
 //Custom component imports and styling
 import commonStyles, { typography } from '../styles/commonStyles';
@@ -57,20 +57,13 @@ export const AppButton = ({ style, textStyle, onPress, title, ...props }) => (
     </Text>
   </TouchableOpacity>
 );
-export const AppTextInput = ({ style, ...props }) => (
-  <TextInput
-    style={[
-      {
-        fontFamily: typography.fontRegular,
-        fontSize: 16,
-        padding: 10,
-        borderWidth: 1,
-        borderColor: '#e8e8e8',
-        borderRadius: 5,
-        backgroundColor: 'white',
-      },
-      style
-    ]}
-    {...props}
-  />
+
+export const AppTextInput = ({ style, placeholderTextColor = "#999", ...props }) => (
+  <View style={commonStyles.inputContainer}>
+    <TextInput
+      style={[commonStyles.input, style]}
+      placeholderTextColor={placeholderTextColor}
+      {...props}
+    />
+  </View>
 );

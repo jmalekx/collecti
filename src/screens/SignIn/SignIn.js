@@ -11,7 +11,7 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import formValidation from '../../utils/formValidation';
 
 // Custom component imports and styling
-import Logo from '../../images/tmplogo.png';
+import Logo from '../../images/logo.png';
 import commonStyles from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
@@ -67,6 +67,7 @@ const SignIn = ({ navigation }) => {
             <View style={styles.root}>
 
                 {/* Logo */}
+                <AppHeading>Collecti</AppHeading>
                 <Image
                     source={Logo}
                     style={[styles.logo, { height: height * 0.45 }]}
@@ -86,25 +87,19 @@ const SignIn = ({ navigation }) => {
                     {/* Email */}
                     <AppTextInput
                         value={email}
-                        style={styles.input}
                         placeholder="Email"
                         autoCapitalize="none"
                         keyboardType="email-address"
                         onChangeText={setEmail}
-                        accessibilityLabel="Email input"
-                        testID="email-input"
                     />
 
                     {/* Password */}
                     <AppTextInput
                         secureTextEntry={true}
                         value={password}
-                        style={styles.input}
                         placeholder="Password"
                         autoCapitalize="none"
                         onChangeText={setPassword}
-                        accessibilityLabel="Password input"
-                        testID="password-input"
                     />
 
                     {loading ? (
@@ -120,8 +115,6 @@ const SignIn = ({ navigation }) => {
                                 style={styles.button}
                                 title="Login"
                                 onPress={handleSignIn}
-                                accessibilityLabel="Login button"
-                                testID="login-button"
                             />
 
                             {/* Sign up link */}
@@ -129,8 +122,6 @@ const SignIn = ({ navigation }) => {
                                 <AppText>Don't have an account? </AppText>
                                 <TouchableOpacity
                                     onPress={() => navigation.navigate('SignUp')}
-                                    accessibilityLabel="Sign up link"
-                                    testID="signup-link"
                                 >
                                     <AppText style={styles.signLink}>Sign Up</AppText>
                                 </TouchableOpacity>
@@ -151,12 +142,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logo: {
-        width: '75%',
+        width: '45%',
         maxWidth: 200,
-    },
-    MainText: {
-        alignSelf: 'flex-start',
-        marginLeft: 35,
     },
 })
 

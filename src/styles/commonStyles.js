@@ -113,15 +113,26 @@ const buttonStyles = StyleSheet.create({
 });
 
 const inputStyles = StyleSheet.create({
-  input: {
-    backgroundColor: 'white',
+  inputContainer: {
     width: 300,
-    height: 50,
-    borderColor: '#e8e8e8',
+    marginVertical: 8,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },  
+    shadowOpacity: 0.07,            
+    shadowRadius: 5,                      
+    elevation: 2,                        
+  },
+  input: {
+    backgroundColor: '#fffdf9',
+    height: 55,
+    borderColor: 'white',
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginVertical: 5,
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    fontFamily: typography.fontRegular,
+    fontSize: 16,
   },
   searchIcon: {
     marginRight: 8,
@@ -167,7 +178,7 @@ const headerStyles = {
   defaultHeaderOptions: {
     headerTitleStyle: {
       fontFamily: typography.fontBold || 'Inter_700Bold',
-      fontSize: 18,
+      fontSize: 22,
     },
     headerStyle: {
       backgroundColor: '#F5D6E0',
