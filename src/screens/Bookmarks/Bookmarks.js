@@ -13,7 +13,7 @@ import { useBookmarks } from '../../hooks/useBookmarks';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
-import { AppHeading } from '../../components/Typography';
+import { AppButton } from '../../components/Typography';
 import RenderThumbnail from '../../components/RenderThumbnail';
 
 /*
@@ -104,12 +104,12 @@ const Bookmarks = () => {
       {/* Visual Empty State Indicator */}
       <Ionicons name="bookmark-outline" size={64} color="#ccc" />
       <Text style={styles.emptyText}>You haven't bookmarked any collections yet</Text>
-      <TouchableOpacity
-        style={styles.exploreButton}
+      <AppButton
+        style={styles.pinkbutton}
+        textStyle={styles.pinkbuttonText}
+        title="Explore Collections"
         onPress={() => navigation.navigate('SearchScreen')}
-      >
-        <Text style={styles.exploreButtonText}>Explore Collections</Text>
-      </TouchableOpacity>
+      />
     </View>
   );
 
@@ -196,17 +196,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     marginBottom: 24,
-  },
-  exploreButton: {
-    backgroundColor: '#4A90E2',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 25,
-  },
-  exploreButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
   loadingContainer: {
     flex: 1,

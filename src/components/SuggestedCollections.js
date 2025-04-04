@@ -13,7 +13,7 @@ import { DEFAULT_THUMBNAIL } from '../constants';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 //Custom component imports and styling
-import commonStyles from '../styles/commonStyles';
+import commonStyles, { colours } from '../styles/commonStyles';
 
 /*
     SuggestedCollections Component
@@ -56,7 +56,7 @@ const SuggestedCollections = () => {
       <View style={styles.headerContainer}>
         <Text style={styles.sectionTitle}>Suggested Collections</Text>
         <TouchableOpacity onPress={refreshRecommendations}>
-          <Ionicons name="refresh-outline" size={20} color="#007AFF" />
+          <Ionicons name="refresh-outline" size={20} color={colours.buttonsText}/>
         </TouchableOpacity>
       </View>
 

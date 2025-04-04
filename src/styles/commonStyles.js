@@ -97,9 +97,29 @@ const buttonStyles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
-    color: 'white', 
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  authButton: {
+    backgroundColor: colours.buttons,
+  },
+  authButtonText: {
+    color: colours.buttonsText,
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  pinkbutton: {
+    backgroundColor: colours.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 25,
+  },
+  pinkbuttonText: {
+    color: colours.buttonsTextPink,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   backButton: {
     position: 'absolute',
@@ -121,15 +141,7 @@ const buttonStyles = StyleSheet.create({
   pinterestConnected: {
     backgroundColor: '#666',
   },
-  authButton:{
-    backgroundColor: colours.buttons,
-  },
-  authButtonText:{
-    color: colours.buttonsText,
-    fontSize: 16,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-  },
+
 });
 
 const inputStyles = StyleSheet.create({
@@ -138,10 +150,10 @@ const inputStyles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 15,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },  
-    shadowOpacity: 0.07,            
-    shadowRadius: 5,                      
-    elevation: 2,                        
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 5,
+    elevation: 2,
   },
   input: {
     backgroundColor: 'white',
@@ -222,5 +234,5 @@ const commonStyles = {
   Bg,
 };
 
-export { typography, headerStyles, colours};
+export { typography, headerStyles, colours };
 export default commonStyles;
