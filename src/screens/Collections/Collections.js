@@ -46,10 +46,6 @@ const Collections = ({ }) => {
   const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email?.split('@')[0] || 'User';
   const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
 
-  //Calculate stats directly from collections
-  const stats = `${collections.length} collections | ${collections.reduce((sum, collection) => sum + collection.items.length, 0)
-    } posts`;
-
   //Filter collections based on search query
   const filteredCollections = collections.filter((collection) =>
     collection.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -71,7 +67,6 @@ const Collections = ({ }) => {
         {/* Profile Header */}
         <ProfileHeader
           username={username}
-          stats={stats}
           profilePicture={profilePicture}
         />
 
@@ -134,11 +129,6 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 24,
     fontWeight: 'bold',
-  },
-  stats: {
-    fontSize: 14,
-    color: '#888',
-    marginVertical: 8,
   },
   grid: {
     justifyContent: 'space-between',
