@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { StyleSheet, View, Dimensions, Text } from 'react-native';
+import { StyleSheet, View, Dimensions, Animated } from 'react-native';
 
 //Third-party library external imports
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -26,6 +26,43 @@ const { width } = Dimensions.get('window');
 */
 
 const TabNavigator = () => {
+
+  const tabAnimations = React.useRef([
+    new Animated.Value(0),
+    new Animated.Value(0),
+    new Animated.Value(0),
+    new Animated.Value(0)
+  ]).current;
+
+  const animateTab = (index) => {
+    //Start fading out the previous tabs
+    tabAnimations.forEach((anim, i) => {
+      if (i !== index) {
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: 150, //Faster fadeout for nonselected tabs
+          useNativeDriver: false,
+        }).start();
+      }
+    });
+
+    //Animate selected tab with sequence
+    Animated.sequence([
+      //Scale up
+      Animated.timing(tabAnimations[index], {
+        toValue: 0.5,
+        duration: 100,
+        useNativeDriver: false,
+      }),
+      //Scale down and fade in to final state
+      Animated.timing(tabAnimations[index], {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      })
+    ]).start();
+  };
+
   return (
     <Tab.Navigator
       initialRouteName="HomeScreen"
@@ -74,16 +111,33 @@ const TabNavigator = () => {
                 });
 
                 if (!isFocused && !event.defaultPrevented) {
+                  // Trigger animation when changing tabs
+                  animateTab(index);
                   props.navigation.navigate(route.name);
                 }
               };
 
+              // Create animated background color
+              const backgroundColor = tabAnimations[index].interpolate({
+                inputRange: [0, 1],
+                outputRange: ['transparent', 'rgba(170, 121, 15, 0.15)']
+              });
+
+              // Create animated scale effect
+              const scale = tabAnimations[index].interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [1, 1.1, 1]
+              });
+
               return (
-                <View
+                <Animated.View
                   key={index}
                   style={[
                     styles.tabItem,
-                    isFocused && styles.tabItemFocused
+                    {
+                      backgroundColor,
+                      transform: [{ scale }]
+                    }
                   ]}
                   onTouchEnd={onPress}
                 >
@@ -96,7 +150,7 @@ const TabNavigator = () => {
                     size={26}
                     color={isFocused ? colours.buttonsText : colours.buttonsHighlight}
                   />
-                </View>
+                </Animated.View>
               );
             })}
           </View>
@@ -119,16 +173,33 @@ const TabNavigator = () => {
                 });
 
                 if (!isFocused && !event.defaultPrevented) {
+                  // Trigger animation when changing tabs
+                  animateTab(realIndex);
                   props.navigation.navigate(route.name);
                 }
               };
 
+              // Create animated background color
+              const backgroundColor = tabAnimations[realIndex].interpolate({
+                inputRange: [0, 1],
+                outputRange: ['transparent', 'rgba(170, 121, 15, 0.15)']
+              });
+
+              // Create animated scale effect
+              const scale = tabAnimations[realIndex].interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [1, 1.1, 1]
+              });
+
               return (
-                <View
+                <Animated.View
                   key={index}
                   style={[
                     styles.tabItem,
-                    isFocused && styles.tabItemFocused
+                    {
+                      backgroundColor,
+                      transform: [{ scale }]
+                    }
                   ]}
                   onTouchEnd={onPress}
                 >
@@ -141,7 +212,7 @@ const TabNavigator = () => {
                     size={26}
                     color={isFocused ? colours.buttonsText : colours.buttonsHighlight}
                   />
-                </View>
+                </Animated.View>
               );
             })}
           </View>
