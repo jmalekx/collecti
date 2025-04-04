@@ -4,6 +4,7 @@ import { View, Image, StyleSheet, useWindowDimensions, ActivityIndicator, Keyboa
 
 // Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import LinearGradient from 'react-native-linear-gradient';
 
 // Project services and utilities
 import { signIn } from '../../services/auth';
@@ -63,7 +64,12 @@ const SignIn = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <LinearGradient
+            colors={['#F5D6E0', '#F9EAD9', '#FCF5E8']}
+            style={styles.container}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 0, y: 1 }}
+        >
 
             {/* Logo */}
             <Image
@@ -137,7 +143,7 @@ const SignIn = ({ navigation }) => {
                     </>
                 )}
             </KeyboardAvoidingView>
-        </View>
+        </LinearGradient>
     );
 };
 
