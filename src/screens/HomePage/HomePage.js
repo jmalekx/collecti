@@ -1,19 +1,22 @@
 //React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
+import { useUserData } from '../../hooks/useUserData';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
 import SuggestedCollections from '../../components/SuggestedCollections';
+import UserStats from '../../components/UserStats';
 
 /* 
   HomePage Screen
@@ -23,14 +26,15 @@ import SuggestedCollections from '../../components/SuggestedCollections';
   access to main application features. Uses service layer for data access.
 */
 
-//ADD RECENTLY ACCESSES COLECTIONS TO THIS SCREEN
-
 const HomePage = () => {
-
   //State transitions
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  //Get user data using the hook for collections and posts count
+  const { userProfile, collections } = useUserData();
 
   //Context states
   const toast = useToast();
@@ -47,6 +51,8 @@ const HomePage = () => {
         }
 
         const userProfile = await getUserProfile(userId);
+        const currentUser = getCurrentUser();
+        setUser(currentUser);
 
         if (userProfile) {
           //Prefer data from user profile
@@ -56,7 +62,6 @@ const HomePage = () => {
         }
         else {
           //Fallback to auth data using service layer
-          const currentUser = getCurrentUser();
           setUserName(currentUser?.displayName || 'User');
           setProfileImage(currentUser?.photoURL || null);
         }
@@ -96,7 +101,14 @@ const HomePage = () => {
           </View>
         </View>
 
-        {/* Content sections */}
+
+        {/* Stats Collage Component */}
+        <UserStats
+          user={user}
+          collections={collections}
+        />
+
+        {/* Suggested Collections Section */}
         <View style={styles.section}>
           <SuggestedCollections />
         </View>
@@ -108,10 +120,6 @@ const HomePage = () => {
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -146,18 +154,6 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
-  },
-  defaultProfileImage: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#007AFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profileInitial: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });
 
