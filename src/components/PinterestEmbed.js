@@ -57,7 +57,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
                     extractedPinId = extractPinId(resolvedUrl);
                 } 
                 catch (error) {
-                    console.error('Pinterest: Failed to resolve short URL:', error);
+                    console.log('Pinterest: Failed to resolve short URL:', error);
                 }
             }
 

@@ -69,7 +69,7 @@ const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
                 url: shareUrl
             });
         } catch (error) {
-            console.error('Error sharing video:', error);
+            console.log('Error sharing video:', error);
         }
     };
 

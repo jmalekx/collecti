@@ -47,7 +47,8 @@ export const extractSourceUrl = (post) => {
 class PlatformLink {
     //Open URL in designated platform
     async openUrl(url) {
-        throw new Error('Method not implemented');
+        console.log('Error: PlatformLink.openUrl not implemented in derived class');
+        return false;
     }
 
     isValidUrl(url) {
@@ -55,7 +56,8 @@ class PlatformLink {
     }
 
     getDisplayName() {
-        throw new Error('Method not implemented');
+        console.log('Error: PlatformLink.getDisplayName not implemented in derived class');
+        return 'Unknown Platform';
     }
 }
 
@@ -147,10 +149,16 @@ export const createPlatformLink = (platform) => {
 
 //Open post in native platform
 export const openInPlatform = async (post) => {
-    if (!post) throw new Error('Invalid post data');
+    if (!post) {
+        console.log('Error opening in platform: Invalid post data');
+        return false;
+    }
 
     const url = extractPostUrl(post);
-    if (!url) throw new Error('No URL available to open');
+    if (!url) {
+        console.log('Error opening post in platform: No URL available');
+        return false;
+    }
 
     const strategy = createPlatformLink(post.platform);
     return await strategy.openUrl(url);

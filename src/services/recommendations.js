@@ -82,7 +82,7 @@ export const getSimilarCollections = async (userCollections = [], bookmarkedColl
         return recommendedCollections.slice(0, maxResults);
     }
     catch (error) {
-        console.error('Error getting recommendations:', error);
+        console.log('Error getting recommendations:', error);
         return [];
     }
 };
@@ -118,7 +118,7 @@ export const getRecentCollections = async (maxResults = 6) => {
         return collections.slice(0, maxResults);
     }
     catch (error) {
-        console.error('Error getting popular collections:', error);
+        console.log('Error getting popular collections:', error);
         return [];
     }
 };

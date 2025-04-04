@@ -166,7 +166,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           resolvedUrl = await resolveShortUrl(url);
         } 
         catch (error) {
-          console.error("Error resolving short URL:", error);
+          console.log("Error resolving short URL:", error);
         }
       }
 
@@ -289,7 +289,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           //Upload the local image to Cloudinary
           const uploadedUrl = await uploadImageToCloudinary(image);
           if (!uploadedUrl) {
-            throw new Error("Failed to upload image");
+            console.log("Failed to upload image");
           }
           imageToUse = uploadedUrl;
         }

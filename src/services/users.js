@@ -25,7 +25,7 @@ export const subscribeToUserProfile = (callback, userId = getCurrentUserId()) =>
             }
         },
         (error) => {
-            console.error('Error subscribing to user profile:', error);
+            console.log('Error subscribing to user profile:', error);
         }
     );
 };
@@ -37,8 +37,7 @@ export const getUserProfile = async (userId = getCurrentUserId()) => {
         return userDoc.exists() ? userDoc.data() : null;
     }
     catch (error) {
-        console.error('Error fetching user profile:', error);
-        throw error;
+        console.log('Error fetching user profile:', error);
     }
 };
 
@@ -62,8 +61,7 @@ export const createUserProfile = async (userId, userData) => {
         return userProfile;
     }
     catch (error) {
-        console.error('Error creating user profile:', error);
-        throw error;
+        console.log('Error creating user profile:', error);
     }
 };
 
@@ -74,8 +72,7 @@ export const updateUserProfile = async (updateData, userId = getCurrentUserId())
         return true;
     }
     catch (error) {
-        console.error('Error updating user profile:', error);
-        throw error;
+        console.log('Error updating user profile:', error);
     }
 };
 
@@ -93,7 +90,6 @@ export const completeOnboarding = async (userId) => {
         return true;
     }
     catch (error) {
-        console.error('Error completing onboarding:', error);
-        throw error;
+        console.log('Error completing onboarding:', error);
     }
 };

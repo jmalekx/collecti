@@ -14,8 +14,7 @@ export const getBookmarks = async (userId) => {
     return bookmarksJson ? JSON.parse(bookmarksJson) : [];
   } 
   catch (error) {
-    console.error('Error loading bookmarked collections:', error);
-    throw error;
+    console.log('Error loading bookmarked collections:', error);
   }
 };
 
@@ -36,7 +35,6 @@ export const addBookmark = async (userId, collection) => {
   } 
   catch (error) {
     console.error('Error adding bookmark:', error);
-    throw error;
   }
 };
 
@@ -53,8 +51,7 @@ export const removeBookmark = async (userId, collectionId) => {
     return updatedBookmarks;
   } 
   catch (error) {
-    console.error('Error removing bookmark:', error);
-    throw error;
+    console.log('Error removing bookmark:', error);
   }
 };
 
@@ -78,7 +75,6 @@ export const toggleBookmark = async (userId, collection) => {
     }
   } 
   catch (error) {
-    console.error('Error toggling bookmark:', error);
-    throw error;
+    console.log('Error toggling bookmark:', error);
   }
 };

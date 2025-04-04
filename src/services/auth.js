@@ -25,8 +25,7 @@ export const signIn = async (email, password) => {
         return response.user;
     }
     catch (error) {
-        console.log(error);
-        throw error;
+        console.log('Auth error signin', error);
     }
 };
 
@@ -35,29 +34,28 @@ export const signUp = async (email, password, userData) => {
     try {
         const response = await createUserWithEmailAndPassword(FIREBASE_AUTH, email, password);
         const user = response.user;
-        
+
         //Create default username from email if not provided
         if (!userData.username || userData.username.trim() === '') {
             userData.username = email.split('@')[0];
         } else {
             userData.username = userData.username.trim();
         }
-        
+
         //Create user profile document in Firestore
         await createUserProfile(user.uid, {
             email,
             ...userData,
             isNewUser: true
         });
-        
+
         //Create default "Unsorted" collection
         await createDefaultCollection(user.uid);
 
         return user;
     }
     catch (error) {
-        console.log(error);
-        throw error;
+        console.log('Signup error', error);
     }
 };
 
@@ -68,21 +66,9 @@ export const logOut = async () => {
         return true;
     }
     catch (error) {
-        console.log(error);
-        throw error;
+        console.log('Logout error', error);
     }
 };
-
-// //Send password reset email - not using this rn
-// export const resetPassword = async (email) => {
-//     try {
-//         await sendPasswordResetEmail(FIREBASE_AUTH, email);
-//         return true;
-//     } catch (error) {
-//         console.error('Error sending password reset:', error);
-//         throw error;
-//     }
-// };
 
 //Get current authenticated user
 export const getCurrentUser = () => FIREBASE_AUTH.currentUser;
@@ -94,7 +80,7 @@ export const checkNeedsOnboarding = async (userId) => {
         return userProfile?.isNewUser ?? true;
     }
     catch (error) {
-        console.log(error);
+        console.log('Onboard check error', error);
         return true; //Default to show onboarding if error
     }
 };

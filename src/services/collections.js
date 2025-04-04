@@ -20,8 +20,7 @@ export const getCollection = async (collectionId, userId = getCurrentUserId()) =
         return collectionDoc.exists() ? { id: collectionDoc.id, ...collectionDoc.data() } : null;
     }
     catch (error) {
-        console.error('Error fetching collection:', error);
-        throw error;
+        console.log('Error fetching collection:', error);
     }
 };
 
@@ -32,8 +31,7 @@ export const getAllCollections = async (userId = getCurrentUserId()) => {
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
     catch (error) {
-        console.error('Error fetching collections:', error);
-        throw error;
+        console.log('Error fetching all collections:', error);
     }
 };
 
@@ -66,8 +64,7 @@ export const createCollection = async (collectionData, userId = getCurrentUserId
         };
     }
     catch (error) {
-        console.error('Error creating collection:', error);
-        throw error;
+        console.log('Error creating collection:', error);
     }
 };
 
@@ -78,8 +75,7 @@ export const updateCollection = async (collectionId, updateData, userId = getCur
         return true;
     }
     catch (error) {
-        console.error('Error updating collection:', error);
-        throw error;
+        console.log('Error updating collection:', error);
     }
 };
 
@@ -90,8 +86,7 @@ export const deleteCollection = async (collectionId, userId = getCurrentUserId()
         return true;
     }
     catch (error) {
-        console.error('Error deleting collection:', error);
-        throw error;
+        console.log('Error deleting collection:', error);
     }
 };
 
@@ -119,7 +114,7 @@ export const subscribeToCollections = (callback, userId = getCurrentUserId()) =>
             callback(collections);
         },
         (error) => {
-            console.error('Error subscribing to collections:', error);
+            console.log('Error subscribing to collections:', error);
         }
     );
 
@@ -146,7 +141,6 @@ export const createDefaultCollection = async (userId) => {
             ...collectionData
         };
     } catch (error) {
-        console.error('Error creating default collection:', error);
-        throw error;
+        console.log('Error creating default collection:', error);
     }
 };

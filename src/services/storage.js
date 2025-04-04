@@ -58,7 +58,6 @@ export const uploadImageToCloudinary = async (localUri) => {
       return data.secure_url;
     } 
     catch (error) {
-      console.error('Error uploading image to Cloudinary:', error);
-      throw error;
+      console.log('Error uploading image to Cloudinary:', error);
     }
   };

@@ -41,8 +41,7 @@ export const createInitialCollections = async (collectionNames = [], userId) => 
     return true;
   }
   catch (error) {
-    console.error('Error creating initial collections:', error);
-    throw error;
+    console.log('Error creating initial collections:', error);
   }
 };
 
@@ -65,7 +64,6 @@ export const completeOnboardingProcess = async (selectedCollections = []) => {
     return true;
   }
   catch (error) {
-    console.error('Error completing onboarding process:', error);
-    throw error;
+    console.log('Error completing onboarding process:', error);
   }
 };

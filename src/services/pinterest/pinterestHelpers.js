@@ -42,7 +42,7 @@ export const resolveShortUrl = async (shortUrl) => {
 
         return finalUrl;
     } catch (error) {
-        console.error('[Pinterest] URL resolution failed:', error.message);
+        console.log('Pinterest URL resolution failed:', error.message);
     }
 };
 

@@ -18,9 +18,8 @@ export const handlePostDeletion = async (collectionId, postId, toast) => {
         await deletePostService(collectionId, postId);
         showToast(toast, "Post deleted successfully", { type: TOAST_TYPES.SUCCESS });
         return true;
-    } 
+    }
     catch (error) {
-        console.error('Error deleting post:', error);
         showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
         return false;
     }
@@ -31,10 +30,9 @@ export const handleOpenInPlatform = async (post, toast) => {
     try {
         await openInPlatform(post);
         return true;
-    } 
+    }
     catch (error) {
-        console.error('Error opening in platform:', error);
-        showToast(toast, error.message || "Failed to open content", { type: TOAST_TYPES.WARNING });
+        showToast(toast, "Failed to open content", { type: TOAST_TYPES.WARNING });
         return false;
     }
 };
@@ -54,9 +52,8 @@ export const loadPostForEditing = async (collectionId, postId, toast) => {
             tags: post.tags?.join(', ') || '',
             originalPost: post // Keep original for reference
         };
-    } 
+    }
     catch (error) {
-        console.error('Error loading post for editing:', error);
         showToast(toast, "Failed to load post", { type: TOAST_TYPES.DANGER });
         return null;
     }
@@ -77,9 +74,8 @@ export const saveEditedPost = async (collectionId, postId, formData, toast) => {
 
         showToast(toast, "Post updated", { type: TOAST_TYPES.SUCCESS });
         return true;
-    } 
+    }
     catch (error) {
-        console.error('Error updating post:', error);
         showToast(toast, "Failed to update post", { type: TOAST_TYPES.DANGER });
         return false;
     }
@@ -89,7 +85,7 @@ export const saveEditedPost = async (collectionId, postId, formData, toast) => {
 const processTags = (tagsString) => {
     if (!tagsString) return [];
     return tagsString
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag);
-  };
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag);
+};

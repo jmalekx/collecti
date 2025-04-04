@@ -53,8 +53,8 @@ class PinterestService {
       return result;
     }
     catch (error) {
-      console.error('Error handling redirect:', error);
-      throw error;
+      console.log('Error handling redirect:', error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -111,7 +111,8 @@ class PinterestService {
       };
     }
     catch (error) {
-      throw error;
+      console.log('Error exchanging code for token:', error);
+      return { success: false, error: error.message };
     }
   }
 
@@ -131,7 +132,7 @@ class PinterestService {
       await AsyncStorage.setItem('pinterest_token_expires_at', expiresAt.toString());
     }
     catch (error) {
-      console.error('Error saving tokens to AsyncStorage:', error);
+      console.log('Error saving tokens to AsyncStorage:', error);
     }
   }
 
@@ -153,6 +154,7 @@ class PinterestService {
       return false;
     }
     catch (error) {
+      console.log('Error loading tokens from storage:', error);
       return false;
     }
   }
@@ -202,8 +204,8 @@ class PinterestService {
       };
     }
     catch (error) {
-      console.error('Error refreshing token:', error.response?.data || error.message);
-      throw error;
+      console.log('Error refreshing token:', error.response?.data || error.message);
+      return { success: false, error: 'Token refresh failed' };
     }
   }
 
@@ -213,7 +215,8 @@ class PinterestService {
     if (!this.accessToken) {
       const loaded = await this.loadTokens();
       if (!loaded) {
-        throw new Error('Not authenticated with Pinterest');
+        console.log('Not authenticated with Pinterest');
+        return { success: false, error: 'Not authenticated with Pinterest' };
       }
     }
 
@@ -244,7 +247,8 @@ class PinterestService {
       return response.data;
     }
     catch (error) {
-      throw error;
+      console.log('API request failed:', error.response?.status || '', error.message);
+      return { success: false, error: error.message};
     }
   }
 
@@ -263,6 +267,7 @@ class PinterestService {
       return true;
     }
     catch (error) {
+      console.log('Error clearing stored tokens:', error);
       return false;
     }
   }
@@ -282,14 +287,15 @@ class PinterestService {
       const endpoint = '/user_account';
       const response = await this.apiRequest(endpoint);
 
-      console.log('Pinterest API: User info retrieved successfully');
       return {
         id: response.id,
         username: response.username,
         profileUrl: `https://www.pinterest.com/${response.username}/`
       };
-    } catch (error) {
-      throw error;
+    } 
+    catch (error) {
+      console.log('Error fetching user info:', error);
+      return { success : false, error: error.message };
     }
   }
 
@@ -318,9 +324,10 @@ class PinterestService {
         is_owner: response.is_owner,
         raw: response
       };
-    } 
+    }
     catch (error) {
       console.log('Pinterest API: Could not fetch - user may not own this pin');
+      return {success: false};
     }
   }
 }

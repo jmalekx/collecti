@@ -19,8 +19,7 @@ export const getPost = async (collectionId, postId, userId = getCurrentUserId())
         return postDoc.exists() ? { id: postDoc.id, ...postDoc.data() } : null;
     } 
     catch (error) {
-        console.error('Error fetching post:', error);
-        throw error;
+        console.log('Error fetching post:', error);
     }
 };
 
@@ -31,8 +30,7 @@ export const getCollectionPosts = async (collectionId, userId = getCurrentUserId
         return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } 
     catch (error) {
-        console.error('Error fetching posts:', error);
-        throw error;
+        console.log('Error fetching posts:', error);
     }
 };
 
@@ -53,8 +51,7 @@ export const createPost = async (collectionId, postData, userId = getCurrentUser
         return { id: docRef.id, ...newPost };
     } 
     catch (error) {
-        console.error('Error creating post:', error);
-        throw error;
+        console.log('Error creating post:', error);
     }
 };
 
@@ -65,8 +62,7 @@ export const updatePost = async (collectionId, postId, updateData, userId = getC
         return true;
     }
     catch (error) {
-        console.error('Error updating post:', error);
-        throw error;
+        console.log('Error updating post:', error);
     }
 };
 
@@ -77,9 +73,9 @@ export const deletePost = async (collectionId, postId, userId = getCurrentUserId
         await updateCollectionThumbnail(collectionId, userId);
 
         return true;
-    } catch (error) {
-        console.error('Error deleting post:', error);
-        throw error;
+    } 
+    catch (error) {
+        console.log('Error deleting post:', error);
     }
 };
 
@@ -97,7 +93,7 @@ export const subscribeToPosts = (collectionId, callback, userId = getCurrentUser
             callback(posts);
         },
         (error) => {
-            console.error('Error subscribing to posts:', error);
+            console.log('Error subscribing to posts:', error);
         }
     );
 
@@ -134,7 +130,6 @@ export const updateCollectionThumbnail = async (collectionId, userId = getCurren
         return true;
     } 
     catch (error) {
-        console.error('Error updating collection thumbnail:', error);
-        throw error;
+        console.log('Error updating collection thumbnail:', error);
     }
 };
