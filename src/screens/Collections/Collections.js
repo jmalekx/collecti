@@ -65,51 +65,53 @@ const Collections = ({ }) => {
   });
 
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Profile Header */}
-      <ProfileHeader
-        username={username}
-        stats={stats}
-        profilePicture={profilePicture}
-      />
+        {/* Profile Header */}
+        <ProfileHeader
+          username={username}
+          stats={stats}
+          profilePicture={profilePicture}
+        />
 
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search collections..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#999"
+        {/* Search Bar */}
+        <View style={styles.searchContainer}>
+          <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search collections..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#999"
+          />
+        </View>
+
+        {/* Collection Grid */}
+        <FlatList
+          data={sortedCollections}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.grid}
+          columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensures items don't stretch
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.collectionCard}
+              onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
+            >
+              {/* Collection Thumbnail */}
+              <RenderThumbnail
+                thumbnail={item.thumbnail}
+                containerStyle={styles.thumbnailContainer}
+                thumbnailStyle={styles.thumbnail}
+              />
+              <Text style={styles.collectionName}>{item.name}</Text>
+              <Text style={styles.collectionStats}>{item.items.length} posts</Text>
+            </TouchableOpacity>
+          )}
         />
       </View>
-
-      {/* Collection Grid */}
-      <FlatList
-        data={sortedCollections}
-        keyExtractor={(item) => item.id}
-        numColumns={2}
-        contentContainerStyle={styles.grid}
-        columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensures items don't stretch
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.collectionCard}
-            onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
-          >
-            {/* Collection Thumbnail */}
-            <RenderThumbnail
-              thumbnail={item.thumbnail}
-              containerStyle={styles.thumbnailContainer}
-              thumbnailStyle={styles.thumbnail}
-            />
-            <Text style={styles.collectionName}>{item.name}</Text>
-            <Text style={styles.collectionStats}>{item.items.length} posts</Text>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+    </commonStyles.Bg>
   );
 };
 
@@ -117,11 +119,6 @@ export default Collections;
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   profilePicture: {
     width: 80,
     height: 80,

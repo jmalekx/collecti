@@ -4,7 +4,6 @@ import { View, Image, StyleSheet, useWindowDimensions, ActivityIndicator, Keyboa
 
 // Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
-import LinearGradient from 'react-native-linear-gradient';
 
 // Project services and utilities
 import { signIn } from '../../services/auth';
@@ -64,86 +63,83 @@ const SignIn = ({ navigation }) => {
     };
 
     return (
-        <LinearGradient
-            colors={['#F5D6E0', '#F9EAD9', '#FCF5E8']}
-            style={styles.container}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-        >
+        <commonStyles.Bg>
+            <View style={styles.container}>
 
-            {/* Logo */}
-            <Image
-                source={Logo}
-                style={[styles.logo, { height: height * 0.45 }]}
-                resizeMode='contain'
-                accessibilityLabel="Application logo"
-            />
-
-            {/* Header text */}
-            <View style={styles.headerContainer}>
-                <AppHeading style={styles.headerText}>Welcome</AppHeading>
-                <AppText style={styles.subHeaderText}>Please enter your details below</AppText>
-            </View>
-
-            {/* Form */}
-            <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
-
-                {/* Email */}
-                <AppTextInput
-                    value={email}
-                    style={styles.input}
-                    placeholder="Email"
-                    autoCapitalize="none"
-                    keyboardType="email-address"
-                    onChangeText={setEmail}
-                    accessibilityLabel="Email input"
-                    testID="email-input"
+                {/* Logo */}
+                <Image
+                    source={Logo}
+                    style={[styles.logo, { height: height * 0.45 }]}
+                    resizeMode='contain'
+                    accessibilityLabel="Application logo"
                 />
 
-                {/* Password */}
-                <AppTextInput
-                    secureTextEntry={true}
-                    value={password}
-                    style={styles.input}
-                    placeholder="Password"
-                    autoCapitalize="none"
-                    onChangeText={setPassword}
-                    accessibilityLabel="Password input"
-                    testID="password-input"
-                />
+                {/* Header text */}
+                <View style={styles.headerContainer}>
+                    <AppHeading style={styles.headerText}>Welcome</AppHeading>
+                    <AppText style={styles.subHeaderText}>Please enter your details below</AppText>
+                </View>
 
-                {loading ? (
-                    <ActivityIndicator
-                        size="large"
-                        color="#0000ff"
-                        accessibilityLabel="Loading indicator"
+                {/* Form */}
+                <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
+
+                    {/* Email */}
+                    <AppTextInput
+                        value={email}
+                        style={styles.input}
+                        placeholder="Email"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        onChangeText={setEmail}
+                        accessibilityLabel="Email input"
+                        testID="email-input"
                     />
-                ) : (
-                    <>
-                        {/* Login button */}
-                        <AppButton
-                            style={styles.button}
-                            title="Login"
-                            onPress={handleSignIn}
-                            accessibilityLabel="Login button"
-                            testID="login-button"
-                        />
 
-                        {/* Sign up link */}
-                        <View style={styles.signContainer}>
-                            <AppText>Don't have an account? </AppText>
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('SignUp')}
-                                accessibilityLabel="Sign up link"
-                                testID="signup-link"
-                            >
-                                <AppText style={styles.signLink}>Sign Up</AppText>
-                            </TouchableOpacity>
-                        </View>
-                    </>
-                )}
-            </KeyboardAvoidingView>
-        </LinearGradient>
+                    {/* Password */}
+                    <AppTextInput
+                        secureTextEntry={true}
+                        value={password}
+                        style={styles.input}
+                        placeholder="Password"
+                        autoCapitalize="none"
+                        onChangeText={setPassword}
+                        accessibilityLabel="Password input"
+                        testID="password-input"
+                    />
+
+                    {loading ? (
+                        <ActivityIndicator
+                            size="large"
+                            color="#0000ff"
+                            accessibilityLabel="Loading indicator"
+                        />
+                    ) : (
+                        <>
+                            {/* Login button */}
+                            <AppButton
+                                style={styles.button}
+                                title="Login"
+                                onPress={handleSignIn}
+                                accessibilityLabel="Login button"
+                                testID="login-button"
+                            />
+
+                            {/* Sign up link */}
+                            <View style={styles.signContainer}>
+                                <AppText>Don't have an account? </AppText>
+                                <TouchableOpacity
+                                    onPress={() => navigation.navigate('SignUp')}
+                                    accessibilityLabel="Sign up link"
+                                    testID="signup-link"
+                                >
+                                    <AppText style={styles.signLink}>Sign Up</AppText>
+                                </TouchableOpacity>
+                            </View>
+                        </>
+                    )}
+                </KeyboardAvoidingView>
+            </View>
+        </commonStyles.Bg>
     );
 };
 

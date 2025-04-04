@@ -77,13 +77,13 @@ const CollectionDetails = ({ route, navigation }) => {
   const [selectedTargetCollection, setSelectedTargetCollection] = useState('');
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
-  
+
   const isFocused = useIsFocused();
 
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
-      
+
       //Set up an event listener for post additions
       const unsubscribe = navigation.addListener('postAdded', (data) => {
         //If the event data matches current collection, refresh posts
@@ -91,7 +91,7 @@ const CollectionDetails = ({ route, navigation }) => {
           fetchData();
         }
       });
-      
+
       //Clean up the event listener
       return () => {
         unsubscribe();
@@ -109,13 +109,13 @@ const CollectionDetails = ({ route, navigation }) => {
   const getPlatformIcon = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
       return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
-    } 
+    }
     else if (post.thumbnail.includes('tiktok.com')) {
       return <Ionicons name="logo-tiktok" size={20} color="#000000" />;
-    } 
+    }
     else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
       return <Ionicons name="logo-youtube" size={20} color="#FF0000" />;
-    } 
+    }
     else if (post.platform === 'pinterest' || post.thumbnail.includes('pinterest.com') || post.thumbnail.includes('pin.it')) {
       return <Ionicons name="logo-pinterest" size={20} color="#E60023" />;
     }
@@ -202,7 +202,7 @@ const CollectionDetails = ({ route, navigation }) => {
 
   const renderThumbnail = (item) => {
     return (
-      <RenderThumbnail 
+      <RenderThumbnail
         thumbnail={item.thumbnail}
         containerStyle={styles.postContentContainer}
         thumbnailStyle={styles.thumbnail}
@@ -212,313 +212,310 @@ const CollectionDetails = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Collection Header */}
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-          <Text style={styles.collectionName}>{collectionName}</Text>
-          <View style={styles.headerIcons}>
-            {isSelectionMode ? (
-              <>
-                <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                  <Ionicons name="close" size={24} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
-                <TouchableOpacity
-                  onPress={handleGroupMove}
-                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                  disabled={isExternalCollection}
-                >
-                  <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleGroupDelete}
-                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                  disabled={isExternalCollection}
-                >
-                  <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
-                </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  onPress={toggleSelectionMode}
-                  style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                  disabled={isExternalCollection}
-                >
-                  <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
-                </TouchableOpacity>
-                {canEditCollection ? (
-                  <>
-                    <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
-                      <Ionicons name="create-outline" size={24} color="#000" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setShowDeleteCollectionModal(true)} style={styles.selectionButton}>
-                      <Ionicons name="trash" size={24} color="red" />
-                    </TouchableOpacity>
-                  </>
-                ) : (
-                  <>
-                    <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                      <Ionicons name="create-outline" size={24} color="#ccc" />
-                    </TouchableOpacity>
-                    <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                      <Ionicons name="trash" size={24} color="#ccc" />
-                    </TouchableOpacity>
-                  </>
-                )}
-              </>
-            )}
-          </View>
-        </View>
-        <View style={styles.headerBottom}>
-          <Text style={styles.collectionDescription}>{collectionDescription}</Text>
-          <Text style={styles.postCount}>{posts.length} posts</Text>
-        </View>
-      </View>
-
-      {/* Add Search Bar */}
-      <View style={commonStyles.searchContainer}>
-        <Ionicons name="search" size={20} color="#777" style={commonStyles.searchIcon} />
-        <TextInput
-          style={commonStyles.searchInput}
-          placeholder="Search posts..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#999"
-        />
-      </View>
-
-      {/* Posts List */}
-      <FlatList
-        data={filteredPosts}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        key={numColumns}
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <MaterialIcons name="post-add" size={64} color="#ccc" />
-            <Text style={styles.emptyText}>
-              This collection is empty! Start adding posts to keep things organized.
-            </Text>
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[
-              styles.postCard,
-              isSelectionMode && selectedPosts.includes(item.id) && styles.selectedPostCard
-            ]}
-
-            onPress={() => {
-              if (isSelectionMode) {
-                toggleItemSelection(item.id);
-              } else {
-                navigation.navigate('PostDetails', {
-                  postId: item.id,
-                  collectionId: collectionId,
-                  ownerId: effectiveUserId
-                });
-              }
-            }}
-            onLongPress={() => {
-              if (!isSelectionMode) {
-                selectSingleItem(item.id);
-              }
-            }}
-          >
-            {/* Platform Icon */}
-            <View style={styles.platformIconContainer}>
-              {getPlatformIcon(item)}
-            </View>
-
-            {isSelectionMode && (
-              <View style={styles.checkboxContainer}>
-                <Ionicons
-                  name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
-                  size={24}
-                  color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"}
-                />
-              </View>
-            )}
-
-            {/* Post Content */}
-            {renderThumbnail(item)}
-            <Text style={styles.postTitle}>{item.notes}</Text>
-
-          </TouchableOpacity>
-
-        )}
-      />
-
-      {/* Group Action Modal (Move) */}
-      <Modal
-        visible={isGroupActionModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setIsGroupActionModalVisible(false)}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalHeader}>
-              <AppHeading style={styles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
-              <TouchableOpacity onPress={() => setIsGroupActionModalVisible(false)}>
-                <Ionicons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
-
-            {!isAddingNewCollection ? (
-              <>
-                <Text style={styles.modalLabel}>Select Target Collection:</Text>
-                {collections.length > 0 ? (
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                      selectedValue={selectedTargetCollection}
-                      onValueChange={(itemValue) => {
-                        if (itemValue === 'new') {
-                          setIsAddingNewCollection(true);
-                        } else {
-                          setSelectedTargetCollection(itemValue);
-                        }
-                      }}
-                      style={styles.picker}
-                    >
-                      {collections.map((collection) => (
-                        <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
-                      ))}
-                      <Picker.Item label="+ Create New Collection" value="new" />
-                    </Picker>
-                  </View>
-                ) : (
-                  <View style={styles.noCollectionsContainer}>
-                    <Text style={styles.noCollectionsText}>No other collections available</Text>
-                  </View>
-                )}
-
-                <View style={styles.buttonRow}>
-                  <AppButton
-                    style={[styles.actionButton, styles.cancelButton]}
-                    title="Cancel"
-                    onPress={() => setIsGroupActionModalVisible(false)}
-                    textStyle={styles.buttonText}
-                  />
-
-                  {collections.length > 0 && (
-                    <AppButton
-                      style={[styles.actionButton, styles.confirmButton]}
-                      title="Move"
-                      onPress={handleMoveToExistingCollection}
-                      textStyle={styles.buttonTextWhite}
-                    />
-                  )}
-                </View>
-              </>
-            ) : (
-              <>
-                <Text style={styles.modalLabel}>New Collection Name:</Text>
-                <AppTextInput
-                  style={styles.input}
-                  placeholder="Enter Collection Name"
-                  value={newCollectionName}
-                  onChangeText={setNewCollectionName}
-                />
-
-                <View style={styles.buttonRow}>
-                  <AppButton
-                    style={[styles.actionButton, styles.cancelButton]}
-                    title="Back"
-                    onPress={() => {
-                      setIsAddingNewCollection(false);
-                      setNewCollectionName('');
-                    }}
-                    textStyle={styles.buttonText}
-                  />
-
-                  <AppButton
-                    style={[styles.actionButton, styles.confirmButton]}
-                    title="Create & Move"
-                    onPress={handleCreateCollectionAndMove}
-                    textStyle={styles.buttonTextWhite}
-                  />
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
-      <View>
-        {/* Delete Collection Modal */}
-        <ConfirmationModal
-          visible={showDeleteCollectionModal}
-          onClose={() => setShowDeleteCollectionModal(false)}
-          title="Delete Collection"
-          message="Are you sure you want to delete this collection? This action cannot be undone."
-          primaryAction={handleDeleteCollection}
-          primaryText="Delete"
-          primaryStyle="danger"
-          icon="trash-outline"
-        />
-
-        {/* Delete Group Modal */}
-        <ConfirmationModal
-          visible={showDeleteGroupModal}
-          onClose={() => setShowDeleteGroupModal(false)}
-          title={`Delete ${selectedPosts.length} Posts`}
-          message="Are you sure you want to delete these posts? This action cannot be undone."
-          primaryAction={handleConfirmGroupDelete}
-          primaryText="Delete"
-          primaryStyle="danger"
-          icon="trash-outline"
-        />
-      </View>
-
-      {/* Menu Modal */}
-      <Modal
-        visible={isMenuVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={closeMenu}
-      >
-        <View style={styles.menuModal}>
-          <View style={styles.menuContent}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
+        {/* Collection Header */}
+        <View style={styles.header}>
+          <View style={styles.headerTop}>
             <TouchableOpacity
-              style={styles.menuItem}
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="arrow-back" size={24} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.collectionName}>{collectionName}</Text>
+            <View style={styles.headerIcons}>
+              {isSelectionMode ? (
+                <>
+                  <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
+                    <Ionicons name="close" size={24} color="#000" />
+                  </TouchableOpacity>
+                  <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
+                  <TouchableOpacity
+                    onPress={handleGroupMove}
+                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                    disabled={isExternalCollection}
+                  >
+                    <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleGroupDelete}
+                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                    disabled={isExternalCollection}
+                  >
+                    <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    onPress={toggleSelectionMode}
+                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
+                    disabled={isExternalCollection}
+                  >
+                    <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
+                  </TouchableOpacity>
+                  {canEditCollection ? (
+                    <>
+                      <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
+                        <Ionicons name="create-outline" size={24} color="#000" />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={() => setShowDeleteCollectionModal(true)} style={styles.selectionButton}>
+                        <Ionicons name="trash" size={24} color="red" />
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                        <Ionicons name="create-outline" size={24} color="#ccc" />
+                      </TouchableOpacity>
+                      <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
+                        <Ionicons name="trash" size={24} color="#ccc" />
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+          <View style={styles.headerBottom}>
+            <Text style={styles.collectionDescription}>{collectionDescription}</Text>
+            <Text style={styles.postCount}>{posts.length} posts</Text>
+          </View>
+        </View>
+
+        {/* Add Search Bar */}
+        <View style={commonStyles.searchContainer}>
+          <Ionicons name="search" size={20} color="#777" style={commonStyles.searchIcon} />
+          <TextInput
+            style={commonStyles.searchInput}
+            placeholder="Search posts..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#999"
+          />
+        </View>
+
+        {/* Posts List */}
+        <FlatList
+          data={filteredPosts}
+          keyExtractor={(item) => item.id}
+          numColumns={numColumns}
+          key={numColumns}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <MaterialIcons name="post-add" size={64} color="#ccc" />
+              <Text style={styles.emptyText}>
+                This collection is empty! Start adding posts to keep things organized.
+              </Text>
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.postCard,
+                isSelectionMode && selectedPosts.includes(item.id) && styles.selectedPostCard
+              ]}
+
               onPress={() => {
-                navigation.navigate('EditPost', { collectionId, postId: selectedPost.id });
-                closeMenu();
+                if (isSelectionMode) {
+                  toggleItemSelection(item.id);
+                } else {
+                  navigation.navigate('PostDetails', {
+                    postId: item.id,
+                    collectionId: collectionId,
+                    ownerId: effectiveUserId
+                  });
+                }
+              }}
+              onLongPress={() => {
+                if (!isSelectionMode) {
+                  selectSingleItem(item.id);
+                }
               }}
             >
-              <Text style={styles.menuText}>Edit Post</Text>
+              {/* Platform Icon */}
+              <View style={styles.platformIconContainer}>
+                {getPlatformIcon(item)}
+              </View>
+
+              {isSelectionMode && (
+                <View style={styles.checkboxContainer}>
+                  <Ionicons
+                    name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
+                    size={24}
+                    color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"}
+                  />
+                </View>
+              )}
+
+              {/* Post Content */}
+              {renderThumbnail(item)}
+              <Text style={styles.postTitle}>{item.notes}</Text>
+
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => deletePost(selectedPost.id)}
-            >
-              <Text style={[styles.menuText, { color: 'red' }]}>Delete Post</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={closeMenu}>
-              <Text style={styles.menuText}>Cancel</Text>
-            </TouchableOpacity>
+
+          )}
+        />
+
+        {/* Group Action Modal (Move) */}
+        <Modal
+          visible={isGroupActionModalVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={() => setIsGroupActionModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <AppHeading style={styles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
+                <TouchableOpacity onPress={() => setIsGroupActionModalVisible(false)}>
+                  <Ionicons name="close" size={24} color="#000" />
+                </TouchableOpacity>
+              </View>
+
+              {!isAddingNewCollection ? (
+                <>
+                  <Text style={styles.modalLabel}>Select Target Collection:</Text>
+                  {collections.length > 0 ? (
+                    <View style={styles.pickerContainer}>
+                      <Picker
+                        selectedValue={selectedTargetCollection}
+                        onValueChange={(itemValue) => {
+                          if (itemValue === 'new') {
+                            setIsAddingNewCollection(true);
+                          } else {
+                            setSelectedTargetCollection(itemValue);
+                          }
+                        }}
+                        style={styles.picker}
+                      >
+                        {collections.map((collection) => (
+                          <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
+                        ))}
+                        <Picker.Item label="+ Create New Collection" value="new" />
+                      </Picker>
+                    </View>
+                  ) : (
+                    <View style={styles.noCollectionsContainer}>
+                      <Text style={styles.noCollectionsText}>No other collections available</Text>
+                    </View>
+                  )}
+
+                  <View style={styles.buttonRow}>
+                    <AppButton
+                      style={[styles.actionButton, styles.cancelButton]}
+                      title="Cancel"
+                      onPress={() => setIsGroupActionModalVisible(false)}
+                      textStyle={styles.buttonText}
+                    />
+
+                    {collections.length > 0 && (
+                      <AppButton
+                        style={[styles.actionButton, styles.confirmButton]}
+                        title="Move"
+                        onPress={handleMoveToExistingCollection}
+                        textStyle={styles.buttonTextWhite}
+                      />
+                    )}
+                  </View>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.modalLabel}>New Collection Name:</Text>
+                  <AppTextInput
+                    style={styles.input}
+                    placeholder="Enter Collection Name"
+                    value={newCollectionName}
+                    onChangeText={setNewCollectionName}
+                  />
+
+                  <View style={styles.buttonRow}>
+                    <AppButton
+                      style={[styles.actionButton, styles.cancelButton]}
+                      title="Back"
+                      onPress={() => {
+                        setIsAddingNewCollection(false);
+                        setNewCollectionName('');
+                      }}
+                      textStyle={styles.buttonText}
+                    />
+
+                    <AppButton
+                      style={[styles.actionButton, styles.confirmButton]}
+                      title="Create & Move"
+                      onPress={handleCreateCollectionAndMove}
+                      textStyle={styles.buttonTextWhite}
+                    />
+                  </View>
+                </>
+              )}
+            </View>
           </View>
+        </Modal>
+        <View>
+          {/* Delete Collection Modal */}
+          <ConfirmationModal
+            visible={showDeleteCollectionModal}
+            onClose={() => setShowDeleteCollectionModal(false)}
+            title="Delete Collection"
+            message="Are you sure you want to delete this collection? This action cannot be undone."
+            primaryAction={handleDeleteCollection}
+            primaryText="Delete"
+            primaryStyle="danger"
+            icon="trash-outline"
+          />
+
+          {/* Delete Group Modal */}
+          <ConfirmationModal
+            visible={showDeleteGroupModal}
+            onClose={() => setShowDeleteGroupModal(false)}
+            title={`Delete ${selectedPosts.length} Posts`}
+            message="Are you sure you want to delete these posts? This action cannot be undone."
+            primaryAction={handleConfirmGroupDelete}
+            primaryText="Delete"
+            primaryStyle="danger"
+            icon="trash-outline"
+          />
         </View>
-      </Modal>
-    </View>
+
+        {/* Menu Modal */}
+        <Modal
+          visible={isMenuVisible}
+          transparent={true}
+          animationType="slide"
+          onRequestClose={closeMenu}
+        >
+          <View style={styles.menuModal}>
+            <View style={styles.menuContent}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  navigation.navigate('EditPost', { collectionId, postId: selectedPost.id });
+                  closeMenu();
+                }}
+              >
+                <Text style={styles.menuText}>Edit Post</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => deletePost(selectedPost.id)}
+              >
+                <Text style={[styles.menuText, { color: 'red' }]}>Delete Post</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menuItem} onPress={closeMenu}>
+                <Text style={styles.menuText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    </commonStyles.Bg>
   );
 };
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   header: {
     marginBottom: 16,
   },

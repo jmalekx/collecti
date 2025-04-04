@@ -36,28 +36,6 @@ const SignUp = ({ navigation }) => {
     //Context states
     const toast = useToast();
 
-    //Nav header config
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitle: 'Create Account',
-            headerTitleStyle: {
-                fontFamily: 'Inter_700Bold',
-                fontSize: 18,
-            },
-            headerStyle: {
-                backgroundColor: '#F9F6F2',
-                shadowColor: 'transparent',
-                shadowOffset: { height: 0, width: 0 },
-                shadowOpacity: 0,
-                shadowRadius: 0,
-                elevation: 0,
-                borderBottomWidth: 0,
-            },
-            headerShadowVisible: false,
-            headerTitleAlign: 'center',
-        });
-    }, [navigation]);
-
     //Sign up handled with service
     const handleSignUp = async () => {
         //Validate form data
@@ -83,66 +61,68 @@ const SignUp = ({ navigation }) => {
         }
         catch (error) {
             showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
-        } 
+        }
         finally {
             setLoading(false);
         }
     };
 
     return (
-        <View style={styles.root}>
-            <KeyboardAvoidingView behavior='padding'>
-                <AppTextInput
-                    value={username}
-                    style={styles.input}
-                    placeholder="Username"
-                    autoCapitalize="none"
-                    onChangeText={setUsername}
-                />
-                <AppTextInput
-                    value={email}
-                    style={styles.input}
-                    placeholder="Email"
-                    autoCapitalize="none"
-                    onChangeText={setEmail}
-                />
-                <AppTextInput
-                    secureTextEntry={true}
-                    value={password}
-                    style={styles.input}
-                    placeholder="Password"
-                    autoCapitalize="none"
-                    onChangeText={setPassword}
-                />
-                <AppTextInput
-                    secureTextEntry={true}
-                    value={confirmPassword}
-                    style={styles.input}
-                    placeholder="Confirm Password"
-                    autoCapitalize="none"
-                    onChangeText={setConfirmPassword}
-                />
+        <commonStyles.Bg>
+            <View style={styles.root}>
+                <KeyboardAvoidingView behavior='padding'>
+                    <AppTextInput
+                        value={username}
+                        style={styles.input}
+                        placeholder="Username"
+                        autoCapitalize="none"
+                        onChangeText={setUsername}
+                    />
+                    <AppTextInput
+                        value={email}
+                        style={styles.input}
+                        placeholder="Email"
+                        autoCapitalize="none"
+                        onChangeText={setEmail}
+                    />
+                    <AppTextInput
+                        secureTextEntry={true}
+                        value={password}
+                        style={styles.input}
+                        placeholder="Password"
+                        autoCapitalize="none"
+                        onChangeText={setPassword}
+                    />
+                    <AppTextInput
+                        secureTextEntry={true}
+                        value={confirmPassword}
+                        style={styles.input}
+                        placeholder="Confirm Password"
+                        autoCapitalize="none"
+                        onChangeText={setConfirmPassword}
+                    />
 
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : (
-                    <>
-                        <AppButton
-                            style={styles.button}
-                            title='Sign Up'
-                            onPress={handleSignUp}
-                        />
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        <>
+                            <AppButton
+                                style={styles.button}
+                                title='Sign Up'
+                                onPress={handleSignUp}
+                            />
 
-                        <View style={styles.signContainer}>
-                            <AppText>Already have an account? </AppText>
-                            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                                <AppText style={styles.signLink}>Sign In</AppText>
-                            </TouchableOpacity>
-                        </View>
-                    </>
-                )}
-            </KeyboardAvoidingView>
-        </View>
+                            <View style={styles.signContainer}>
+                                <AppText>Already have an account? </AppText>
+                                <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                                    <AppText style={styles.signLink}>Sign In</AppText>
+                                </TouchableOpacity>
+                            </View>
+                        </>
+                    )}
+                </KeyboardAvoidingView>
+            </View>
+        </commonStyles.Bg>
     );
 };
 

@@ -89,66 +89,63 @@ const EditCollection = ({ route, navigation }) => {
       await updateCollection(collectionId, {
         name: collectionName,
         description: collectionDescription,
-        updatedAt: new Date().toISOString(), 
+        updatedAt: new Date().toISOString(),
       }, userId);
 
       showToast(toast, "Collection updated successfully", { type: TOAST_TYPES.SUCCESS });
       navigation.goBack();
-    } 
+    }
     catch (error) {
       showToast(toast, "Failed to update collection", { type: TOAST_TYPES.DANGER });
-    } 
+    }
     finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Collection Name */}
-      <Text style={styles.label}>Collection Name</Text>
-      <TextInput
-        style={styles.input}
-        value={collectionName}
-        onChangeText={setCollectionName}
-        placeholder="Enter collection name"
-        editable={!loading}
-      />
+        {/* Collection Name */}
+        <Text style={styles.label}>Collection Name</Text>
+        <TextInput
+          style={styles.input}
+          value={collectionName}
+          onChangeText={setCollectionName}
+          placeholder="Enter collection name"
+          editable={!loading}
+        />
 
-      {/* Collection Description */}
-      <Text style={styles.label}>Collection Description</Text>
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        value={collectionDescription}
-        onChangeText={setCollectionDescription}
-        placeholder="Enter collection description"
-        multiline
-        numberOfLines={4}
-        editable={!loading}
-      />
+        {/* Collection Description */}
+        <Text style={styles.label}>Collection Description</Text>
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          value={collectionDescription}
+          onChangeText={setCollectionDescription}
+          placeholder="Enter collection description"
+          multiline
+          numberOfLines={4}
+          editable={!loading}
+        />
 
-      {/* Save Button */}
-      <TouchableOpacity
-        style={[styles.saveButton, loading && styles.disabledButton]}
-        onPress={saveChanges}
-        disabled={loading}
-      >
-        <Text style={styles.saveButtonText}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Text>
-      </TouchableOpacity>
-    </View>
+        {/* Save Button */}
+        <TouchableOpacity
+          style={[styles.saveButton, loading && styles.disabledButton]}
+          onPress={saveChanges}
+          disabled={loading}
+        >
+          <Text style={styles.saveButtonText}>
+            {loading ? "Saving..." : "Save Changes"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </commonStyles.Bg>
   );
 };
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   label: {
     fontSize: 16,
     fontWeight: 'bold',

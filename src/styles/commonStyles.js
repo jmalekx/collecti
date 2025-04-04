@@ -1,4 +1,6 @@
+import React from 'react';
 import { StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 const typography = {
   fontRegular: 'Inter_400Regular',
@@ -9,10 +11,9 @@ const typography = {
 const layoutStyles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F9F6F2',
-    padding: 20,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    padding: 16,
   },
   optionsContainer: {
     flexDirection: "row",
@@ -152,6 +153,36 @@ const optionStyles = StyleSheet.create({
   },
 });
 
+const Bg = React.memo(({ children, style }) => {
+  return (
+    <LinearGradient
+      colors={['#F5D6E0', '#F9EAD9', '#FCF5E8']}
+      style={[{ flex: 1 }, style]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+    >
+      {children}
+    </LinearGradient>
+  );
+});
+
+const headerStyles = {
+  defaultHeaderOptions: {
+    headerTitleStyle: {
+      fontFamily: typography.fontBold || 'Inter_700Bold',
+      fontSize: 18,
+    },
+    headerStyle: {
+      backgroundColor: '#F5D6E0',
+      elevation: 0,
+      shadowOpacity: 0,
+      borderBottomWidth: 0,
+    },
+    headerShadowVisible: false,
+    headerTitleAlign: 'center',
+  }
+};
+
 //Merge all style objects for export
 const commonStyles = {
   ...layoutStyles,
@@ -159,7 +190,9 @@ const commonStyles = {
   ...buttonStyles,
   ...inputStyles,
   ...optionStyles,
+  ...headerStyles,
+  Bg,
 };
 
-export { typography };
+export { typography, headerStyles };
 export default commonStyles;

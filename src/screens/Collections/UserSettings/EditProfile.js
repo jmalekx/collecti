@@ -45,29 +45,29 @@ const EditProfile = ({ navigation }) => {
     setLocalImage(null);
     showToast(toast, "Profile picture will be removed on save", { type: TOAST_TYPES.INFO });
   };
-  
+
   //Load user profile data on component mount
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        
+
         //Call service to get user profile
         const userData = await getUserProfile();
-        
+
         if (userData) {
           setUsername(userData.username || '');
           setProfilePicture(userData.profilePicture || '');
         }
-      } 
+      }
       catch (error) {
         showToast(toast, "Failed to load profile", { type: TOAST_TYPES.DANGER });
-      } 
+      }
       finally {
         setLoading(false);
       }
     };
-    
+
     fetchProfile();
   }, [toast]);
 
@@ -94,7 +94,7 @@ const EditProfile = ({ navigation }) => {
       if (!result.canceled) {
         setLocalImage(result.assets[0].uri);
       }
-    } 
+    }
     catch (error) {
       showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
     }
@@ -109,47 +109,47 @@ const EditProfile = ({ navigation }) => {
   const handleSaveProfile = async () => {
     try {
       setSaving(true);
-      
+
       let profileImageUrl = profilePicture;
-      
+
       //Upload new image if selected
       if (localImage) {
         try {
           setUploadingImage(true);
           showToast(toast, "Uploading profile picture...", { type: TOAST_TYPES.INFO });
-          
+
           //Upload to Cloudinary
           const uploadedUrl = await uploadImageToCloudinary(localImage);
           if (!uploadedUrl) {
             throw new Error("Failed to upload image");
           }
-          
+
           profileImageUrl = uploadedUrl;
           setUploadingImage(false);
-        } 
+        }
         catch (uploadError) {
           showToast(toast, "Failed to upload profile picture", { type: TOAST_TYPES.DANGER });
           setSaving(false);
           return;
         }
       }
-      
+
       //Build update data object
       const updateData = {
         username: username,
         profilePicture: profileImageUrl, // This will be empty string if user removed profile pic
         updatedAt: new Date().toISOString()
       };
-      
+
       //Call service to update profile
       await updateUserProfile(updateData);
-      
+
       showToast(toast, "Profile updated successfully", { type: TOAST_TYPES.SUCCESS });
       navigation.goBack();
-    } 
+    }
     catch (error) {
       showToast(toast, "Failed to update profile", { type: TOAST_TYPES.DANGER });
-    } 
+    }
     finally {
       setSaving(false);
     }
@@ -165,87 +165,83 @@ const EditProfile = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <AppHeading>Edit Profile</AppHeading>
-      
-      {/* Profile picture section */}
-      <View style={styles.profilePictureSection}>
-        <Text style={styles.label}>Profile Picture</Text>
-        
-        {localImage ? (
-          <View style={styles.profileImageContainer}>
-            <Image source={{ uri: localImage }} style={styles.profileImage} />
+    <commonStyles.Bg>
+      <View style={styles.container}>
+
+        {/* Profile picture section */}
+        <View style={styles.profilePictureSection}>
+          <Text style={styles.label}>Profile Picture</Text>
+
+          {localImage ? (
+            <View style={styles.profileImageContainer}>
+              <Image source={{ uri: localImage }} style={styles.profileImage} />
+              <TouchableOpacity
+                style={styles.removeImageButton}
+                onPress={removeSelectedImage}
+              >
+                <Ionicons name="close-circle" size={24} color="#FF3B30" />
+              </TouchableOpacity>
+            </View>
+          ) : profilePicture ? (
+            <View style={styles.profileImageContainer}>
+              <Image source={{ uri: profilePicture }} style={styles.profileImage} />
+              <TouchableOpacity
+                style={styles.changeImageButton}
+                onPress={selectImage}
+              >
+                <Ionicons name="camera" size={24} color="#007AFF" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.removeProfilePictureButton}
+                onPress={removeProfilePicture}
+              >
+                <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+              </TouchableOpacity>
+            </View>
+          ) : (
             <TouchableOpacity
-              style={styles.removeImageButton}
-              onPress={removeSelectedImage}
-            >
-              <Ionicons name="close-circle" size={24} color="#FF3B30" />
-            </TouchableOpacity>
-          </View>
-        ) : profilePicture ? (
-          <View style={styles.profileImageContainer}>
-            <Image source={{ uri: profilePicture }} style={styles.profileImage} />
-            <TouchableOpacity
-              style={styles.changeImageButton}
+              style={styles.pickImageButton}
               onPress={selectImage}
             >
-              <Ionicons name="camera" size={24} color="#007AFF" />
+              <Ionicons name="person-circle-outline" size={60} color="#007AFF" />
+              <Text style={styles.pickImageText}>Select Profile Picture</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.removeProfilePictureButton}
-              onPress={removeProfilePicture}
-            >
-              <Ionicons name="trash-outline" size={20} color="#FF3B30" />
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={styles.pickImageButton}
-            onPress={selectImage}
-          >
-            <Ionicons name="person-circle-outline" size={60} color="#007AFF" />
-            <Text style={styles.pickImageText}>Select Profile Picture</Text>
-          </TouchableOpacity>
-        )}
+          )}
+        </View>
+
+        {/* Username input */}
+        <Text style={styles.label}>Username</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your username"
+          value={username}
+          onChangeText={setUsername}
+        />
+
+        {/* Save button with loading state */}
+        <TouchableOpacity
+          style={[styles.button, (saving || uploadingImage) && styles.disabledButton]}
+          onPress={handleSaveProfile}
+          disabled={saving || uploadingImage}
+        >
+          {saving || uploadingImage ? (
+            <View style={styles.savingContainer}>
+              <ActivityIndicator size="small" color="#fff" />
+              <Text style={styles.savingText}>
+                {uploadingImage ? "Uploading image..." : "Saving..."}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.buttonText}>Save Changes</Text>
+          )}
+        </TouchableOpacity>
       </View>
-      
-      {/* Username input */}
-      <Text style={styles.label}>Username</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your username"
-        value={username}
-        onChangeText={setUsername}
-      />
-      
-      {/* Save button with loading state */}
-      <TouchableOpacity
-        style={[styles.button, (saving || uploadingImage) && styles.disabledButton]}
-        onPress={handleSaveProfile}
-        disabled={saving || uploadingImage}
-      >
-        {saving || uploadingImage ? (
-          <View style={styles.savingContainer}>
-            <ActivityIndicator size="small" color="#fff" />
-            <Text style={styles.savingText}>
-              {uploadingImage ? "Uploading image..." : "Saving..."}
-            </Text>
-          </View>
-        ) : (
-          <Text style={styles.buttonText}>Save Changes</Text>
-        )}
-      </TouchableOpacity>
-    </View>
+    </commonStyles.Bg >
   );
 };
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',

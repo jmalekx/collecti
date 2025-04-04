@@ -9,11 +9,12 @@ import HomePage from '../../screens/HomePage/HomePage';
 import PostDetails from '../../screens/Collections/Posts/PostDetails';
 import EditPost from '../../screens/Collections/Posts/EditPost';
 import CollectionDetails from '../../screens/Collections/CollectionDetails';
+import commonStyles from '../../styles/commonStyles';
 
 const Stack = createNativeStackNavigator();
 
 const HomeStack = () => (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
         <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
         <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
         <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />

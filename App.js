@@ -18,6 +18,7 @@ import { getUserProfile } from './src/services/users';
 import MainLayout from './src/components/MainLayout';
 import AuthStack from './src/navigation/stacks/AuthStack';
 import OnboardingStack from './src/navigation/stacks/OnboardingStack';
+import { typography } from './src/styles/commonStyles';
 
 /*
   App Component
@@ -83,7 +84,7 @@ function App() {
   }
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="#F9F6F2" translucent={false} />
+      <StatusBar barStyle="dark-content" backgroundColor="#F5D6E0" translucent={false} />
       <ToastProvider
         placement="top"
         duration={4000}

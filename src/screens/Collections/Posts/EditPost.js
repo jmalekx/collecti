@@ -38,17 +38,17 @@ const EditPost = ({ route, navigation }) => {
     useEffect(() => {
         const fetchPostData = async () => {
             setLoading(true);
-            
+
             // Use service to load post data
             const postData = await loadPostForEditing(collectionId, postId, toast);
-            
+
             if (postData) {
                 setNotes(postData.notes);
                 setTags(postData.tags);
             } else {
                 navigation.goBack();
             }
-            
+
             setLoading(false);
         };
 
@@ -59,12 +59,12 @@ const EditPost = ({ route, navigation }) => {
     const handleSave = async () => {
         // Use service to save post data
         const success = await saveEditedPost(
-            collectionId, 
-            postId, 
-            { notes, tags }, 
+            collectionId,
+            postId,
+            { notes, tags },
             toast
         );
-        
+
         if (success) {
             navigation.goBack();
         }
@@ -80,45 +80,43 @@ const EditPost = ({ route, navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="close" size={24} color="#000" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleSave}>
-                    <Ionicons name="checkmark" size={24} color="#000" />
-                </TouchableOpacity>
-            </View>
+        <commonStyles.Bg>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="close" size={24} color="#000" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSave}>
+                        <Ionicons name="checkmark" size={24} color="#000" />
+                    </TouchableOpacity>
+                </View>
 
-            <View style={styles.form}>
-                <Text style={styles.label}>Notes</Text>
-                <TextInput
-                    style={styles.input}
-                    value={notes}
-                    onChangeText={setNotes}
-                    multiline
-                    placeholder="Add notes about this post..."
-                />
+                <View style={styles.form}>
+                    <Text style={styles.label}>Notes</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={notes}
+                        onChangeText={setNotes}
+                        multiline
+                        placeholder="Add notes about this post..."
+                    />
 
-                <Text style={styles.label}>Tags</Text>
-                <TextInput
-                    style={styles.input}
-                    value={tags}
-                    onChangeText={setTags}
-                    placeholder="Add tags (comma separated)"
-                />
+                    <Text style={styles.label}>Tags</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={tags}
+                        onChangeText={setTags}
+                        placeholder="Add tags (comma separated)"
+                    />
+                </View>
             </View>
-        </View>
+        </commonStyles.Bg>
     );
 };
 
 // styles remain the same
 const styles = StyleSheet.create({
     ...commonStyles,
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
@@ -128,8 +126,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eee',
     },
     form: {
         padding: 16,

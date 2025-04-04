@@ -94,20 +94,20 @@ const PostDetails = ({ route, navigation }) => {
     //Platform-specific link handling using service
     const handlePlatformLink = async () => {
         try {
-          if (post.platform === 'pinterest' && post.sourceUrl) {
-            Linking.openURL(post.sourceUrl).catch(error => {
-              showToast(toast, "Could not open Pinterest URL", { type: TOAST_TYPES.DANGER });
-            });
-          } 
-          else {
-            // Use the correctly imported function
-            await handleOpenInPlatform(post, toast);
-          }
-        } 
-        catch (error) {
-          showToast(toast, "Error opening link", { type: TOAST_TYPES.DANGER });
+            if (post.platform === 'pinterest' && post.sourceUrl) {
+                Linking.openURL(post.sourceUrl).catch(error => {
+                    showToast(toast, "Could not open Pinterest URL", { type: TOAST_TYPES.DANGER });
+                });
+            }
+            else {
+                // Use the correctly imported function
+                await handleOpenInPlatform(post, toast);
+            }
         }
-      };
+        catch (error) {
+            showToast(toast, "Error opening link", { type: TOAST_TYPES.DANGER });
+        }
+    };
 
     //Loading state render
     if (loading) {
@@ -119,109 +119,106 @@ const PostDetails = ({ route, navigation }) => {
     }
 
     return (
-        <View style={styles.container}>
-            {/* Header Section */}
-            <View style={styles.header}>
-                {/* Back Navigation Button */}
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Ionicons name="chevron-back" size={24} color="#007AFF" />
-                </TouchableOpacity>
-                {/* Action Buttons */}
-                <View style={styles.headerActions}>
-                    {isExternalCollection ? (
-                        //Disabled buttons for external collections
-                        <>
-                            <TouchableOpacity
-                                disabled={true}
-                                style={[styles.headerButton, styles.disabledIcon]}
-                            >
-                                <Ionicons name="create-outline" size={24} color="#ccc" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                disabled={true}
-                                style={[styles.headerButton, styles.disabledIcon]}
-                            >
-                                <Ionicons name="trash" size={24} color="#ccc" />
-                            </TouchableOpacity>
-                        </>
-                    ) : (
-                        //Enabled buttons for user own collections
-                        <>
-                            <TouchableOpacity
-                                onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
-                                style={styles.headerButton}
-                            >
-                                <Ionicons name="create-outline" size={24} color="#007AFF" />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={handleDelete}
-                                style={styles.headerButton}
-                            >
-                                <Ionicons name="trash" size={24} color="#FF3B30" />
-                            </TouchableOpacity>
-                        </>
-                    )}
+        <commonStyles.Bg>
+            <View style={styles.container}>
+                {/* Header Section */}
+                <View style={styles.header}>
+                    {/* Back Navigation Button */}
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="chevron-back" size={24} color="#007AFF" />
+                    </TouchableOpacity>
+                    {/* Action Buttons */}
+                    <View style={styles.headerActions}>
+                        {isExternalCollection ? (
+                            //Disabled buttons for external collections
+                            <>
+                                <TouchableOpacity
+                                    disabled={true}
+                                    style={[styles.headerButton, styles.disabledIcon]}
+                                >
+                                    <Ionicons name="create-outline" size={24} color="#ccc" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    disabled={true}
+                                    style={[styles.headerButton, styles.disabledIcon]}
+                                >
+                                    <Ionicons name="trash" size={24} color="#ccc" />
+                                </TouchableOpacity>
+                            </>
+                        ) : (
+                            //Enabled buttons for user own collections
+                            <>
+                                <TouchableOpacity
+                                    onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
+                                    style={styles.headerButton}
+                                >
+                                    <Ionicons name="create-outline" size={24} color="#007AFF" />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={handleDelete}
+                                    style={styles.headerButton}
+                                >
+                                    <Ionicons name="trash" size={24} color="#FF3B30" />
+                                </TouchableOpacity>
+                            </>
+                        )}
+                    </View>
                 </View>
-            </View>
 
-            {/* Post Content - Using the specialized content renderer component */}
-            <RenderPosts post={post} toast={toast} />
+                {/* Post Content - Using the specialized content renderer component */}
+                <RenderPosts post={post} toast={toast} />
 
-            {/* Post Notes Section */}
-            <LinkTexts text={post?.notes} style={styles.notes} />
+                {/* Post Notes Section */}
+                <LinkTexts text={post?.notes} style={styles.notes} />
 
-            {/* Post Metadata Section */}
-            <View style={styles.metaContainer}>
-                {post?.createdAt && (
-                    <Text style={styles.dateText}>
-                        Saved on {formatDate(post.createdAt)}
+                {/* Post Metadata Section */}
+                <View style={styles.metaContainer}>
+                    {post?.createdAt && (
+                        <Text style={styles.dateText}>
+                            Saved on {formatDate(post.createdAt)}
+                        </Text>
+                    )}
+                    <Text style={styles.platformText}>
+                        From {formatPlatform(post?.platform)}
                     </Text>
+                </View>
+
+                {/* Post Tags Section */}
+                <View style={styles.tagsContainer}>
+                    {post?.tags?.map((tag, index) => (
+                        <Text key={index} style={styles.tag}>
+                            #{tag}
+                        </Text>
+                    ))}
+                </View>
+
+                {/* Platform Link Button - Using platform service to determine visibility */}
+                {shouldShowPlatformLink(post) && (
+                    <TouchableOpacity style={styles.platformButton} onPress={handlePlatformLink}>
+                        <Text style={styles.platformButtonText}>
+                            View on {getPlatformDisplayName(post)}
+                        </Text>
+                    </TouchableOpacity>
                 )}
-                <Text style={styles.platformText}>
-                    From {formatPlatform(post?.platform)}
-                </Text>
+
+                {/* Delete Post Modal */}
+                <ConfirmationModal
+                    visible={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    title="Delete Post"
+                    message="Are you sure you want to delete this post? This action cannot be undone."
+                    primaryAction={confirmDelete}
+                    primaryText="Delete"
+                    primaryStyle="danger"
+                    icon="trash-outline"
+                />
             </View>
-
-            {/* Post Tags Section */}
-            <View style={styles.tagsContainer}>
-                {post?.tags?.map((tag, index) => (
-                    <Text key={index} style={styles.tag}>
-                        #{tag}
-                    </Text>
-                ))}
-            </View>
-
-            {/* Platform Link Button - Using platform service to determine visibility */}
-            {shouldShowPlatformLink(post) && (
-                <TouchableOpacity style={styles.platformButton} onPress={handlePlatformLink}>
-                    <Text style={styles.platformButtonText}>
-                        View on {getPlatformDisplayName(post)}
-                    </Text>
-                </TouchableOpacity>
-            )}
-
-            {/* Delete Post Modal */}
-            <ConfirmationModal
-                visible={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                title="Delete Post"
-                message="Are you sure you want to delete this post? This action cannot be undone."
-                primaryAction={confirmDelete}
-                primaryText="Delete"
-                primaryStyle="danger"
-                icon="trash-outline"
-            />
-        </View>
+        </commonStyles.Bg>
     );
 };
 
 const styles = StyleSheet.create({
     ...commonStyles,
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: '#fff',
-    },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',

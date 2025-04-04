@@ -202,73 +202,70 @@ const SearchPage = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        {loading && !loadingMore && (
-          <View style={styles.fullScreenLoader}>
-            <ActivityIndicator size="large" color="#007AFF" />
-          </View>
-        )}
-
-        <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search collections..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#999"
-          autoCapitalize="none"
-        />
-        {searchQuery !== '' && (
-          <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <Ionicons name="close-circle" size={20} color="#666" />
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <FlatList
-        data={results}
-        keyExtractor={(item, index) => item.uniqueId || `${item.id}_${index}`} // Fallback key
-        numColumns={2}
-        columnWrapperStyle={styles.resultGrid}
-        onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={5}
-        windowSize={5}
-        initialNumToRender={10}
-        maintainVisibleContentPosition={{
-          minIndexForVisible: 0,
-        }}
-        ListFooterComponent={() => (
-          loadingMore ? (
-            <View style={styles.loadingFooter}>
-              <ActivityIndicator size="small" color="#007AFF" />
+    <commonStyles.Bg>
+      <View style={styles.container}>
+        <View style={styles.searchContainer}>
+          {loading && !loadingMore && (
+            <View style={styles.fullScreenLoader}>
+              <ActivityIndicator size="large" color="#007AFF" />
             </View>
-          ) : null
-        )}
-        renderItem={renderCollectionItem}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Ionicons name="search" size={64} color="#ccc" />
-            <Text style={styles.emptyText}>
-              {loading ? 'Loading collections...' :
-                searchQuery.trim() === '' ? 'Recent collections will appear here' : 'No results found'}
-            </Text>
-          </View>
-        }
-      />
-    </View>
+          )}
+
+          <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search collections..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholderTextColor="#999"
+            autoCapitalize="none"
+          />
+          {searchQuery !== '' && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Ionicons name="close-circle" size={20} color="#666" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <FlatList
+          data={results}
+          keyExtractor={(item, index) => item.uniqueId || `${item.id}_${index}`} // Fallback key
+          numColumns={2}
+          columnWrapperStyle={styles.resultGrid}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          initialNumToRender={10}
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+          }}
+          ListFooterComponent={() => (
+            loadingMore ? (
+              <View style={styles.loadingFooter}>
+                <ActivityIndicator size="small" color="#007AFF" />
+              </View>
+            ) : null
+          )}
+          renderItem={renderCollectionItem}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Ionicons name="search" size={64} color="#ccc" />
+              <Text style={styles.emptyText}>
+                {loading ? 'Loading collections...' :
+                  searchQuery.trim() === '' ? 'Recent collections will appear here' : 'No results found'}
+              </Text>
+            </View>
+          }
+        />
+      </View>
+    </commonStyles.Bg>
   );
 };
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -29,11 +29,11 @@ import RenderThumbnail from '../../components/RenderThumbnail';
 
 const Bookmarks = () => {
   //Use the custom bookmark hook for all bookmark operations
-  const { 
-    bookmarkedCollections, 
-    loading, 
-    loadBookmarks, 
-    removeBookmark 
+  const {
+    bookmarkedCollections,
+    loading,
+    loadBookmarks,
+    removeBookmark
   } = useBookmarks();
 
   //Navigation hook
@@ -114,32 +114,28 @@ const Bookmarks = () => {
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Your Bookmarks</Text>
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <Text>Loading bookmarks...</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={bookmarkedCollections}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={bookmarkedCollections.length === 0 ? styles.emptyListContent : styles.listContent}
-          ListEmptyComponent={EmptyBookmarksMessage}
-        />
-      )}
-    </View>
+    <commonStyles.Bg>
+      <View style={styles.container}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <Text>Loading bookmarks...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={bookmarkedCollections}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={bookmarkedCollections.length === 0 ? styles.emptyListContent : styles.listContent}
+            ListEmptyComponent={EmptyBookmarksMessage}
+          />
+        )}
+      </View>
+    </commonStyles.Bg>
   );
 };
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',

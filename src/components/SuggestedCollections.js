@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 16,
     width: '100%',
-    height: 180,
+    height: 170,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -107,13 +107,13 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   loadingContainer: {
-    height: 150,
+    height: 130,
     justifyContent: 'center',
     alignItems: 'center',
   },
   collectionCard: {
-    width: 150,
-    height: 140,
+    width: 130,
+    height: 130,
     marginRight: 12,
     backgroundColor: '#fff',
     borderRadius: 12,

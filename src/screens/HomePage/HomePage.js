@@ -73,34 +73,36 @@ const HomePage = () => {
   }, [toast]);
 
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Header with greeting and profile image */}
-      <View style={styles.header}>
-        <View style={styles.greetingContainer}>
-          <Text style={styles.greeting}>Hello,</Text>
-          <Text style={styles.username}>{userName}</Text>
+        {/* Header with greeting and profile image */}
+        <View style={styles.header}>
+          <View style={styles.greetingContainer}>
+            <Text style={styles.greeting}>Hello,</Text>
+            <Text style={styles.username}>{userName}</Text>
+          </View>
+
+          <View style={styles.profileContainer}>
+            {profileImage ? (
+              <Image source={{ uri: profileImage }} style={styles.profileImage} />
+            ) : (
+              //Use DEFAULT_PROFILE_PICTURE instead of initials when no profile image
+              <Image
+                source={{ uri: DEFAULT_PROFILE_PICTURE }}
+                style={styles.profileImage}
+              />
+            )}
+          </View>
         </View>
 
-        <View style={styles.profileContainer}>
-          {profileImage ? (
-            <Image source={{ uri: profileImage }} style={styles.profileImage} />
-          ) : (
-            //Use DEFAULT_PROFILE_PICTURE instead of initials when no profile image
-            <Image
-              source={{ uri: DEFAULT_PROFILE_PICTURE }}
-              style={styles.profileImage}
-            />
-          )}
+        {/* Content sections */}
+        <View style={styles.section}>
+          <SuggestedCollections />
         </View>
-      </View>
 
-      {/* Content sections */}
-      <View style={styles.section}>
-        <SuggestedCollections />
       </View>
-      
-    </View>
+    </commonStyles.Bg>
   );
 };
 
@@ -109,7 +111,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
