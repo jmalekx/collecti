@@ -2,7 +2,7 @@
 import { Linking } from 'react-native';
 
 //Project services and utilities
-import { isDirectPinterestImage, openPinterestUrl } from './pinterest/pinterestHelpers';
+import { isDirectPinterestImage } from './pinterest/pinterestHelpers';
 
 /* 
     Platform Service Module

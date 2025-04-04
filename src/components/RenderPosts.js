@@ -3,12 +3,14 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 //Project services and utilities
+import { extractPostUrl } from '../services/platformService';
+import { isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
+
+//Custom component imports and styling
 import InstagramEmbed from './InstagramEmbed';
 import TikTokEmbed from './TiktokEmbed';
 import YouTubeEmbed from './YoutubeEmbed';
 import PinterestEmbed from './PinterestEmbed';
-import { extractPostUrl } from '../services/platformService';
-import { isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
 
 /*
     Post Content Renderer Component

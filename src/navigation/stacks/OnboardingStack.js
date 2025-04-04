@@ -4,7 +4,7 @@ import React from 'react';
 //Third-party library external imports
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-//Screen imports
+//Custom component imports and styling
 import Screen1 from '../../screens/SignUp/Screen1';
 import Screen2 from '../../screens/SignUp/Screen2';
 import Screen3 from '../../screens/SignUp/Screen3';

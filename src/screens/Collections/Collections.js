@@ -10,11 +10,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserData } from '../../hooks/useUserData';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
-import ProfileHeader from '../../components/ProfileHeader';
-import RenderThumbnail from '../../components/RenderThumbnail';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
+import ProfileHeader from '../../components/ProfileHeader';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 /*
   Collections component displays the user's collections and allows searching through them.

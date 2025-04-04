@@ -13,13 +13,13 @@ import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 import { getPost } from '../../../services/posts';
 import { handlePostDeletion, handleOpenInPlatform } from '../../../services/postActionService';
 import { shouldShowPlatformLink, getPlatformDisplayName } from '../../../services/platformService';
-import ConfirmationModal from '../../../components/ConfirmationModal';
-import LinkTexts from '../../../components/LinkTexts';
 import { formatDate, formatPlatform } from '../../../utils/formatting';
-import RenderPosts from '../../../components/RenderPosts';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
+import ConfirmationModal from '../../../components/ConfirmationModal';
+import LinkTexts from '../../../components/LinkTexts';
+import RenderPosts from '../../../components/RenderPosts';
 
 /*
     PostDetails Screen

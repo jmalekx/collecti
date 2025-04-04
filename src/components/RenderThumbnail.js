@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
-//Project services and utilities
+//Custom component imports and styling
 import InstagramEmbed from './InstagramEmbed';
 import TikTokEmbed from './TiktokEmbed';
 import YouTubeEmbed from './YoutubeEmbed';

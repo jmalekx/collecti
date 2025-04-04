@@ -9,17 +9,18 @@ import { useToast } from 'react-native-toast-notifications';
 import { Picker } from '@react-native-picker/picker';
 
 //Project services and utilities
-import { AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
-import ConfirmationModal from '../../components/ConfirmationModal';
-import RenderThumbnail from '../../components/RenderThumbnail';
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
 
 //Custom component imports and styling
+import { AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import commonStyles from '../../styles/commonStyles';
+import ConfirmationModal from '../../components/ConfirmationModal';
+import RenderThumbnail from '../../components/RenderThumbnail';
 
 /*
+
   CollectionDetails Component
 
   Displays details of a specific collection, including posts and options to edit or delete the collection.

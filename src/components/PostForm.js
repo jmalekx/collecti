@@ -6,7 +6,6 @@ import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 //Custom component imports and styling
-import { showToast, TOAST_TYPES } from './Toasts';
 import commonStyles from '../commonStyles';
 
 /*
@@ -26,9 +25,6 @@ const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '
     //State transitions
     const [selectedCollectionId, setSelectedCollectionId] = React.useState(initialCollectionId);
     
-    //Context states
-    const toast = useToast();
-
     //Form submission handler
     const handleSubmit = () => {
         //Data transform and submit (comma-sepparated string to clean array)

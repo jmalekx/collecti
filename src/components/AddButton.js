@@ -13,9 +13,9 @@ import * as ImagePicker from 'expo-image-picker';
 import pinterestService from '../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../services/storage';
 import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
+import { showToast, TOAST_TYPES } from './Toasts';
 
 //Custom component imports and styling
-import { showToast, TOAST_TYPES } from './Toasts';
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../styles/commonStyles';
 

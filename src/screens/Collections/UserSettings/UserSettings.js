@@ -4,11 +4,11 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 //Project services and utilities
 import { logOut } from '../../../services/auth'; 
+
+//Custom component imports and styling
+import commonStyles from '../../../styles/commonStyles';
 import PinterestButton from '../../../components/PinterestButton';
 import ConfirmationModal from '../../../components/ConfirmationModal';
-
-//Custom component imports
-import commonStyles from '../../../styles/commonStyles';
 
 /*
   UserSettings Screen

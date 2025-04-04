@@ -10,10 +10,10 @@ import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
-import SuggestedCollections from '../../components/SuggestedCollections';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
+import SuggestedCollections from '../../components/SuggestedCollections';
 
 /* 
   HomePage Screen

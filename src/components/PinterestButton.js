@@ -7,9 +7,9 @@ import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
 import pinterestService from '../services/pinterest/pinterestServices';
+import { TOAST_TYPES, showToast } from './Toasts';
 
 //Custom component imports and styling
-import { TOAST_TYPES, showToast } from './Toasts';
 import commonStyles from '../styles/commonStyles';
 
 /*

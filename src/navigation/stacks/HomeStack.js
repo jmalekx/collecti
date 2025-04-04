@@ -4,7 +4,7 @@ import React from 'react';
 //Third-party library external imports
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-//Screen imports
+//SCustom component imports and styling
 import HomePage from '../../screens/HomePage/HomePage';
 import PostDetails from '../../screens/Collections/Posts/PostDetails';
 import EditPost from '../../screens/Collections/Posts/EditPost';

@@ -4,7 +4,7 @@ import { getDoc, getDocs, addDoc, updateDoc, deleteDoc, setDoc, onSnapshot, coll
 //Project services and utilities
 import { FIREBASE_DB } from '../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../constants';
-import { getCollectionRef, getCollectionsRef, getPostsRef, getCurrentUserId } from './firebase';
+import { getCollectionRef, getCollectionsRef, getCurrentUserId } from './firebase';
 
 /*
     Collections Service Module
