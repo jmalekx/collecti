@@ -106,7 +106,7 @@ const Bookmarks = () => {
       <Text style={styles.emptyText}>You haven't bookmarked any collections yet</Text>
       <TouchableOpacity
         style={styles.exploreButton}
-        onPress={() => navigation.navigate('Search')}
+        onPress={() => navigation.navigate('SearchScreen')}
       >
         <Text style={styles.exploreButtonText}>Explore Collections</Text>
       </TouchableOpacity>
