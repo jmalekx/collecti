@@ -99,6 +99,7 @@ const HomePage = () => {
       <View style={styles.section}>
         <SuggestedCollections />
       </View>
+      
     </View>
   );
 };
@@ -116,6 +117,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
     paddingTop: 8,
+  },
+  section: {
+    flex: 1,
+    marginBottom: 16
   },
   greetingContainer: {
     flexDirection: 'column',

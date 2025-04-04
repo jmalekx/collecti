@@ -30,7 +30,7 @@ const SuggestedCollections = () => {
   const { recommendations, loading, refreshRecommendations } = useRecommendations(6);
   const navigation = useNavigation();
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
-  
+
   const navigateToCollection = (collectionId, ownerId) => {
     navigation.navigate('CollectionDetails', {
       collectionId,
@@ -38,7 +38,7 @@ const SuggestedCollections = () => {
       isExternalCollection: ownerId !== currentUserId
     });
   };
-  
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -46,11 +46,11 @@ const SuggestedCollections = () => {
       </View>
     );
   }
-  
+
   if (recommendations.length === 0) {
     return null; //Dont show section if no recommendations
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -59,27 +59,28 @@ const SuggestedCollections = () => {
           <Ionicons name="refresh-outline" size={20} color="#007AFF" />
         </TouchableOpacity>
       </View>
-      
+
       <FlatList
         horizontal
         data={recommendations}
         keyExtractor={(item) => `${item.ownerId}_${item.id}`}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.collectionCard}
             onPress={() => navigateToCollection(item.id, item.ownerId)}
           >
-            <RenderThumbnail
-              thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
-              containerStyle={styles.thumbnailContainer}
-              thumbnailStyle={styles.thumbnail}
-              scale={0.5}
-            />
-            <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-            <Text style={styles.collectionStats} numberOfLines={1}>
-              {item.items?.length || 0} posts
-            </Text>
+            <View style={styles.thumbnailContainer}>
+              <RenderThumbnail
+                thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
+                scale={0.5}
+                containerStyle={styles.thumbnailWrapper}
+                thumbnailStyle={styles.thumbnail}
+              />
+            </View>
+            <View style={styles.cardContent}>
+              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -88,15 +89,16 @@ const SuggestedCollections = () => {
 };
 
 const styles = StyleSheet.create({
-    ...commonStyles,
+  ...commonStyles,
   container: {
     marginVertical: 16,
+    width: '100%',
+    height: 180,
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
     marginBottom: 12,
   },
   sectionTitle: {
@@ -111,37 +113,42 @@ const styles = StyleSheet.create({
   },
   collectionCard: {
     width: 150,
-    marginLeft: 16,
-    backgroundColor: '#f9f9f9',
+    height: 140,
+    marginRight: 12,
+    backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
   thumbnailContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 8,
-    overflow: 'hidden',
-    marginBottom: 8,
+    height: 90,
+    width: '100%',
+  },
+  thumbnailWrapper: {
+    width: '100%',
+    height: '100%',
   },
   thumbnail: {
     width: '100%',
     height: '100%',
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  cardContent: {
+    padding: 10,
   },
   collectionName: {
     fontSize: 14,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 4,
   },
   collectionStats: {
     fontSize: 12,
     color: '#666',
-    textAlign: 'center',
   }
 });
 
