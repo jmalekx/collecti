@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, Image, ActivityIndicator } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
@@ -28,13 +28,14 @@ import UserStats from '../../components/UserStats';
 
 const HomePage = () => {
   //State transitions
+  const [pageReady, setPageReady] = useState(false);
   const [userName, setUserName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState(null);
 
   //Get user data using the hook for collections and posts count
-  const { userProfile, collections } = useUserData();
+  const { userProfile, collections, loading: collectionsLoading } = useUserData();
 
   //Context states
   const toast = useToast();
@@ -76,6 +77,25 @@ const HomePage = () => {
 
     loadUserProfile();
   }, [toast]);
+
+  // Coordinate data loading
+  useEffect(() => {
+    // Only mark the page as ready when all data is loaded
+    if (!isLoading && !collectionsLoading) {
+      setPageReady(true);
+    }
+  }, [isLoading, collectionsLoading]);
+
+  // Show a loading spinner until everything is ready
+  if (!pageReady) {
+    return (
+      <commonStyles.Bg>
+        <View style={[styles.container, styles.loadingContainer]}>
+          <ActivityIndicator size="large" color="#007AFF" />
+        </View>
+      </commonStyles.Bg>
+    );
+  }
 
   return (
     <commonStyles.Bg>
@@ -154,6 +174,10 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
 });
 
