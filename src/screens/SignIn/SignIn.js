@@ -64,7 +64,7 @@ const SignIn = ({ navigation }) => {
 
     return (
         <commonStyles.Bg>
-            <View style={styles.container}>
+            <View style={styles.root}>
 
                 {/* Logo */}
                 <Image

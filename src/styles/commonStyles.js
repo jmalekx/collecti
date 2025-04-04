@@ -7,12 +7,9 @@ const typography = {
   fontBold: 'Inter_700Bold',
 };
 
-//Create separate style objects by category
 const layoutStyles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     padding: 16,
   },
   optionsContainer: {
@@ -156,7 +153,7 @@ const optionStyles = StyleSheet.create({
 const Bg = React.memo(({ children, style }) => {
   return (
     <LinearGradient
-      colors={['#F5D6E0', '#F9EAD9', '#FCF5E8']}
+      colors={['#F5D6E0', '#FCF5E8', '#fffbf4',]}
       style={[{ flex: 1 }, style]}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
