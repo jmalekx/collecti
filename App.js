@@ -14,10 +14,11 @@ import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/in
 import { subscribeToAuthChanges } from './src/services/auth';
 import { getUserProfile } from './src/services/users';
 
-//Import navigation stacks
+//Custom component imports and styling
 import MainLayout from './src/components/MainLayout';
 import AuthStack from './src/navigation/stacks/AuthStack';
 import OnboardingStack from './src/navigation/stacks/OnboardingStack';
+import LoadingIndicator from './src/components/LoadingIndicator';
 
 /*
   App Component
@@ -83,7 +84,7 @@ function App() {
   if (!fontsLoaded || initialising) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Loading...</Text>
+        <LoadingIndicator/>
       </View>
     );
   }

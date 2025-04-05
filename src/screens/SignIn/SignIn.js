@@ -13,7 +13,7 @@ import formValidation from '../../utils/formValidation';
 // Custom component imports and styling
 import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
-import commonStyles, { colours } from '../../styles/commonStyles';
+import commonStyles from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 /*
