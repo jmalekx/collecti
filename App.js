@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native'; // Add this import
 import { ToastProvider } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
-import { ShareIntentProvider, useShareIntentContext } from 'expo-share-intent';
+import { ShareIntentProvider } from 'expo-share-intent';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
 //Project services and utilities
@@ -18,7 +18,6 @@ import { getUserProfile } from './src/services/users';
 import MainLayout from './src/components/MainLayout';
 import AuthStack from './src/navigation/stacks/AuthStack';
 import OnboardingStack from './src/navigation/stacks/OnboardingStack';
-import { typography } from './src/styles/commonStyles';
 
 /*
   App Component
@@ -58,12 +57,12 @@ function App() {
           //Check if user needs onboarding
           const userProfile = await getUserProfile(user.uid);
           setIsOnboarding(userProfile?.isNewUser ?? true);
-        } 
+        }
         catch (error) {
           console.error("Error checking user onboarding status:", error);
           setIsOnboarding(false);
         }
-      } 
+      }
       else {
         setUser(null);
         setIsOnboarding(false);
@@ -92,28 +91,28 @@ function App() {
         renderType={{
           success: (toast) => (
             <View style={[toastConfig.containerStyle, toastConfig.success]}>
-              <Text style={[toastConfig.textStyle, { color: toastConfig.success.color }]}>
+              <Text style={[toastConfig.messageStyle, { color: toastConfig.success }]}>
                 {toast.message}
               </Text>
             </View>
           ),
           danger: (toast) => (
             <View style={[toastConfig.containerStyle, toastConfig.danger]}>
-              <Text style={[toastConfig.textStyle, { color: toastConfig.danger.color }]}>
+              <Text style={[toastConfig.messageStyle, { color: toastConfig.danger }]}>
                 {toast.message}
               </Text>
             </View>
           ),
           warning: (toast) => (
             <View style={[toastConfig.containerStyle, toastConfig.warning]}>
-              <Text style={[toastConfig.textStyle, { color: toastConfig.warning.color }]}>
+              <Text style={[toastConfig.messageStyle, { color: toastConfig.warning }]}>
                 {toast.message}
               </Text>
             </View>
           ),
           info: (toast) => (
             <View style={[toastConfig.containerStyle, toastConfig.info]}>
-              <Text style={[toastConfig.textStyle, { color: toastConfig.info.color }]}>
+              <Text style={[toastConfig.messageStyle, { color: toastConfig.info }]}>
                 {toast.message}
               </Text>
             </View>
