@@ -12,7 +12,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
   
   A custom hook for searching and paginating collections in Firebase Firestore.
   This hook provides functionality to:
-  - Fetch recent collections with pagination
+  - Fetch recent collections with pagination (server-side)
   - Search collections by term with client-side filtering
   - Handle loading states and pagination
   - Prevent duplicate entries across pagination requests

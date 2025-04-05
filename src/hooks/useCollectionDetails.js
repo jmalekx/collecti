@@ -48,8 +48,8 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             if (collectionData) {
                 setCollectionName(collectionData.name);
                 setCollectionDescription(collectionData.description || 'No description available');
-            } 
-        } 
+            }
+        }
         catch (error) {
             showToast(toast, "Error fetching collection details", { type: TOAST_TYPES.DANGER });
         }
@@ -62,7 +62,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             //Filter out current collection
             const filteredCollections = collectionsData.filter(coll => coll.id !== collectionId);
             setCollections(filteredCollections);
-        } 
+        }
         catch (error) {
             showToast(toast, "Error fetching collections", { type: TOAST_TYPES.DANGER });
         }
@@ -73,7 +73,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
         try {
             const postsData = await getCollectionPosts(collectionId, effectiveUserId);
             setPosts(postsData);
-        } 
+        }
         catch (error) {
             showToast(toast, "Error fetching posts", { type: TOAST_TYPES.DANGER });
         }
@@ -95,7 +95,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             await deleteCollectionService(collectionId, currentUserId);
             showToast(toast, "Collection deleted successfully", { type: TOAST_TYPES.INFO });
             return true;
-        } 
+        }
         catch (error) {
             showToast(toast, "Failed to delete collection", { type: TOAST_TYPES.DANGER });
             return false;
@@ -108,7 +108,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             await deletePostService(collectionId, postId);
             await fetchPosts();
             return true;
-        } 
+        }
         catch (error) {
             showToast(toast, "Failed to delete post", { type: TOAST_TYPES.DANGER });
             return false;
@@ -125,7 +125,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             await fetchPosts();
             showToast(toast, `${postIds.length} posts deleted`, { type: TOAST_TYPES.SUCCESS });
             return true;
-        } 
+        }
         catch (error) {
             showToast(toast, "Failed to delete posts", { type: TOAST_TYPES.DANGER });
             return false;
@@ -162,7 +162,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
             await fetchPosts();
             showToast(toast, `${postIds.length} posts moved successfully`, { type: TOAST_TYPES.SUCCESS });
             return true;
-        } 
+        }
         catch (error) {
             showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
             return false;
@@ -185,25 +185,32 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
 
             showToast(toast, `Posts moved to new collection: ${newCollectionName}`, { type: TOAST_TYPES.SUCCESS });
             return true;
-        } 
+        }
         catch (error) {
             showToast(toast, "Failed to move posts", { type: TOAST_TYPES.DANGER });
             return false;
         }
     }, [movePostsToCollection, toast]);
 
+    const searchAndFilterPosts = useCallback((allPosts, query) => {
+        if (!query || query.trim() === '') {
+            return allPosts;
+        }
+
+        const normalisedQuery = query.toLowerCase().trim();
+
+        return allPosts.filter(post =>
+            post.notes?.toLowerCase().includes(normalisedQuery) ||
+            post.tags?.some(tag => tag.toLowerCase().includes(normalisedQuery))
+        );
+    }, []);
+
     //Filter posts based on search query
     useEffect(() => {
-        if (posts.length > 0) {
-            const filtered = posts.filter(post =>
-                post.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-            );
-            setFilteredPosts(filtered);
-        } else {
-            setFilteredPosts([]);
-        }
-    }, [posts, searchQuery]);
+        const filtered = searchAndFilterPosts(posts, searchQuery);
+        setFilteredPosts(filtered);
+    }, [posts, searchQuery, searchAndFilterPosts]);
+
 
     //Set up real-time listener for posts
     const setupPostsListener = useCallback(() => {

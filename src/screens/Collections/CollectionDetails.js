@@ -12,12 +12,14 @@ import { Picker } from '@react-native-picker/picker';
 import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
+import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
 import { AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import commonStyles from '../../styles/commonStyles';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import RenderThumbnail from '../../components/RenderThumbnail';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /*
 
@@ -30,6 +32,9 @@ import RenderThumbnail from '../../components/RenderThumbnail';
 
 const CollectionDetails = ({ route, navigation }) => {
   const { collectionId, ownerId, isExternalCollection } = route.params;
+
+  const INITIAL_POSTS_TO_DISPLAY = 6;
+  const POSTS_INCREMENT = 4;
 
   //Context states
   const toast = useToast();
@@ -66,6 +71,15 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsSelectionMode
   } = useSelectionMode();
 
+  const {
+    paginatedItems: paginatedPosts,
+    hasMore,
+    isLoadingMore,
+    loadMore,
+    resetPagination
+  } = usePagination(filteredPosts, INITIAL_POSTS_TO_DISPLAY, POSTS_INCREMENT);
+
+
   //State trabnsitions
   const [numColumns, setNumColumns] = useState(2);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -77,6 +91,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const [selectedTargetCollection, setSelectedTargetCollection] = useState('');
   const [newCollectionName, setNewCollectionName] = useState('');
   const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
+
 
   const isFocused = useIsFocused();
 
@@ -104,6 +119,24 @@ const CollectionDetails = ({ route, navigation }) => {
     const unsubscribe = setupPostsListener();
     return () => unsubscribe();
   }, [setupPostsListener]);
+
+  //Reset pagination when search query changes
+  useEffect(() => {
+    resetPagination();
+  }, [searchQuery, resetPagination]);
+
+  //Handle load more on scroll end
+  const handleLoadMore = () => {
+    if (hasMore && !isLoadingMore) {
+      loadMore();
+    }
+  };
+
+  //Render footer with loading indicator
+  const renderFooter = () => {
+    if (!hasMore) return null;
+    return isLoadingMore ? <LoadingIndicator /> : null;
+  };
 
   //UI Helper functions
   const getPlatformIcon = (post) => {
@@ -298,10 +331,13 @@ const CollectionDetails = ({ route, navigation }) => {
 
         {/* Posts List */}
         <FlatList
-          data={filteredPosts}
+          data={paginatedPosts}
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={renderFooter}
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <MaterialIcons name="post-add" size={64} color="#ccc" />

@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_THUMBNAIL } from '../../constants';
 import { useBookmarks } from '../../hooks/useBookmarks';
+import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
@@ -21,13 +22,19 @@ import RenderThumbnail from '../../components/RenderThumbnail';
 
   Displays a list of bookmarked collections for the current user
   Implements persistence for bookmarks using custom useBookmarks hook.
+  Uses pagination for efficiently loading large numbers of bookmarks.
 
   -Read: Load bookmarked collections (via hook)
   -Delete: Remove bookmarked collection (via hook)
   -Navigation: View the bookmarked collections
+  -Pagination: Load bookmarks incrementally as user scrolls
 */
 
 const Bookmarks = () => {
+
+  const INITIAL_BOOKMARKS_TO_DISPLAY = 5;
+  const BOOKMARKS_INCREMENT = 4;
+
   //Use the custom bookmark hook for all bookmark operations
   const {
     bookmarkedCollections,
@@ -36,22 +43,38 @@ const Bookmarks = () => {
     removeBookmark
   } = useBookmarks();
 
+  //Use pagination hook for bookmarked collections
+  const {
+    paginatedItems: paginatedBookmarks,
+    hasMore,
+    isLoadingMore,
+    loadMore,
+    resetPagination
+  } = usePagination(bookmarkedCollections, INITIAL_BOOKMARKS_TO_DISPLAY, BOOKMARKS_INCREMENT);
+
   //Navigation hook
   const navigation = useNavigation();
 
   //User authentication
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
 
-  //Focus listener for data refresh using the hook's loadBookmarks function
-  React.useEffect(() => {
+  //Focus listener for data refresh using the hooks loadBookmarks function
+  useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       if (currentUserId) {
         loadBookmarks();
+        resetPagination();
       }
     });
 
     return unsubscribe;
-  }, [navigation, currentUserId, loadBookmarks]);
+  }, [navigation, currentUserId, loadBookmarks, resetPagination]);
+
+  const handleLoadMore = () => {
+    if (hasMore && !isLoadingMore) {
+      loadMore();
+    }
+  };
 
   //Navigate to collection details screen of bookmarked collection
   const navigateToCollectionDetail = (collection) => {
@@ -122,11 +145,12 @@ const Bookmarks = () => {
           </View>
         ) : (
           <FlatList
-            data={bookmarkedCollections}
+            data={paginatedBookmarks}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={bookmarkedCollections.length === 0 ? styles.emptyListContent : styles.listContent}
             ListEmptyComponent={EmptyBookmarksMessage}
+            onEndReached={handleLoadMore}
           />
         )}
       </View>
