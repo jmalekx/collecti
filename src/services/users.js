@@ -1,16 +1,19 @@
 //Third-party library external imports
-import { getDoc, getDocs, setDoc, updateDoc, onSnapshot, deleteDoc, query, where, writeBatch, getFirestore } from 'firebase/firestore';
+import { getDoc, getDocs, setDoc, updateDoc, onSnapshot, deleteDoc, doc, collection } from 'firebase/firestore';
 import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from 'firebase/auth';
 
 //Project services and utilities
-import { FIREBASE_AUTH } from '../../FirebaseConfig';
-import { getUserRef, getCurrentUserId, getPostsRef, getCollectionsRef } from './firebase';
+import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
+import { getUserRef, getCurrentUserId } from './firebase';
 import { DEFAULT_PROFILE_PICTURE } from '../constants';
 
 /*
     User Profile Service Module
 
     Centralised interface for creating and retrieving user profiles from Firestore
+    Provides functions for subscribing to user profile changes, creating new profiles,
+    updating existing profiles, and deleting user accounts
+    Handles user authentication and reauthentication for sensitive operations
 */
 
 //Subscribe to user profile changes
@@ -119,36 +122,27 @@ export const deleteUserAccount = async (password) => {
         //Get user ID for deleting associated data
         const userId = currentUser.uid;
 
-        //Delete user data from Firestor
-        await deleteDoc(getUserRef(userId));
+        //First delete all collections and posts (subcollections of the user document)
+        const userCollectionsRef = collection(FIREBASE_DB, 'users', userId, 'collections');
+        const collectionsSnapshot = await getDocs(userCollectionsRef);
 
-        //Delete user collections and posts
-        const collectionsSnapshot = await getDocs(query(getCollectionsRef(), where("userId", "==", userId)));
-        const collectionsDeleteBatch = writeBatch(getFirestore());
+        //Delete posts in each collection first
+        for (const collectionDoc of collectionsSnapshot.docs) {
+            const collectionId = collectionDoc.id;
+            const postsRef = collection(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts');
+            const postsSnapshot = await getDocs(postsRef);
 
-        //Track collection IDs to delete associated posts
-        const collectionIds = [];
-
-        collectionsSnapshot.forEach(doc => {
-            collectionIds.push(doc.id);
-            collectionsDeleteBatch.delete(doc.ref);
-        });
-
-        //Commit the collections deletion
-        await collectionsDeleteBatch.commit();
-
-        //Delete all posts in each collection
-        for (const collectionId of collectionIds) {
-            const postsSnapshot = await getDocs(getPostsRef(collectionId));
-
-            if (!postsSnapshot.empty) {
-                const postsDeleteBatch = writeBatch(getFirestore());
-                postsSnapshot.forEach(doc => {
-                    postsDeleteBatch.delete(doc.ref);
-                });
-                await postsDeleteBatch.commit();
+            //Delete all posts in collection
+            for (const postDoc of postsSnapshot.docs) {
+                await deleteDoc(doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postDoc.id));
             }
+
+            //Delete the collection document
+            await deleteDoc(doc(FIREBASE_DB, 'users', userId, 'collections', collectionId));
         }
+
+        //Now delete user document from Firestore
+        await deleteDoc(doc(FIREBASE_DB, 'users', userId));
 
         //Finally delete user account from Firebase Auth
         await deleteUser(currentUser);
