@@ -59,7 +59,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
             onConnected();
           }
         }
-      } 
+      }
       catch (error) {
         showToast(toast, "Failed to connect Pinterest", { type: TOAST_TYPES.DANGER });
       }
@@ -92,7 +92,7 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
     try {
       const authUrl = pinterestService.getAuthorizationUrl();
       await Linking.openURL(authUrl);
-    } 
+    }
     catch (error) {
       showToast(toast, "Failed to open Pinterest authorization", { type: TOAST_TYPES.DANGER });
     }
@@ -107,9 +107,9 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
       if (onDisconnected) {
         onDisconnected();
       }
-    } 
+    }
     catch (error) {
-      showToast(toast,"Failed to disconnect Pinterest", { type: TOAST_TYPES.DANGER });
+      showToast(toast, "Failed to disconnect Pinterest", { type: TOAST_TYPES.DANGER });
     }
   };
 

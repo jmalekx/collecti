@@ -16,21 +16,21 @@ import commonStyles from '../styles/commonStyles';
   semantic types (confirmation, warning, error) with optional input field support.
 */
 
-const ConfirmationModal = ({ 
-  visible, 
-  onClose, 
-  title, 
-  message, 
-  primaryAction, 
+const ConfirmationModal = ({
+  visible,
+  onClose,
+  title,
+  message,
+  primaryAction,
   primaryText,
   primaryStyle = 'primary', // 'primary', 'danger', 'warning'
-  secondaryAction, 
-  secondaryText = 'Cancel', 
+  secondaryAction,
+  secondaryText = 'Cancel',
   icon,
   //Input field e.g for the password confirmation
   showInput = false,
   inputValue = '',
-  onInputChange = () => {},
+  onInputChange = () => { },
   inputPlaceholder = '',
   inputLabel = '',
   inputSecureTextEntry = false,

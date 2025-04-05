@@ -248,7 +248,7 @@ class PinterestService {
     }
     catch (error) {
       console.log('API request failed:', error.response?.status || '', error.message);
-      return { success: false, error: error.message};
+      return { success: false, error: error.message };
     }
   }
 
@@ -292,10 +292,10 @@ class PinterestService {
         username: response.username,
         profileUrl: `https://www.pinterest.com/${response.username}/`
       };
-    } 
+    }
     catch (error) {
       console.log('Error fetching user info:', error);
-      return { success : false, error: error.message };
+      return { success: false, error: error.message };
     }
   }
 
@@ -327,7 +327,7 @@ class PinterestService {
     }
     catch (error) {
       console.log('Pinterest API: Could not fetch - user may not own this pin');
-      return {success: false};
+      return { success: false };
     }
   }
 }

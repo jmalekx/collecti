@@ -11,10 +11,10 @@ import ConfirmationModal from './ConfirmationModal';
   Provides guidance on alternative ways to save content
 */
 
-const UnsupportedPlatformModal = ({ 
-  visible, 
-  onClose, 
-  platformName = "this platform" 
+const UnsupportedPlatformModal = ({
+  visible,
+  onClose,
+  platformName = "this platform"
 }) => {
   return (
     <ConfirmationModal

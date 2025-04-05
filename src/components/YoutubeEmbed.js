@@ -17,67 +17,67 @@ import { WebView } from 'react-native-webview';
 */
 
 const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-    //Extract video ID from YouTube URL
-    const extractVideoId = (youtubeUrl) => {
-        if (!youtubeUrl) return null;
+  //Extract video ID from YouTube URL
+  const extractVideoId = (youtubeUrl) => {
+    if (!youtubeUrl) return null;
 
-        //Handle different YouTube URL formats
-        let videoId = null;
+    //Handle different YouTube URL formats
+    let videoId = null;
 
-        //Format: youtube.com/watch?v=VIDEO_ID
-        const watchRegex = /youtube\.com\/watch\?v=([^&]+)/;
-        const watchMatch = youtubeUrl.match(watchRegex);
-        if (watchMatch) {
-            videoId = watchMatch[1];
-        }
-
-        //Format: youtu.be/VIDEO_ID
-        const shortRegex = /youtu\.be\/([^?&]+)/;
-        const shortMatch = youtubeUrl.match(shortRegex);
-        if (shortMatch) {
-            videoId = shortMatch[1];
-        }
-
-        //Format: youtube.com/embed/VIDEO_ID
-        const embedRegex = /youtube\.com\/embed\/([^?&]+)/;
-        const embedMatch = youtubeUrl.match(embedRegex);
-        if (embedMatch) {
-            videoId = embedMatch[1];
-        }
-
-        return videoId;
-    };
-
-    const videoId = extractVideoId(url);
-
-    if (!videoId) {
-        return (
-            <View style={[styles.errorContainer, style]}>
-                <Text style={styles.errorText}>Invalid YouTube URL</Text>
-            </View>
-        );
+    //Format: youtube.com/watch?v=VIDEO_ID
+    const watchRegex = /youtube\.com\/watch\?v=([^&]+)/;
+    const watchMatch = youtubeUrl.match(watchRegex);
+    if (watchMatch) {
+      videoId = watchMatch[1];
     }
 
-    //Function to share YouTube video
-    const shareVideo = async () => {
-        try {
-            const shareUrl = `https://youtu.be/${videoId}`;
-            await Share.share({
-                message: `Check out this YouTube video: ${shareUrl}`,
-                url: shareUrl
-            });
-        } catch (error) {
-            console.log('Error sharing video:', error);
-        }
-    };
+    //Format: youtu.be/VIDEO_ID
+    const shortRegex = /youtu\.be\/([^?&]+)/;
+    const shortMatch = youtubeUrl.match(shortRegex);
+    if (shortMatch) {
+      videoId = shortMatch[1];
+    }
 
-    //Create embed URL for the iframe
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    //Format: youtube.com/embed/VIDEO_ID
+    const embedRegex = /youtube\.com\/embed\/([^?&]+)/;
+    const embedMatch = youtubeUrl.match(embedRegex);
+    if (embedMatch) {
+      videoId = embedMatch[1];
+    }
 
-    //Custom HTML for responsive YouTube embed
-    const customHtml = `
+    return videoId;
+  };
+
+  const videoId = extractVideoId(url);
+
+  if (!videoId) {
+    return (
+      <View style={[styles.errorContainer, style]}>
+        <Text style={styles.errorText}>Invalid YouTube URL</Text>
+      </View>
+    );
+  }
+
+  //Function to share YouTube video
+  const shareVideo = async () => {
+    try {
+      const shareUrl = `https://youtu.be/${videoId}`;
+      await Share.share({
+        message: `Check out this YouTube video: ${shareUrl}`,
+        url: shareUrl
+      });
+    } catch (error) {
+      console.log('Error sharing video:', error);
+    }
+  };
+
+  //Create embed URL for the iframe
+  const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+  //Custom HTML for responsive YouTube embed
+  const customHtml = `
     <html>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -132,26 +132,26 @@ const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
     </html>
   `;
 
-    return (
-        <View style={[styles.container, style]}>
-            {loading && (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={styles.loadingText}>Loading YouTube video...</Text>
-                </View>
-            )}
+  return (
+    <View style={[styles.container, style]}>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading YouTube video...</Text>
+        </View>
+      )}
 
-            <WebView
-                source={{ html: customHtml }}
-                style={styles.webview}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                startInLoadingState={true}
-                scrollEnabled={false}
-                onLoadStart={() => setLoading(true)}
-                onLoadEnd={() => setLoading(false)}
-                allowsFullscreenVideo={isInteractive}
-                injectedJavaScript={!isInteractive ? `
+      <WebView
+        source={{ html: customHtml }}
+        style={styles.webview}
+        javaScriptEnabled={true}
+        domStorageEnabled={true}
+        startInLoadingState={true}
+        scrollEnabled={false}
+        onLoadStart={() => setLoading(true)}
+        onLoadEnd={() => setLoading(false)}
+        allowsFullscreenVideo={isInteractive}
+        injectedJavaScript={!isInteractive ? `
           document.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -175,73 +175,73 @@ const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
           setInterval(disableLinks, 1000);
           true;
         ` : ''}
-            />
+      />
 
-            {isInteractive && (
-                <TouchableOpacity
-                    style={styles.shareButton}
-                    onPress={shareVideo}
-                >
-                    <Text style={styles.shareButtonText}>Share</Text>
-                </TouchableOpacity>
-            )}
-        </View>
-    );
+      {isInteractive && (
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={shareVideo}
+        >
+          <Text style={styles.shareButtonText}>Share</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        height: 150,
-        borderRadius: 8,
-        marginBottom: 8,
-        overflow: 'hidden',
-        backgroundColor: '#fff',
-        position: 'relative',
-    },
-    webview: {
-        width: '100%',
-        height: '100%',
-    },
-    loadingContainer: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f8f8f8',
-        zIndex: 1,
-    },
-    loadingText: {
-        marginTop: 8,
-        color: '#666',
-        fontSize: 14,
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f0f0f0',
-    },
-    errorText: {
-        color: '#666',
-        fontSize: 14,
-    },
-    shareButton: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-    },
-    shareButtonText: {
-        color: '#fff',
-        fontSize: 12,
-    }
+  container: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    position: 'relative',
+  },
+  webview: {
+    width: '100%',
+    height: '100%',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+    zIndex: 1,
+  },
+  loadingText: {
+    marginTop: 8,
+    color: '#666',
+    fontSize: 14,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  errorText: {
+    color: '#666',
+    fontSize: 14,
+  },
+  shareButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
+  shareButtonText: {
+    color: '#fff',
+    fontSize: 12,
+  }
 });
 
 export default YouTubeEmbed;

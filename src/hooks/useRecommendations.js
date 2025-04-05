@@ -49,7 +49,7 @@ export const useRecommendations = (maxResults = 6) => {
         //Tier 2: Fallback to popularity based recommendations
         const recentCollections = await getRecentCollections(maxResults);
         setRecommendations(recentCollections);
-      } 
+      }
       else {
         setRecommendations(recommendedCollections);
       }
@@ -61,7 +61,7 @@ export const useRecommendations = (maxResults = 6) => {
       try {
         const popularCollections = await getRecentCollections(maxResults);
         setRecommendations(popularCollections);
-      } 
+      }
       catch (fallbackError) {
         setRecommendations([]);
       }

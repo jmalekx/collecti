@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Modal, TextInput, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, Modal, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -20,21 +20,21 @@ import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../styles/commonStyles';
 
 /*
-  AddButton Component
+AddButton Component
 
-  Floating action button (FAB) serving as main entry point for user content creation
-  Implements multi modal interface for addingf posts from different sources (gallery, URL)
-  This is the modal you see when sharing content to the app from other platforms.
+Floating action button (FAB) serving as main entry point for user content creation
+Implements multi modal interface for addingf posts from different sources (gallery, URL)
+This is the modal you see when sharing content to the app from other platforms.
 
-  State mahcine:
-  - Idle: FAB visible, not expanded
-  - Options open: FAB menu options visible
-  - Collection creation: modal for creating new collections
-  - Post creation: modal with sub-states for content types
-    - Gallery selection
-    - URL input
-    - Collection selection
-    - New collection creation
+State mahcine:
+- Idle: FAB visible, not expanded
+- Options open: FAB menu options visible
+- Collection creation: modal for creating new collections
+- Post creation: modal with sub-states for content types
+  - Gallery selection
+  - URL input
+  - Collection selection
+  - New collection creation
 
 */
 
@@ -979,7 +979,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 40,
     left: '50%',
-    marginLeft: -30, 
+    marginLeft: -30,
     backgroundColor: '#F5D6E0',
     width: 60,
     height: 60,
@@ -991,14 +991,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    zIndex: 1001, 
+    zIndex: 1001,
     pointerEvents: 'auto',
   },
   addOptions: {
     position: 'absolute',
     bottom: 110,
-    left: '50%', 
-    marginLeft: -100, 
+    left: '50%',
+    marginLeft: -100,
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 1,
@@ -1010,7 +1010,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     width: 200,
     overflow: 'hidden',
-    zIndex: 1001, 
+    zIndex: 1001,
     pointerEvents: 'auto',
   },
   optionItem: {

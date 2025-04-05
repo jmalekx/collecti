@@ -25,7 +25,7 @@ const ProfileHeader = ({ username, stats, profilePicture }) => (
 );
 
 const styles = StyleSheet.create({
-    ...commonStyles,
+  ...commonStyles,
   header: {
     marginBottom: 16,
     alignItems: 'center',

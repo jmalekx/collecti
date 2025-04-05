@@ -56,7 +56,7 @@ const SuggestedCollections = () => {
       <View style={styles.headerContainer}>
         <Text style={styles.sectionTitle}>Suggested Collections</Text>
         <TouchableOpacity onPress={refreshRecommendations}>
-          <Ionicons name="refresh-outline" size={20} color={colours.buttonsText}/>
+          <Ionicons name="refresh-outline" size={20} color={colours.buttonsText} />
         </TouchableOpacity>
       </View>
 

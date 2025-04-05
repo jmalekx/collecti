@@ -34,14 +34,14 @@ export const useUserData = () => {
   //Subscribing to user profile changes
   useEffect(() => {
     if (!userId) return;
-    
+
     // Using real-time subscription instead of one-time fetch
     const unsubscribe = subscribeToUserProfile((profile) => {
       if (profile) {
         setUserProfile(profile);
       }
     }, userId);
-    
+
     return () => unsubscribe();
   }, [userId]);
 

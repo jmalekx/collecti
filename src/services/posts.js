@@ -17,7 +17,7 @@ export const getPost = async (collectionId, postId, userId = getCurrentUserId())
   try {
     const postDoc = await getDoc(getPostRef(collectionId, postId, userId));
     return postDoc.exists() ? { id: postDoc.id, ...postDoc.data() } : null;
-  } 
+  }
   catch (error) {
     console.log('Error fetching post:', error);
   }
@@ -28,7 +28,7 @@ export const getCollectionPosts = async (collectionId, userId = getCurrentUserId
   try {
     const snapshot = await getDocs(getPostsRef(collectionId, userId));
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  } 
+  }
   catch (error) {
     console.log('Error fetching posts:', error);
   }
@@ -49,7 +49,7 @@ export const createPost = async (collectionId, postData, userId = getCurrentUser
     await updateCollectionThumbnail(collectionId, userId);
 
     return { id: docRef.id, ...newPost };
-  } 
+  }
   catch (error) {
     console.log('Error creating post:', error);
   }
@@ -73,7 +73,7 @@ export const deletePost = async (collectionId, postId, userId = getCurrentUserId
     await updateCollectionThumbnail(collectionId, userId);
 
     return true;
-  } 
+  }
   catch (error) {
     console.log('Error deleting post:', error);
   }
@@ -128,7 +128,7 @@ export const updateCollectionThumbnail = async (collectionId, userId = getCurren
     }
 
     return true;
-  } 
+  }
   catch (error) {
     console.log('Error updating collection thumbnail:', error);
   }

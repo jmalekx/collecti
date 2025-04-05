@@ -55,7 +55,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         try {
           const resolvedUrl = await resolveShortUrl(inputUrl);
           extractedPinId = extractPinId(resolvedUrl);
-        } 
+        }
         catch (error) {
           console.log('Pinterest: Failed to resolve short URL:', error);
         }
@@ -66,14 +66,14 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         const cleanUrl = createPinUrl(extractedPinId);
         setPinId(extractedPinId);
         setPinUrl(cleanUrl);
-      } 
+      }
       else {
         //Use original url if no id
         setPinUrl(inputUrl);
       }
 
       setLoading(false);
-    } 
+    }
     catch (error) {
       setLoading(false);
     }
@@ -184,7 +184,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   const handleOpenPinterest = () => {
     if (pinUrl) {
       Linking.openURL(pinUrl);
-    } 
+    }
     else if (url) {
       Linking.openURL(url);
     }

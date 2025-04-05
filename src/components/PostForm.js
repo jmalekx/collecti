@@ -2,9 +2,6 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-//Third-party library external imports
-import { useToast } from 'react-native-toast-notifications';
-
 //Custom component imports and styling
 import commonStyles from '../commonStyles';
 
@@ -16,15 +13,15 @@ import commonStyles from '../commonStyles';
 */
 
 const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '',
-  collections, onSubmit, submitButtonText = 'Save Changes',}) => {
-  
+  collections, onSubmit, submitButtonText = 'Save Changes', }) => {
+
   //Content managing
   const [notes, setNotes] = React.useState(initialNotes);
   const [tags, setTags] = React.useState(initialTags);
 
   //State transitions
   const [selectedCollectionId, setSelectedCollectionId] = React.useState(initialCollectionId);
-  
+
   //Form submission handler
   const handleSubmit = () => {
     //Data transform and submit (comma-sepparated string to clean array)
@@ -47,7 +44,7 @@ const PostForm = ({ initialNotes = '', initialTags = '', initialCollectionId = '
         multiline
       />
 
-      {/* Tags Field - Optional */}          
+      {/* Tags Field - Optional */}
       <Text style={styles.label}>Tags (comma-separated)</Text>
       <TextInput
         style={styles.input}

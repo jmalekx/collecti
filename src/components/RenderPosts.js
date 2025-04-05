@@ -61,7 +61,7 @@ const RenderPosts = ({ post, toast }) => {
   //Pinterest posts
   if (post.platform === 'pinterest' || postUrl.includes('pin.it') || postUrl.includes('pinterest.com')) {
     const isDirectImage = isDirectPinterestImage(postUrl);
-    
+
     return (
       <View style={styles.embedContainer}>
         {isDirectImage ? (

@@ -1,5 +1,5 @@
 //Third-party library external imports
-import { collectionGroup, query, where, limit, orderBy, getDocs } from 'firebase/firestore';
+import { collectionGroup, query, limit, orderBy, getDocs } from 'firebase/firestore';
 import { getCurrentUserId } from './firebase';
 
 //Project services and utilities
