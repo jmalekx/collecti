@@ -4,7 +4,7 @@ import { View, Text, StatusBar } from 'react-native';
 
 //Third-party library external imports
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native'; // Add this import
+import { NavigationContainer } from '@react-navigation/native';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { toastConfig } from './src/components/Toasts';
 import { ShareIntentProvider } from 'expo-share-intent';
@@ -50,24 +50,30 @@ function App() {
   //Subscribe to auth state changes
   useEffect(() => {
     const unsubscribe = subscribeToAuthChanges(async (user) => {
-      if (user) {
-        setUser(user);
 
+      //User signed in or not
+      if (user) {
         try {
-          //Check if user needs onboarding
+          //Checking if user needs onboarding before updating
           const userProfile = await getUserProfile(user.uid);
-          setIsOnboarding(userProfile?.isNewUser ?? true);
+          const needsOnboarding = userProfile?.isNewUser ?? true;
+
+          setUser(user);
+          setIsOnboarding(needsOnboarding);
+          setInitialising(false);
         }
         catch (error) {
-          console.error("Error checking user onboarding status:", error);
-          setIsOnboarding(false);
+          setUser(user);
+          setIsOnboarding(true); //Default to showing onboarding on error
+          setInitialising(false);
         }
       }
       else {
+        //No user
         setUser(null);
         setIsOnboarding(false);
+        setInitialising(false);
       }
-      setInitialising(false);
     });
 
     return () => unsubscribe();
@@ -123,24 +129,17 @@ function App() {
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
               {user ? (
-                //User signed in
-                <>
+                //User signed in check onboarding
+                isOnboarding ? (
+                  //Onboarding needed show onboarding stack
+                  <Stack.Screen name="Onboarding" component={OnboardingStack} options={{ headerShown: false }} />
+                ) : (
+                  //No onboarding needed show main app
                   <Stack.Screen name="Inside" component={MainLayout} />
-                  {isOnboarding && (
-                    <Stack.Screen
-                      name="Onboarding"
-                      component={OnboardingStack}
-                      options={{ headerShown: false }}
-                    />
-                  )}
-                </>
+                )
               ) : (
                 //No user so show auth stack
-                <Stack.Screen
-                  name="Auth"
-                  component={AuthStack}
-                  options={{ headerShown: false }}
-                />
+                <Stack.Screen name="Auth" component={AuthStack} options={{ headerShown: false }} />
               )}
             </Stack.Navigator>
           </NavigationContainer>

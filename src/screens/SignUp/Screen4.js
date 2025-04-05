@@ -45,23 +45,12 @@ const Screen4 = ({ navigation }) => {
   const handleCompleteOnboarding = async () => {
     setIsProcessing(true);
     try {
-      //Service layer call
+      // Service layer call
       await completeOnboardingProcess(selectedOptions);
-
-      //Navigation is appropriate in the UI layer
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Inside' }],
-      });
+      navigation.navigate('Inside', { screen: 'HomePage' });
     }
     catch (error) {
-      //Error handling
-      if (error.message.includes('No authenticated user found')) {
-        showToast(toast, 'Authentication error. Please sign in again.', { type: TOAST_TYPES.DANGER });
-      }
-      else {
-        showToast(toast, 'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
-      }
+      showToast(toast, 'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
     }
     finally {
       setIsProcessing(false);
@@ -74,20 +63,15 @@ const Screen4 = ({ navigation }) => {
     try {
       //Complete onboarding without collections
       await completeOnboardingProcess([]);
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Inside' }],
-      });
-    } 
+      navigation.navigate('Inside', { screen: 'HomePage' });
+    }
     catch (error) {
       showToast(toast, 'Failed to complete onboarding', { type: TOAST_TYPES.DANGER });
-    } 
+    }
     finally {
       setIsProcessing(false);
     }
   };
-
   return (
     <View style={styles.container}>
 
