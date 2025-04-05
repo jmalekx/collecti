@@ -5,34 +5,34 @@ import { collection, doc } from 'firebase/firestore';
 import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
 
 /*
-    Firebase Service Module
+  Firebase Service Module
 
-    Provides standardised firestore doc and collection references with path construction
-    Centralises database path defintions to ensure consistencty across application data
-    access layer.
+  Provides standardised firestore doc and collection references with path construction
+  Centralises database path defintions to ensure consistencty across application data
+  access layer.
 */
 
 //Current user helper
 export const getCurrentUserId = () => {
-    return FIREBASE_AUTH.currentUser?.uid || null;
-  };
-  
+  return FIREBASE_AUTH.currentUser?.uid || null;
+};
+
 export const getCurrentUser = () => {
-    return FIREBASE_AUTH.currentUser;
-  };
+  return FIREBASE_AUTH.currentUser;
+};
 
 //Document reference helpers
 export const getUserRef = (userId = getCurrentUserId()) =>
-    doc(FIREBASE_DB, 'users', userId);
+  doc(FIREBASE_DB, 'users', userId);
 
 export const getCollectionRef = (collectionId, userId = getCurrentUserId()) =>
-    doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
+  doc(FIREBASE_DB, 'users', userId, 'collections', collectionId);
 
 export const getCollectionsRef = (userId = getCurrentUserId()) =>
-    collection(FIREBASE_DB, 'users', userId, 'collections');
+  collection(FIREBASE_DB, 'users', userId, 'collections');
 
 export const getPostRef = (collectionId, postId, userId = getCurrentUserId()) =>
-    doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
+  doc(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts', postId);
 
 export const getPostsRef = (collectionId, userId = getCurrentUserId()) =>
-    collection(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts');
+  collection(FIREBASE_DB, 'users', userId, 'collections', collectionId, 'posts');

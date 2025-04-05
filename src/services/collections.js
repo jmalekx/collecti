@@ -7,140 +7,140 @@ import { DEFAULT_THUMBNAIL } from '../constants';
 import { getCollectionRef, getCollectionsRef, getCurrentUserId } from './firebase';
 
 /*
-    Collections Service Module
+  Collections Service Module
 
-    Implements Firestore CRUD operations for user collections
-    Implements realtime listeners for collections
+  Implements Firestore CRUD operations for user collections
+  Implements realtime listeners for collections
 */
 
 //Retrieving single collection of a user
 export const getCollection = async (collectionId, userId = getCurrentUserId()) => {
-    try {
-        const collectionDoc = await getDoc(getCollectionRef(collectionId, userId));
-        return collectionDoc.exists() ? { id: collectionDoc.id, ...collectionDoc.data() } : null;
-    }
-    catch (error) {
-        console.log('Error fetching collection:', error);
-    }
+  try {
+    const collectionDoc = await getDoc(getCollectionRef(collectionId, userId));
+    return collectionDoc.exists() ? { id: collectionDoc.id, ...collectionDoc.data() } : null;
+  }
+  catch (error) {
+    console.log('Error fetching collection:', error);
+  }
 };
 
 //Retrieving all collections of a user
 export const getAllCollections = async (userId = getCurrentUserId()) => {
-    try {
-        const snapshot = await getDocs(getCollectionsRef(userId));
-        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    }
-    catch (error) {
-        console.log('Error fetching all collections:', error);
-    }
+  try {
+    const snapshot = await getDocs(getCollectionsRef(userId));
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  }
+  catch (error) {
+    console.log('Error fetching all collections:', error);
+  }
 };
 
 //Creating a new collection
 export const createCollection = async (collectionData, userId = getCurrentUserId()) => {
-    try {
-        const { name } = collectionData;
+  try {
+    const { name } = collectionData;
 
-        //Safety check - name is required
-        if (!name) {
-            throw new Error('Collection name is required');
-        }
-
-        //Build collection document
-        const collectionDoc = {
-            name,
-            description: collectionData.description || '',
-            createdAt: collectionData.createdAt || new Date().toISOString(),
-            items: [],
-            thumbnail: collectionData.thumbnail || DEFAULT_THUMBNAIL,
-        };
-
-        //Create collection document in Firestore
-        const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', name);
-        await setDoc(collectionRef, collectionDoc);
-
-        return {
-            id: name,
-            ...collectionDoc,
-        };
+    //Safety check - name is required
+    if (!name) {
+      throw new Error('Collection name is required');
     }
-    catch (error) {
-        console.log('Error creating collection:', error);
-    }
+
+    //Build collection document
+    const collectionDoc = {
+      name,
+      description: collectionData.description || '',
+      createdAt: collectionData.createdAt || new Date().toISOString(),
+      items: [],
+      thumbnail: collectionData.thumbnail || DEFAULT_THUMBNAIL,
+    };
+
+    //Create collection document in Firestore
+    const collectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', name);
+    await setDoc(collectionRef, collectionDoc);
+
+    return {
+      id: name,
+      ...collectionDoc,
+    };
+  }
+  catch (error) {
+    console.log('Error creating collection:', error);
+  }
 };
 
 //Updating an existing collection
 export const updateCollection = async (collectionId, updateData, userId = getCurrentUserId()) => {
-    try {
-        await updateDoc(getCollectionRef(collectionId, userId), updateData);
-        return true;
-    }
-    catch (error) {
-        console.log('Error updating collection:', error);
-    }
+  try {
+    await updateDoc(getCollectionRef(collectionId, userId), updateData);
+    return true;
+  }
+  catch (error) {
+    console.log('Error updating collection:', error);
+  }
 };
 
 //Deleting a collection
 export const deleteCollection = async (collectionId, userId = getCurrentUserId()) => {
-    try {
-        await deleteDoc(getCollectionRef(collectionId, userId));
-        return true;
-    }
-    catch (error) {
-        console.log('Error deleting collection:', error);
-    }
+  try {
+    await deleteDoc(getCollectionRef(collectionId, userId));
+    return true;
+  }
+  catch (error) {
+    console.log('Error deleting collection:', error);
+  }
 };
 
 //Realtime listener subscription for collections
 export const subscribeToCollections = (callback, userId = getCurrentUserId()) => {
-    const unsubscribe = onSnapshot(
-        getCollectionsRef(userId),
-        (snapshot) => {
-            //Get all collections from snapshot
-            let collections = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+  const unsubscribe = onSnapshot(
+    getCollectionsRef(userId),
+    (snapshot) => {
+      //Get all collections from snapshot
+      let collections = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-            //Sort collections to ensure Unsorted is first
-            collections = collections.sort((a, b) => {
-                // Always put Unsorted at the top
-                if (a.name === 'Unsorted') return -1;
-                if (b.name === 'Unsorted') return 1;
+      //Sort collections to ensure Unsorted is first
+      collections = collections.sort((a, b) => {
+        // Always put Unsorted at the top
+        if (a.name === 'Unsorted') return -1;
+        if (b.name === 'Unsorted') return 1;
 
-                //Then sort by creation date (newest first)
-                return new Date(b.createdAt) - new Date(a.createdAt);
-            });
+        //Then sort by creation date (newest first)
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
 
-            callback(collections);
-        },
-        (error) => {
-            console.log('Error subscribing to collections:', error);
-        }
-    );
+      callback(collections);
+    },
+    (error) => {
+      console.log('Error subscribing to collections:', error);
+    }
+  );
 
-    return unsubscribe;
+  return unsubscribe;
 };
 
 //Create default unsorted collection for new user
 export const createDefaultCollection = async (userId) => {
-    try {
-        const collectionData = {
-            name: 'Unsorted',
-            description: 'Posts not yet assigned to a collection',
-            createdAt: new Date().toISOString(),
-            items: [],
-            thumbnail: DEFAULT_THUMBNAIL,
-            isPinned: true,
-        };
+  try {
+    const collectionData = {
+      name: 'Unsorted',
+      description: 'Posts not yet assigned to a collection',
+      createdAt: new Date().toISOString(),
+      items: [],
+      thumbnail: DEFAULT_THUMBNAIL,
+      isPinned: true,
+    };
 
-        const unsortedCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted');
-        await setDoc(unsortedCollectionRef, collectionData);
+    const unsortedCollectionRef = doc(FIREBASE_DB, 'users', userId, 'collections', 'Unsorted');
+    await setDoc(unsortedCollectionRef, collectionData);
 
-        return {
-            id: 'Unsorted',
-            ...collectionData
-        };
-    } catch (error) {
-        console.log('Error creating default collection:', error);
-    }
+    return {
+      id: 'Unsorted',
+      ...collectionData
+    };
+  } catch (error) {
+    console.log('Error creating default collection:', error);
+  }
 };

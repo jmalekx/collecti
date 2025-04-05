@@ -24,112 +24,112 @@ import commonStyles from '../../styles/commonStyles';
 
 const SignUp = ({ navigation }) => {
 
-    //Content managing
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+  //Content managing
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-    //State transitions
-    const [loading, setLoading] = useState(false);
+  //State transitions
+  const [loading, setLoading] = useState(false);
 
-    //Context states
-    const toast = useToast();
+  //Context states
+  const toast = useToast();
 
-    //Sign up handled with service
-    const handleSignUp = async () => {
-        //Validate form data
-        if (!formValidation.validateSignupForm({
-            username,
-            email,
-            password,
-            confirmPassword
-        },
-            toast)) {
-            return;
-        }
+  //Sign up handled with service
+  const handleSignUp = async () => {
+    //Validate form data
+    if (!formValidation.validateSignupForm({
+      username,
+      email,
+      password,
+      confirmPassword
+    },
+      toast)) {
+      return;
+    }
 
-        setLoading(true);
-        try {
-            //Auth to handle sign up
-            await signUp(email, password, {
-                username: username.trim()
-            });
+    setLoading(true);
+    try {
+      //Auth to handle sign up
+      await signUp(email, password, {
+        username: username.trim()
+      });
 
-            showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
-            navigation.navigate('Onboarding');
-        }
-        catch (error) {
-            showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
-        }
-        finally {
-            setLoading(false);
-        }
-    };
+      showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
+      navigation.navigate('Onboarding');
+    }
+    catch (error) {
+      showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
+    }
+    finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <commonStyles.Bg>
-            <View style={styles.root}>
-                <KeyboardAvoidingView behavior='padding'>
-                    <AppTextInput
-                        value={username}
-                        placeholder="Username"
-                        autoCapitalize="none"
-                        onChangeText={setUsername}
-                    />
-                    <AppTextInput
-                        value={email}
-                        placeholder="Email"
-                        autoCapitalize="none"
-                        onChangeText={setEmail}
-                    />
-                    <AppTextInput
-                        secureTextEntry={true}
-                        value={password}
-                        placeholder="Password"
-                        autoCapitalize="none"
-                        onChangeText={setPassword}
-                    />
-                    <AppTextInput
-                        secureTextEntry={true}
-                        value={confirmPassword}
-                        placeholder="Confirm Password"
-                        autoCapitalize="none"
-                        onChangeText={setConfirmPassword}
-                    />
+  return (
+    <commonStyles.Bg>
+      <View style={styles.root}>
+        <KeyboardAvoidingView behavior='padding'>
+          <AppTextInput
+            value={username}
+            placeholder="Username"
+            autoCapitalize="none"
+            onChangeText={setUsername}
+          />
+          <AppTextInput
+            value={email}
+            placeholder="Email"
+            autoCapitalize="none"
+            onChangeText={setEmail}
+          />
+          <AppTextInput
+            secureTextEntry={true}
+            value={password}
+            placeholder="Password"
+            autoCapitalize="none"
+            onChangeText={setPassword}
+          />
+          <AppTextInput
+            secureTextEntry={true}
+            value={confirmPassword}
+            placeholder="Confirm Password"
+            autoCapitalize="none"
+            onChangeText={setConfirmPassword}
+          />
 
-                    {loading ? (
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    ) : (
-                        <>
-                            <AppButton
-                                style={styles.authButton}
-                                textStyle={styles.authButtonText}
-                                title='Sign Up'
-                                onPress={handleSignUp}
-                            />
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <>
+              <AppButton
+                style={styles.authButton}
+                textStyle={styles.authButtonText}
+                title='Sign Up'
+                onPress={handleSignUp}
+              />
 
-                            <View style={styles.signContainer}>
-                                <AppText>Already have an account? </AppText>
-                                <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                                    <AppText style={styles.signLink}>Sign In</AppText>
-                                </TouchableOpacity>
-                            </View>
-                        </>
-                    )}
-                </KeyboardAvoidingView>
-            </View>
-        </commonStyles.Bg>
-    );
+              <View style={styles.signContainer}>
+                <AppText>Already have an account? </AppText>
+                <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+                  <AppText style={styles.signLink}>Sign In</AppText>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+        </KeyboardAvoidingView>
+      </View>
+    </commonStyles.Bg>
+  );
 };
 
 const styles = {
-    ...commonStyles,
-    root: {
-        flex: 1,
-        alignItems: 'center',
-        padding: 20,
-    },
+  ...commonStyles,
+  root: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 20,
+  },
 };
 
 export default SignUp;

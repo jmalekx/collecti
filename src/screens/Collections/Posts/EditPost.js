@@ -14,135 +14,135 @@ import commonStyles from '../../../styles/commonStyles';
 import { AppHeading } from '../../../components/Typography';
 
 /*
-    EditPost Screen
+  EditPost Screen
 
-    Implements (MVC) Model-View-Controller pattern for post editing with proper
-    service abstraction and CRUD operations, separating concerns between UI and data.
-    Manages editing post metadata using service layer.
+  Implements (MVC) Model-View-Controller pattern for post editing with proper
+  service abstraction and CRUD operations, separating concerns between UI and data.
+  Manages editing post metadata using service layer.
 */
 
 const EditPost = ({ route, navigation }) => {
 
-    //State transitions
-    const [loading, setLoading] = useState(true);
+  //State transitions
+  const [loading, setLoading] = useState(true);
 
-    //Content managing
-    const { collectionId, postId } = route.params;
-    const [notes, setNotes] = useState('');
-    const [tags, setTags] = useState('');
+  //Content managing
+  const { collectionId, postId } = route.params;
+  const [notes, setNotes] = useState('');
+  const [tags, setTags] = useState('');
 
-    //Context states
-    const toast = useToast();
+  //Context states
+  const toast = useToast();
 
-    //Fetch post data on load
-    useEffect(() => {
-        const fetchPostData = async () => {
-            setLoading(true);
+  //Fetch post data on load
+  useEffect(() => {
+    const fetchPostData = async () => {
+      setLoading(true);
 
-            // Use service to load post data
-            const postData = await loadPostForEditing(collectionId, postId, toast);
+      // Use service to load post data
+      const postData = await loadPostForEditing(collectionId, postId, toast);
 
-            if (postData) {
-                setNotes(postData.notes);
-                setTags(postData.tags);
-            } else {
-                navigation.goBack();
-            }
+      if (postData) {
+        setNotes(postData.notes);
+        setTags(postData.tags);
+      } else {
+        navigation.goBack();
+      }
 
-            setLoading(false);
-        };
-
-        fetchPostData();
-    }, [collectionId, postId, toast, navigation]);
-
-    //Form submission handler
-    const handleSave = async () => {
-        // Use service to save post data
-        const success = await saveEditedPost(
-            collectionId,
-            postId,
-            { notes, tags },
-            toast
-        );
-
-        if (success) {
-            navigation.goBack();
-        }
+      setLoading(false);
     };
 
-    //Conditional loading render while data being fetched
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
-            </View>
-        );
-    }
+    fetchPostData();
+  }, [collectionId, postId, toast, navigation]);
 
-    return (
-        <commonStyles.Bg>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Ionicons name="close" size={24} color="#000" />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleSave}>
-                        <Ionicons name="checkmark" size={24} color="#000" />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.form}>
-                    <Text style={styles.label}>Notes</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={notes}
-                        onChangeText={setNotes}
-                        multiline
-                        placeholder="Add notes about this post..."
-                    />
-
-                    <Text style={styles.label}>Tags</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={tags}
-                        onChangeText={setTags}
-                        placeholder="Add tags (comma separated)"
-                    />
-                </View>
-            </View>
-        </commonStyles.Bg>
+  //Form submission handler
+  const handleSave = async () => {
+    // Use service to save post data
+    const success = await saveEditedPost(
+      collectionId,
+      postId,
+      { notes, tags },
+      toast
     );
+
+    if (success) {
+      navigation.goBack();
+    }
+  };
+
+  //Conditional loading render while data being fetched
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
+  return (
+    <commonStyles.Bg>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="close" size={24} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleSave}>
+            <Ionicons name="checkmark" size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Notes</Text>
+          <TextInput
+            style={styles.input}
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            placeholder="Add notes about this post..."
+          />
+
+          <Text style={styles.label}>Tags</Text>
+          <TextInput
+            style={styles.input}
+            value={tags}
+            onChangeText={setTags}
+            placeholder="Add tags (comma separated)"
+          />
+        </View>
+      </View>
+    </commonStyles.Bg>
+  );
 };
 
 // styles remain the same
 const styles = StyleSheet.create({
-    ...commonStyles,
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 16,
-    },
-    form: {
-        padding: 16,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 8,
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        padding: 12,
-        marginBottom: 16,
-        fontSize: 16,
-    },
+  ...commonStyles,
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  form: {
+    padding: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+  },
 });
 
 export default EditPost;
