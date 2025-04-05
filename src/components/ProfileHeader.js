@@ -6,11 +6,11 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import commonStyles from '../styles/commonStyles';
 
 /*
-    ProfileHeader component displays the user's profile picture, username, and stats.
-    Props:
-    - username: The username of the user.
-    - stats: The statistics to display (e.g., number of collections and posts).
-    - profilePicture: The URL of the user's profile picture.
+  ProfileHeader component displays the user's profile picture, username, and stats.
+  Props:
+  - username: The username of the user.
+  - stats: The statistics to display (e.g., number of collections and posts).
+  - profilePicture: The URL of the user's profile picture.
 */
 
 const ProfileHeader = ({ username, stats, profilePicture }) => (

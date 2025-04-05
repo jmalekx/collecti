@@ -16,14 +16,14 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import commonStyles, { colours } from '../styles/commonStyles';
 
 /*
-    SuggestedCollections Component
+  SuggestedCollections Component
 
-    Implements visual representation layer of recommendation system
-    MVM principles applied:
-    1. Visual display in horizontally scrollable format
-    2. Looading state management
-    3. Empty state handling
-    4. Interactive UI elements
+  Implements visual representation layer of recommendation system
+  MVM principles applied:
+  1. Visual display in horizontally scrollable format
+  2. Looading state management
+  3. Empty state handling
+  4. Interactive UI elements
 */
 
 const SuggestedCollections = () => {

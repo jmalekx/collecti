@@ -6,63 +6,63 @@ import { Text, Linking } from 'react-native';
 import LinkifyIt from 'linkify-it';
 
 /*
-    LinkTexts Component
- 
-    Utility component rendering text with clickable URL links.
-    If user chooses to paste a link into description field of a post or collection,
-    uses linkify-it library to detect the urls and render as touchabele elements.
+  LinkTexts Component
+
+  Utility component rendering text with clickable URL links.
+  If user chooses to paste a link into description field of a post or collection,
+  uses linkify-it library to detect the urls and render as touchabele elements.
 */
 
 //Initialise linkify-it instance
 const linkify = LinkifyIt();
 
 const LinkTexts = ({ text, style }) => {
-    if (!text) return null;
+  if (!text) return null;
 
-    //URL detection
-    const matches = linkify.match(text);
-    //No URL case
-    if (!matches) {
-        return <Text style={style}>{text}</Text>;
+  //URL detection
+  const matches = linkify.match(text);
+  //No URL case
+  if (!matches) {
+    return <Text style={style}>{text}</Text>;
+  }
+
+  const elements = [];
+  let lastIndex = 0;
+
+  matches.forEach((match, i) => {
+    //Add text before link as normal text
+    if (match.index > lastIndex) {
+      elements.push(
+        <Text key={`text-${i}`} style={style}>
+          {text.substring(lastIndex, match.index)}
+        </Text>
+      );
     }
 
-    const elements = [];
-    let lastIndex = 0;
+    //Add the link element
+    elements.push(
+      <Text
+        key={`link-${i}`}
+        style={[style, { color: '#007AFF', textDecorationLine: 'underline' }]}
+        onPress={() => Linking.openURL(match.url)}
+      >
+        {match.text}
+      </Text>
+    );
 
-    matches.forEach((match, i) => {
-        //Add text before link as normal text
-        if (match.index > lastIndex) {
-            elements.push(
-                <Text key={`text-${i}`} style={style}>
-                    {text.substring(lastIndex, match.index)}
-                </Text>
-            );
-        }
+    lastIndex = match.lastIndex;
+  });
 
-        //Add the link element
-        elements.push(
-            <Text
-                key={`link-${i}`}
-                style={[style, { color: '#007AFF', textDecorationLine: 'underline' }]}
-                onPress={() => Linking.openURL(match.url)}
-            >
-                {match.text}
-            </Text>
-        );
+  //Add text after the last link as normall text
+  if (lastIndex < text.length) {
+    elements.push(
+      <Text key={`text-last`} style={style}>
+        {text.substring(lastIndex)}
+      </Text>
+    );
+  }
 
-        lastIndex = match.lastIndex;
-    });
-
-    //Add text after the last link as normall text
-    if (lastIndex < text.length) {
-        elements.push(
-            <Text key={`text-last`} style={style}>
-                {text.substring(lastIndex)}
-            </Text>
-        );
-    }
-
-    return <Text>{elements}</Text>;
+  return <Text>{elements}</Text>;
 };
 
 export default LinkTexts;

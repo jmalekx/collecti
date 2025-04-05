@@ -14,12 +14,12 @@ import commonStyles from '../../styles/commonStyles';
 const Stack = createNativeStackNavigator();
 
 const HomeStack = () => (
-    <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
-        <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
-        <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
-        <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
-    </Stack.Navigator>
+  <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
+    <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }} />
+    <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+    <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+  </Stack.Navigator>
 );
 
 export default HomeStack;

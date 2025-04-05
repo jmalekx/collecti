@@ -5,10 +5,10 @@ import React from 'react';
 import ConfirmationModal from './ConfirmationModal';
 
 /*
-    UnsupportedPlatformModal Component
+  UnsupportedPlatformModal Component
 
-    Modal displayed when user attempts to share from an unsupported platform
-    Provides guidance on alternative ways to save content
+  Modal displayed when user attempts to share from an unsupported platform
+  Provides guidance on alternative ways to save content
 */
 
 const UnsupportedPlatformModal = ({ 

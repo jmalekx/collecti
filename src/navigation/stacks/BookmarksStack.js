@@ -14,12 +14,12 @@ import SearchPage from '../../screens/Search/SearchPage';
 const Stack = createNativeStackNavigator();
 
 const SearchStack = () => (
-    <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
-      <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Your Bookmarks' }} />
-      <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
-      <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: true, title: 'Search' }} />
-    </Stack.Navigator>
+  <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
+    <Stack.Screen name="Bookmarks" component={Bookmarks} options={{ headerShown: true, title: 'Your Bookmarks' }} />
+    <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="Search" component={SearchPage} options={{ headerShown: true, title: 'Search' }} />
+  </Stack.Navigator>
 );
 
 export default SearchStack;

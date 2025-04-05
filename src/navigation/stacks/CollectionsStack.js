@@ -17,15 +17,15 @@ import commonStyles from '../../styles/commonStyles';
 const Stack = createNativeStackNavigator();
 
 const CollectionsStack = () => (
-    <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
-        <Stack.Screen name="Collections" component={Collections} options={{ headerShown: true }} />
-        <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
-        <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
-        <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
-        <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
-        <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true, title: 'Settings' }} />
-    </Stack.Navigator>
+  <Stack.Navigator screenOptions={commonStyles.defaultHeaderOptions}>
+    <Stack.Screen name="Collections" component={Collections} options={{ headerShown: true }} />
+    <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="EditCollection" component={EditCollection} options={{ headerShown: false }} />
+    <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
+    <Stack.Screen name="EditProfile" component={EditProfile} options={{ headerShown: true, title: 'Edit Profile' }} />
+    <Stack.Screen name="UserSettings" component={UserSettings} options={{ headerShown: true, title: 'Settings' }} />
+  </Stack.Navigator>
 );
 
 export default CollectionsStack;
