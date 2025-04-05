@@ -1,9 +1,12 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet, TextInput, Modal } from 'react-native';
 
 //Project services and utilities
 import { logOut } from '../../../services/auth';
+import { deleteUserAccount } from '../../../services/users';
+import { useToast } from 'react-native-toast-notifications';
+import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
@@ -17,17 +20,51 @@ import ConfirmationModal from '../../../components/ConfirmationModal';
   - Pinterest integration
   - Logout functionality
   - Profile management (via navigation)
+  - Account deletion
   Uses service layer for authentication operations.
 */
 
 const UserSettings = ({ navigation }) => {
   //State transitions
   const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  //Context states
+  const toast = useToast();
 
   //Handle user logout with confirmation
   const handleLogout = async () => {
     setModalVisible(false);
-    await logOut(); // Use auth service instead of direct Firebase access
+    await logOut(); //Use auth service instead of direct Firebase access
+  };
+
+  //Handle account deletion
+  const handleDeleteAccount = async () => {
+    if (!password.trim()) {
+      showToast(toast, "Please enter your password", { type: TOAST_TYPES.WARNING });
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const success = await deleteUserAccount(password);
+      if (success) {
+        showToast(toast, "Your account has been deleted", { type: TOAST_TYPES.SUCCESS });
+        //Account deleted successfully, user will be redirected to login automatically
+      }
+      else {
+        showToast(toast, "Incorrect password. Please try again.", { type: TOAST_TYPES.DANGER });
+      }
+    }
+    catch (error) {
+      showToast(toast, "Failed to delete account", { type: TOAST_TYPES.DANGER });
+    }
+    finally {
+      setIsDeleting(false);
+      setPassword('');
+    }
   };
 
   return (
@@ -52,6 +89,14 @@ const UserSettings = ({ navigation }) => {
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
 
+        {/* Delete Account Section */}
+        <TouchableOpacity
+          style={[styles.button, styles.deleteButton]}
+          onPress={() => setDeleteModalVisible(true)}
+        >
+          <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete Account</Text>
+        </TouchableOpacity>
+
         {/* Logout Confirmation Modal */}
         <ConfirmationModal
           visible={modalVisible}
@@ -63,6 +108,30 @@ const UserSettings = ({ navigation }) => {
           primaryStyle="danger"
           secondaryText="Cancel"
           icon="log-out-outline"
+        />
+
+        {/* Delete Account Modal with Password Confirmation */}
+        <ConfirmationModal
+          visible={deleteModalVisible}
+          onClose={() => {
+            setDeleteModalVisible(false);
+            setPassword('');
+          }}
+          title="Delete Account"
+          message="This will permanently delete your account and all your data. This action cannot be undone."
+          primaryAction={handleDeleteAccount}
+          primaryText={isDeleting ? "Deleting..." : "Delete Account"}
+          primaryStyle="danger"
+          secondaryText="Cancel"
+          icon="trash-outline"
+          // Input-specific props
+          showInput={true}
+          inputValue={password}
+          onInputChange={setPassword}
+          inputPlaceholder="Password"
+          inputLabel="Enter your password to confirm:"
+          inputSecureTextEntry={true}
+          inputDisabled={isDeleting}
         />
       </View>
     </commonStyles.Bg>

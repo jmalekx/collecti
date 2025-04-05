@@ -1,8 +1,10 @@
 //Third-party library external imports
-import { getDoc, setDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { getDoc, getDocs, setDoc, updateDoc, onSnapshot, deleteDoc, query, where, writeBatch, getFirestore } from 'firebase/firestore';
+import { EmailAuthProvider, reauthenticateWithCredential, deleteUser } from 'firebase/auth';
 
 //Project services and utilities
-import { getUserRef, getCurrentUserId } from './firebase';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { getUserRef, getCurrentUserId, getPostsRef, getCollectionsRef } from './firebase';
 import { DEFAULT_PROFILE_PICTURE } from '../constants';
 
 /*
@@ -91,5 +93,70 @@ export const completeOnboarding = async (userId) => {
     }
     catch (error) {
         console.log('Error completing onboarding:', error);
+    }
+};
+
+//Deleting user account and all associated data
+export const deleteUserAccount = async (password) => {
+    try {
+        //Get the current user
+        const auth = FIREBASE_AUTH;
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+            console.log('No authenticated user found');
+            return false;
+        }
+
+        //Reauthenticate the user with their password
+        const credential = EmailAuthProvider.credential(
+            currentUser.email,
+            password
+        );
+
+        await reauthenticateWithCredential(currentUser, credential);
+
+        //Get user ID for deleting associated data
+        const userId = currentUser.uid;
+
+        //Delete user data from Firestor
+        await deleteDoc(getUserRef(userId));
+
+        //Delete user collections and posts
+        const collectionsSnapshot = await getDocs(query(getCollectionsRef(), where("userId", "==", userId)));
+        const collectionsDeleteBatch = writeBatch(getFirestore());
+
+        //Track collection IDs to delete associated posts
+        const collectionIds = [];
+
+        collectionsSnapshot.forEach(doc => {
+            collectionIds.push(doc.id);
+            collectionsDeleteBatch.delete(doc.ref);
+        });
+
+        //Commit the collections deletion
+        await collectionsDeleteBatch.commit();
+
+        //Delete all posts in each collection
+        for (const collectionId of collectionIds) {
+            const postsSnapshot = await getDocs(getPostsRef(collectionId));
+
+            if (!postsSnapshot.empty) {
+                const postsDeleteBatch = writeBatch(getFirestore());
+                postsSnapshot.forEach(doc => {
+                    postsDeleteBatch.delete(doc.ref);
+                });
+                await postsDeleteBatch.commit();
+            }
+        }
+
+        //Finally delete user account from Firebase Auth
+        await deleteUser(currentUser);
+
+        return true;
+    }
+    catch (error) {
+        console.log('Error deleting user account:', error);
+        return false;
     }
 };

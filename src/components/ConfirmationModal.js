@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -12,14 +12,29 @@ import commonStyles from '../styles/commonStyles';
 /*
   ConfirmationModal Component
 
-  Reusable dialogue modal following Strategy pattern for states. Impements multiple
-  semantic types (confirmation, warning, error)
-
+  Reusable dialogue modal following Strategy pattern for states. Implements multiple
+  semantic types (confirmation, warning, error) with optional input field support.
 */
 
-const ConfirmationModal = ({ visible, onClose, title, message, primaryAction, primaryText,
+const ConfirmationModal = ({ 
+  visible, 
+  onClose, 
+  title, 
+  message, 
+  primaryAction, 
+  primaryText,
   primaryStyle = 'primary', // 'primary', 'danger', 'warning'
-  secondaryAction, secondaryText = 'Cancel', icon
+  secondaryAction, 
+  secondaryText = 'Cancel', 
+  icon,
+  //Input field e.g for the password confirmation
+  showInput = false,
+  inputValue = '',
+  onInputChange = () => {},
+  inputPlaceholder = '',
+  inputLabel = '',
+  inputSecureTextEntry = false,
+  inputDisabled = false
 }) => {
   return (
     <Modal
@@ -50,6 +65,21 @@ const ConfirmationModal = ({ visible, onClose, title, message, primaryAction, pr
           <AppHeading style={styles.title}>{title}</AppHeading>
           {message && <AppText style={styles.message}>{message}</AppText>}
 
+          {/* Optional Input Field */}
+          {showInput && (
+            <View style={styles.inputContainer}>
+              {inputLabel && <Text style={styles.inputLabel}>{inputLabel}</Text>}
+              <TextInput
+                style={styles.input}
+                placeholder={inputPlaceholder}
+                secureTextEntry={inputSecureTextEntry}
+                value={inputValue}
+                onChangeText={onInputChange}
+                editable={!inputDisabled}
+              />
+            </View>
+          )}
+
           {/* Action buttons */}
           <View style={styles.buttonRow}>
             <TouchableOpacity
@@ -67,6 +97,7 @@ const ConfirmationModal = ({ visible, onClose, title, message, primaryAction, pr
                     styles.primaryButton
               ]}
               onPress={primaryAction}
+              disabled={inputDisabled}
             >
               <Text style={styles.actionButtonText}>{primaryText}</Text>
             </TouchableOpacity>
@@ -126,6 +157,22 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#585f6e',
     lineHeight: 20,
+  },
+  // Input field styles
+  inputContainer: {
+    width: '100%',
+    marginVertical: 15,
+  },
+  inputLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
   },
   buttonRow: {
     flexDirection: 'row',
