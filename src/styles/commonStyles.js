@@ -125,15 +125,16 @@ const textStyles = StyleSheet.create({
 
 const buttonStyles = StyleSheet.create({
   button: {
-    backgroundColor: 'black',
+    backgroundColor: colours.buttons,
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 8,
     marginTop: 20,
   },
   buttonText: {
-    color: 'white',
+    color: colours.buttonsText,
     fontSize: 16,
+    alignSelf: 'center',
     fontWeight: 'bold',
   },
   pinkbutton: {

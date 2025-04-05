@@ -2,6 +2,9 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
+//Custom component imports and styling
+import { colours } from '../styles/commonStyles';
+
 /*
   ProgressBar Component
 
@@ -42,10 +45,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   activeBar: {
-    backgroundColor: '#000', // Color for completed steps
+    backgroundColor: colours.buttonsTextPink, // Color for completed steps
   },
   inactiveBar: {
-    backgroundColor: '#E0E0E0', // Color for incomplete steps
+    backgroundColor: colours.tertiary, // Color for incomplete steps
   },
 });
 

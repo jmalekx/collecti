@@ -14,7 +14,7 @@ import MainLayout from '../../components/MainLayout';
 const Stack = createNativeStackNavigator();
 
 const OnboardingStack = () => (
-  <Stack.Navigator >
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Screen1" component={Screen1} />
     <Stack.Screen name="Screen2" component={Screen2} />
     <Stack.Screen name="Screen3" component={Screen3} />
