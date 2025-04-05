@@ -1,6 +1,3 @@
-//Third-party library external imports
-import { useToast } from 'react-native-toast-notifications';
-
 //Project services and utilities
 import { showToast, TOAST_TYPES } from '../components/Toasts';
 
