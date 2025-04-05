@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -11,7 +11,7 @@ import { loadPostForEditing, saveEditedPost } from '../../../services/postAction
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
-import { AppHeading } from '../../../components/Typography';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 /*
   EditPost Screen
@@ -74,7 +74,7 @@ const EditPost = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <LoadingIndicator/>
       </View>
     );
   }
@@ -117,11 +117,6 @@ const EditPost = ({ route, navigation }) => {
 // styles remain the same
 const styles = StyleSheet.create({
   ...commonStyles,
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

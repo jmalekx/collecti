@@ -12,6 +12,7 @@ import { getCollection, updateCollection } from '../../services/collections';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /*
   EditCollection Screen
@@ -102,6 +103,14 @@ const EditCollection = ({ route, navigation }) => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <LoadingIndicator/>
+      </View>
+    );
+  }
 
   return (
     <commonStyles.Bg>

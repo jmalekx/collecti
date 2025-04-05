@@ -1,9 +1,13 @@
 //React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { WebView } from 'react-native-webview';
+
+//Custom component imports and styling
+import LoadingIndicator from './LoadingIndicator';
+import commonStyles from '../styles/commonStyles';
 
 /*
   InstagramEmbed Component
@@ -167,9 +171,10 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   return (
     <View style={[styles.container, style]}>
       {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
-          <Text style={styles.loadingText}>Loading Instagram post...</Text>
+        <View style={[styles.container, style]}>
+          <View style={styles.loadingContainer}>
+            <LoadingIndicator/>
+          </View>
         </View>
       )}
 
@@ -309,6 +314,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     width: '100%',
     height: 150,
@@ -320,22 +326,6 @@ const styles = StyleSheet.create({
   webview: {
     width: '100%',
     height: '100%',
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8f8f8',
-    zIndex: 1,
-  },
-  loadingText: {
-    marginTop: 8,
-    color: '#666',
-    fontSize: 14,
   },
   errorContainer: {
     flex: 1,

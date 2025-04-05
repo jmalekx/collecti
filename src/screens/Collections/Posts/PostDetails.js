@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +20,7 @@ import commonStyles from '../../../styles/commonStyles';
 import ConfirmationModal from '../../../components/ConfirmationModal';
 import LinkTexts from '../../../components/LinkTexts';
 import RenderPosts from '../../../components/RenderPosts';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 /*
   PostDetails Screen
@@ -113,7 +114,7 @@ const PostDetails = ({ route, navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <LoadingIndicator/>
       </View>
     );
   }
@@ -219,11 +220,6 @@ const PostDetails = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

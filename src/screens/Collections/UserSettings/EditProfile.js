@@ -14,7 +14,7 @@ import { uploadImageToCloudinary } from '../../../services/storage';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
-import { AppHeading } from '../../../components/Typography';
+import LoadingIndicator from '../../../components/LoadingIndicator';
 
 /*
   EditProfile Screen
@@ -159,7 +159,7 @@ const EditProfile = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <LoadingIndicator/>
       </View>
     );
   }
@@ -242,11 +242,6 @@ const EditProfile = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   ...commonStyles,
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   profilePictureSection: {
     marginBottom: 24,
     alignItems: 'center',

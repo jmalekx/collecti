@@ -59,6 +59,25 @@ const layoutStyles = StyleSheet.create({
     marginBottom: 24,
     height: 50,
   },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8f8f8',
+    zIndex: 1,
+  },
+  embedContainer: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 8,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+  },
 });
 
 const textStyles = StyleSheet.create({

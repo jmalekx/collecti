@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ActivityIndicator, Text, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Linking, Image } from 'react-native';
 
 //Third-party library external imports
 import { WebView } from 'react-native-webview';
@@ -8,6 +8,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 //Project services and utilities
 import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } from '../services/pinterest/pinterestHelpers';
+
+//Custom component imports and styling
+import LoadingIndicator from './LoadingIndicator';
+import commonStyles from '../styles/commonStyles';
 
 /*
   PinterestEmbed Component
@@ -193,8 +197,8 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   if (loading) {
     return (
       <View style={[styles.container, style]}>
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#E60023" />
+        <View style={styles.loadingContainer}>
+          <LoadingIndicator/>
         </View>
       </View>
     );
@@ -260,6 +264,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
 };
 
 const styles = StyleSheet.create({
+  ...commonStyles,
   container: {
     width: '100%',
     height: 350,
@@ -271,11 +276,6 @@ const styles = StyleSheet.create({
   webview: {
     flex: 1,
     backgroundColor: 'transparent',
-  },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   overlayButton: {
     position: 'absolute',

@@ -1,9 +1,13 @@
 //React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 //Third-party library external imports
 import WebView from 'react-native-webview';
+
+//Custom component imports and styling
+import commonStyles from './../styles/commonStyles';
+import LoadingIndicator from './../components/LoadingIndicator';
 
 /*
   TiktokEmbed Component
@@ -100,7 +104,7 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <LoadingIndicator />
       </View>
     );
   }
@@ -169,11 +173,6 @@ const styles = StyleSheet.create({
   webview: {
     width: '100%',
     height: '100%',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
 

@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, Modal, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -18,6 +18,7 @@ import { showToast, TOAST_TYPES } from './Toasts';
 //Custom component imports and styling
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../styles/commonStyles';
+import LoadingIndicator from './LoadingIndicator';
 
 /*
   AddButton Component
@@ -674,8 +675,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
             {/* Modal Footer */}
             {isLoading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
-                <Text style={styles.loadingText}>Uploading image...</Text>
+                <LoadingIndicator text="Uploading image..." />
               </View>
             ) : (
               <View style={styles.buttonRow}>
@@ -1026,18 +1026,6 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     color: '#333',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  loadingText: {
-    marginTop: 10,
-    color: '#666',
-    fontSize: 14,
   },
   backdrop: {
     position: 'absolute',

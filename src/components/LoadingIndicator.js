@@ -97,25 +97,25 @@ const LoadingIndicator = ({ text = '', }) => {
 
 const styles = StyleSheet.create({
   loadingContainer: {
-    paddingVertical: 16,
+    paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   loadCirclesContainer: {
-    height: 40,
+    height: 24,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginHorizontal: 4,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginHorizontal: 2,
   },
   loadingText: {
-    marginTop: 8,
-    fontSize: 14,
+    marginTop: 4,
+    fontSize: 12,
     color: '#666',
   }
 });

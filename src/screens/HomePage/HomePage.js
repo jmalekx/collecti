@@ -18,6 +18,7 @@ import SuggestedCollections from '../../components/SuggestedCollections';
 import UserStats from '../../components/UserStats';
 import filler from '../../images/homedecor.png';
 import { AppSubheading } from '../../components/Typography';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /* 
   HomePage Screen
@@ -79,20 +80,20 @@ const HomePage = () => {
     loadUserProfile();
   }, [toast]);
 
-  // Coordinate data loading
+  //Coordinate data loading
   useEffect(() => {
-    // Only mark the page as ready when all data is loaded
+    //Only mark page as ready when all data loaded
     if (!isLoading && !collectionsLoading) {
       setPageReady(true);
     }
   }, [isLoading, collectionsLoading]);
 
-  // Show a loading spinner until everything is ready
+  //Show loading until everything ready
   if (!pageReady) {
     return (
       <commonStyles.Bg>
         <View style={[styles.container, styles.loadingContainer]}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <LoadingIndicator/>
         </View>
       </commonStyles.Bg>
     );
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
     borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.7)', 
+    borderColor: 'rgba(255, 255, 255, 0.7)',
   },
   profileImage: {
     width: '100%',
