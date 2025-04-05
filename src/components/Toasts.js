@@ -104,18 +104,38 @@ export const toastConfig = {
   success: {
     backgroundColor: '#e7f5e8',
     iconColor: '#2ECC71',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3
   },
   danger: {
     backgroundColor: '#ffe2e4',
     iconColor: '#ff626d',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3
   },
   warning: {
     backgroundColor: '#fff3e3',
     iconColor: '#feb37c',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3 
   },
   info: {
     backgroundColor: '#eaf2ff',
     iconColor: '#006efc',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 3
   }
 };
 
