@@ -5,29 +5,38 @@ import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 //Custom component imports and styling
 import { colours } from '../styles/commonStyles';
 
-const LoadingIndicator = ({
-  text = '',
-}) => {
+/*
+  LoadingIndicator Component
 
-  // Animation values for dots
-  const dot1 = useRef(new Animated.Value(0)).current;
-  const dot2 = useRef(new Animated.Value(0)).current;
-  const dot3 = useRef(new Animated.Value(0)).current;
-  const dot4 = useRef(new Animated.Value(0)).current;
-  const dot5 = useRef(new Animated.Value(0)).current;
+  Decorative animated loading indicator displaying sequence
+  of pusling circles with cascading animation pattern to indicate loading or processing state.
+  The component is reusable and can be used in various parts of the application 
+  where loading state needs to be indicated.
+*/
 
-  const animateDot = (dot, delay) => {
+const LoadingIndicator = ({ text = '', }) => {
+  //Optional text prop with default empty string
+
+  //Circle animation values to enable individual animations
+  const loadCircle1 = useRef(new Animated.Value(0)).current;
+  const loadCircle2 = useRef(new Animated.Value(0)).current;
+  const loadCircle3 = useRef(new Animated.Value(0)).current;
+  const loadCircle4 = useRef(new Animated.Value(0)).current;
+  const loadCircle5 = useRef(new Animated.Value(0)).current;
+
+  //Creating loop for sequence of single circle
+  const animateLoad = (loadCircle, delay) => {
     return Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
-        Animated.timing(dot, {
-          toValue: 1,
+        Animated.timing(loadCircle, {
+          toValue: 1, //Fully expanded
           duration: 750,
           easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          useNativeDriver: true, //Better performance
         }),
-        Animated.timing(dot, {
-          toValue: 0,
+        Animated.timing(loadCircle, {
+          toValue: 0, //Back to initial state
           duration: 750,
           easing: Easing.inOut(Easing.ease),
           useNativeDriver: true,
@@ -36,32 +45,37 @@ const LoadingIndicator = ({
     );
   };
 
+  //Start and manage animation lifecycle
   useEffect(() => {
     const animations = [
-      animateDot(dot1, 0),
-      animateDot(dot2, 150),
-      animateDot(dot3, 300),
-      animateDot(dot4, 450),
-      animateDot(dot5, 600),
+      //Different delay values for effect like a wave
+      animateLoad(loadCircle1, 0),
+      animateLoad(loadCircle2, 150),
+      animateLoad(loadCircle3, 300),
+      animateLoad(loadCircle4, 450),
+      animateLoad(loadCircle5, 600),
     ];
 
     animations.forEach((animation) => animation.start());
 
+    //Cleanup - stopping when unmounted
     return () => {
       animations.forEach((animation) => animation.stop());
     };
   }, []);
 
-  const getDotStyle = (dot) => ({
+  //Styles for each loading circle based on animation value
+  const getLoadCircleStyle = (loadCircle) => ({
     transform: [
       {
-        scale: dot.interpolate({
+        scale: loadCircle.interpolate({
           inputRange: [0, 1],
           outputRange: [0.8, 1.2],
         }),
       },
     ],
-    backgroundColor: dot.interpolate({
+    //Colour animation between them
+    backgroundColor: loadCircle.interpolate({
       inputRange: [0, 1],
       outputRange: [colours.primary, colours.buttonsTextPink],
     }),
@@ -69,12 +83,12 @@ const LoadingIndicator = ({
 
   return (
     <View style={styles.loadingContainer}>
-      <View style={styles.dotsContainer}>
-        <Animated.View style={[styles.dot, getDotStyle(dot1)]} />
-        <Animated.View style={[styles.dot, getDotStyle(dot2)]} />
-        <Animated.View style={[styles.dot, getDotStyle(dot3)]} />
-        <Animated.View style={[styles.dot, getDotStyle(dot4)]} />
-        <Animated.View style={[styles.dot, getDotStyle(dot5)]} />
+      <View style={styles.loadCirclesContainer}>
+        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle1)]} />
+        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle2)]} />
+        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle3)]} />
+        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle4)]} />
+        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle5)]} />
       </View>
       {text && <Text style={styles.loadingText}>{text}</Text>}
     </View>
@@ -87,13 +101,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dotsContainer: {
+  loadCirclesContainer: {
     height: 40,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  dot: {
+  loadCircle: {
     width: 16,
     height: 16,
     borderRadius: 8,
