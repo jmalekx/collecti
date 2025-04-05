@@ -12,7 +12,8 @@ import formValidation from '../../utils/formValidation';
 
 // Custom component imports and styling
 import Logo from '../../images/logo.png';
-import commonStyles from '../../styles/commonStyles';
+import Name from '../../images/name.png';
+import commonStyles, { colours } from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 
 /*
@@ -77,16 +78,19 @@ const SignIn = ({ navigation }) => {
           style={{ flex: 1 }}
           contentContainerStyle={{
             flexGrow: 1,
-            paddingTop: 80,
-            paddingBottom: 40,
+            paddingBottom: 65,
             alignItems: 'center',
             justifyContent: 'space-between'
           }}
           keyboardShouldPersistTaps="handled"
         >
           {/* Logo section */}
-          <View style={{ alignItems: 'center', marginBottom: 20 }}>
-            <AppHeading>Collecti</AppHeading>
+          <View style={styles.logoContainer}>
+            <Image
+              source={Name}
+              style={{ height: 170 }}
+              resizeMode='contain'
+            />
             <Image
               source={Logo}
               style={styles.logo}
@@ -145,7 +149,7 @@ const SignIn = ({ navigation }) => {
                     <TouchableOpacity
                       onPress={() => navigation.navigate('SignUp')}
                     >
-                      <AppText style={styles.signLink}>Sign Up</AppText>
+                      <AppText style={styles.authLink}>Sign Up</AppText>
                     </TouchableOpacity>
                   </View>
                 </>
@@ -165,15 +169,18 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  logoContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: -10,
+  },
   logo: {
     width: 150,
     height: 150,
     maxWidth: 200,
-  },
-  formContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginTop: 20,
+    marginTop: -60,
   },
 })
 

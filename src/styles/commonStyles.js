@@ -75,6 +75,7 @@ const textStyles = StyleSheet.create({
   },
   textRegular: {
     fontFamily: typography.fontRegular,
+    color: '#333',
   },
   textBold: {
     fontFamily: typography.fontBold,
@@ -101,9 +102,6 @@ const textStyles = StyleSheet.create({
     marginTop: 15,
     color: '#666',
   },
-  signLink: {
-    fontFamily: 'Inter_700Bold',
-  },
 });
 
 const buttonStyles = StyleSheet.create({
@@ -118,15 +116,6 @@ const buttonStyles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  authButton: {
-    backgroundColor: colours.buttons,
-  },
-  authButtonText: {
-    color: colours.buttonsText,
-    fontSize: 16,
-    fontWeight: 'bold',
-    alignSelf: 'center',
   },
   pinkbutton: {
     backgroundColor: colours.primary,
@@ -241,6 +230,40 @@ const headerStyles = {
   }
 };
 
+const authStyles = {
+  formContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  headerContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
+  headerText: {
+    fontSize: 28,
+    color: '#333',
+  },
+  subHeaderText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+    opacity: 0.85,
+  },
+  authButton: {
+    backgroundColor: colours.buttons,
+  },
+  authButtonText: {
+    color: colours.buttonsText,
+    fontSize: 16,
+    fontWeight: 'bold',
+    alignSelf: 'center',
+  },
+  authLink: {
+    ...textStyles.textBold,
+    color: colours.buttonsTextPink,
+  }
+};
+
 //Merge all style objects for export
 const commonStyles = {
   ...layoutStyles,
@@ -249,6 +272,7 @@ const commonStyles = {
   ...inputStyles,
   ...optionStyles,
   ...headerStyles,
+  ...authStyles,
   Bg,
 };
 
