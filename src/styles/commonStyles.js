@@ -33,6 +33,12 @@ const layoutStyles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   optionsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -80,6 +86,8 @@ const textStyles = StyleSheet.create({
   textSubheading: {
     fontFamily: typography.fontBold,
     fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   textBody: {
     fontFamily: typography.fontRegular,

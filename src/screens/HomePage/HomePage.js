@@ -4,7 +4,6 @@ import { View, StyleSheet, Text, Image, ActivityIndicator } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
-import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { getUserProfile } from '../../services/users';
@@ -17,6 +16,8 @@ import { useUserData } from '../../hooks/useUserData';
 import commonStyles from '../../styles/commonStyles';
 import SuggestedCollections from '../../components/SuggestedCollections';
 import UserStats from '../../components/UserStats';
+import filler from '../../images/homedecor.png';
+import { AppSubheading } from '../../components/Typography';
 
 /* 
   HomePage Screen
@@ -120,9 +121,10 @@ const HomePage = () => {
             )}
           </View>
         </View>
-
+        <Image source={filler} style={styles.fillerImage} />
 
         {/* Stats Collage Component */}
+        <AppSubheading style={styles.headerContainer}>Your Collecti Insights</AppSubheading>
         <UserStats
           user={user}
           collections={collections}
@@ -155,21 +157,23 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   greeting: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
   },
   username: {
-    fontSize: 18,
+    fontSize: 22,
     color: '#666',
-    marginTop: 4,
+    marginTop: -2.5,
   },
   profileContainer: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     borderRadius: 20,
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
+    borderWidth: 3,
+    borderColor: 'rgba(255, 255, 255, 0.7)', 
   },
   profileImage: {
     width: '100%',
@@ -178,6 +182,12 @@ const styles = StyleSheet.create({
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  fillerImage: {
+    width: '100%',
+    height: 95,
+    resizeMode: 'cover',
+    marginBottom: 12,
   },
 });
 

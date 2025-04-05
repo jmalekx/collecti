@@ -14,6 +14,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 //Custom component imports and styling
 import commonStyles, { colours } from '../styles/commonStyles';
+import { AppSubheading } from './Typography';
 
 /*
   SuggestedCollections Component
@@ -54,7 +55,7 @@ const SuggestedCollections = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.sectionTitle}>Suggested Collections</Text>
+        <AppSubheading>Suggested Collections</AppSubheading>
         <TouchableOpacity onPress={refreshRecommendations}>
           <Ionicons name="refresh-outline" size={20} color={colours.buttonsText} />
         </TouchableOpacity>
@@ -94,12 +95,6 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     width: '100%',
     height: 170,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 18,
