@@ -27,55 +27,57 @@ const Screen2 = ({ navigation }) => {
   const handleOptionPress = (option) => {
     if (selectedOptions.includes(option)) {
       setSelectedOptions(selectedOptions.filter(item => item !== option));
-    } 
+    }
     else {
       setSelectedOptions([...selectedOptions, option]);
     }
   };
-  
+
   //Function to handle continue button press
   const handleContinue = () => {
     navigation.navigate('Screen3', { selectedOptions });
   };
 
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
+        {/* Back button */}
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
 
-      {/* Progress indicator */}
-      <ProgressBar currentStep={2} totalSteps={4} />
+        {/* Progress indicator */}
+        <ProgressBar currentStep={2} totalSteps={4} />
 
-      {/* Main content */}
-      <AppHeading>Where would you like to collect from?</AppHeading>
-      <AppSmallText>Select all that apply</AppSmallText>
+        {/* Main content */}
+        <AppHeading>Where would you like to collect from?</AppHeading>
+        <AppSmallText>Select all that apply</AppSmallText>
 
-      {/* Options */}
-      <View style={styles.optionsContainer}>
-        {['Instagram', 'Tiktok', 'Pinterest', 'Youtube', 'My own gallery'].map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.option,
-              selectedOptions.includes(option) && styles.optionSelected
-            ]}
-            onPress={() => handleOptionPress(option)}
-          >
-            <AppBoldText style={styles.optionText}>{option}</AppBoldText>
-          </TouchableOpacity>
-        ))}
+        {/* Options */}
+        <View style={styles.optionsContainer}>
+          {['Instagram', 'Tiktok', 'Pinterest', 'Youtube', 'My own gallery'].map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.option,
+                selectedOptions.includes(option) && styles.optionSelected
+              ]}
+              onPress={() => handleOptionPress(option)}
+            >
+              <AppBoldText style={styles.optionText}>{option}</AppBoldText>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Continue button */}
+        <AppButton
+          style={styles.button}
+          onPress={handleContinue}
+          title='Continue'
+        />
       </View>
-
-      {/* Continue button */}
-      <AppButton
-        style={styles.button}
-        onPress={handleContinue}
-        title='Continue'
-      />
-    </View>
+    </commonStyles.Bg>
   );
 };
 

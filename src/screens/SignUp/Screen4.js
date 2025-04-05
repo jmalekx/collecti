@@ -73,65 +73,67 @@ const Screen4 = ({ navigation }) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Back button */}
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}
-        disabled={isProcessing}
-      >
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
+        {/* Back button */}
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          disabled={isProcessing}
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
 
-      {/* Progress indicator */}
-      <ProgressBar currentStep={4} totalSteps={4} />
+        {/* Progress indicator */}
+        <ProgressBar currentStep={4} totalSteps={4} />
 
-      {/* Main content */}
-      <AppHeading>What would you like to collect?</AppHeading>
-      <AppText>
-        We selected some common collections for you, but you can always change or add your own later.
-      </AppText>
+        {/* Main content */}
+        <AppHeading>What would you like to collect?</AppHeading>
+        <AppText>
+          We selected some common collections for you, but you can always change or add your own later.
+        </AppText>
 
-      {/* Options */}
-      <View style={styles.optionsContainer}>
-        {collectionSuggestions.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            disabled={isProcessing}
-            style={[
-              styles.option,
-              selectedOptions.includes(option) && styles.optionSelected,
-              isProcessing && styles.disabled
-            ]}
-            onPress={() => handleOptionPress(option)}
-          >
-            <AppText>{option}</AppText>
-          </TouchableOpacity>
-        ))}
+        {/* Options */}
+        <View style={styles.optionsContainer}>
+          {collectionSuggestions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              disabled={isProcessing}
+              style={[
+                styles.option,
+                selectedOptions.includes(option) && styles.optionSelected,
+                isProcessing && styles.disabled
+              ]}
+              onPress={() => handleOptionPress(option)}
+            >
+              <AppText>{option}</AppText>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Continue button */}
+        <AppButton
+          style={styles.button}
+          onPress={handleCompleteOnboarding}
+          disabled={isProcessing}
+          title={isProcessing ? 'Processing...' : 'Continue'}
+        />
+
+        {/* Skip button */}
+        <TouchableOpacity
+          onPress={handleSkipOnboarding}
+          disabled={isProcessing}
+        >
+          <Text style={[
+            styles.skipText,
+            isProcessing && styles.disabled
+          ]}>
+            Skip
+          </Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Continue button */}
-      <AppButton
-        style={styles.button}
-        onPress={handleCompleteOnboarding}
-        disabled={isProcessing}
-        title={isProcessing ? 'Processing...' : 'Continue'}
-      />
-
-      {/* Skip button */}
-      <TouchableOpacity
-        onPress={handleSkipOnboarding}
-        disabled={isProcessing}
-      >
-        <Text style={[
-          styles.skipText,
-          isProcessing && styles.disabled
-        ]}>
-          Skip
-        </Text>
-      </TouchableOpacity>
-    </View>
+    </commonStyles.Bg>
   );
 }
 

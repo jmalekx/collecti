@@ -26,34 +26,36 @@ const Screen3 = ({ route, navigation }) => {
   const { selectedOptions } = route.params;
 
   return (
-    <View style={styles.container}>
+    <commonStyles.Bg>
+      <View style={styles.container}>
 
-      {/* Back button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
+        {/* Back button */}
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
 
-      {/* Progress indicator */}
-      <ProgressBar currentStep={3} totalSteps={4} />
+        {/* Progress indicator */}
+        <ProgressBar currentStep={3} totalSteps={4} />
 
-      {/* Main content */}
-      {selectedOptions.includes('Pinterest') ? (
-        <View>
-          <AppText>Connect to Pinterest</AppText>
-          <AppText>This way you can directly save your pins</AppText>
-          <PinterestButton />
-        </View>
-      ) : (
-        <AppHeading>Almost there...</AppHeading>
-      )}
+        {/* Main content */}
+        {selectedOptions.includes('Pinterest') ? (
+          <View>
+            <AppText>Connect to Pinterest</AppText>
+            <AppText>This way you can directly save your pins</AppText>
+            <PinterestButton />
+          </View>
+        ) : (
+          <AppHeading>Almost there...</AppHeading>
+        )}
 
-      {/* Continue button */}
-      <AppButton
-        style={styles.button}
-        onPress={() => navigation.navigate('Screen4', { selectedOptions })}
-        title='Continue'
-      />
-    </View>
+        {/* Continue button */}
+        <AppButton
+          style={styles.button}
+          onPress={() => navigation.navigate('Screen4', { selectedOptions })}
+          title='Continue'
+        />
+      </View>
+    </commonStyles.Bg>
   );
 };
 
