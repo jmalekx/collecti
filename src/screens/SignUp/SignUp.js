@@ -112,7 +112,7 @@ const SignUp = ({ navigation }) => {
               <View style={styles.signContainer}>
                 <AppText>Already have an account? </AppText>
                 <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                  <AppText style={styles.signLink}>Sign In</AppText>
+                  <AppText style={styles.authLink}>Sign In</AppText>
                 </TouchableOpacity>
               </View>
             </>
