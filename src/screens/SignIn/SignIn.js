@@ -48,11 +48,15 @@ const SignIn = ({ navigation }) => {
             //Auth service
             const user = await signIn(email, password);
 
-            //Clear on success
-            setEmail('');
-            setPassword('');
-
-            showToast(toast, "Login successful", { type: TOAST_TYPES.SUCCESS });
+            if (user) {
+                //Clear on success
+                setEmail('');
+                setPassword('');
+                showToast(toast, "Login successful", { type: TOAST_TYPES.SUCCESS });
+            } 
+            else {
+                showToast(toast, "Incorrect email or password. Please try again.", { type: TOAST_TYPES.DANGER });
+            }
         }
         catch (error) {
             showToast(toast, "Login failed", { type: TOAST_TYPES.DANGER });
