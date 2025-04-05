@@ -1,6 +1,16 @@
+//React and React Native core imports
 import React from 'react';
 import { StyleSheet } from 'react-native';
+
+//Third-party library external imports
 import LinearGradient from 'react-native-linear-gradient';
+
+/*
+  Common styles for the application
+  
+  This file contains shared styles, typography, colors, and layout styles used throughout the app.
+  It also includes a gradient background component for consistent theming. 
+*/
 
 const typography = {
   fontRegular: 'Inter_400Regular',

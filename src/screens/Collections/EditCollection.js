@@ -14,11 +14,11 @@ import { getCollection, updateCollection } from '../../services/collections';
 import commonStyles from '../../styles/commonStyles';
 
 /*
-    EditCollection Screen
+  EditCollection Screen
 
-    Implements (MVC) Model-View-Controller pattern for collection editing with proper
-    service abstraction and CRUD operations, separating concerns between UI and data.
-    Manages editing collection metadata using service layer.
+  Implements (MVC) Model-View-Controller pattern for collection editing with proper
+  service abstraction and CRUD operations, separating concerns between UI and data.
+  Manages editing collection metadata using service layer.
 */
 
 const EditCollection = ({ route, navigation }) => {

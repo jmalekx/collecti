@@ -20,21 +20,21 @@ import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
 import commonStyles from '../styles/commonStyles';
 
 /*
-AddButton Component
+  AddButton Component
 
-Floating action button (FAB) serving as main entry point for user content creation
-Implements multi modal interface for addingf posts from different sources (gallery, URL)
-This is the modal you see when sharing content to the app from other platforms.
+  Floating action button (FAB) serving as main entry point for user content creation
+  Implements multi modal interface for addingf posts from different sources (gallery, URL)
+  This is the modal you see when sharing content to the app from other platforms.
 
-State mahcine:
-- Idle: FAB visible, not expanded
-- Options open: FAB menu options visible
-- Collection creation: modal for creating new collections
-- Post creation: modal with sub-states for content types
-  - Gallery selection
-  - URL input
-  - Collection selection
-  - New collection creation
+  State mahcine:
+  - Idle: FAB visible, not expanded
+  - Options open: FAB menu options visible
+  - Collection creation: modal for creating new collections
+  - Post creation: modal with sub-states for content types
+    - Gallery selection
+    - URL input
+    - Collection selection
+    - New collection creation
 
 */
 
