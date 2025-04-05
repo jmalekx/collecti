@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -14,6 +14,7 @@ import { useCollectionSearch } from '../../hooks/useCollectionSearch';
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
 import RenderThumbnail from '../../components/RenderThumbnail';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /*
   SearchPage Component
@@ -206,8 +207,8 @@ const SearchPage = ({ navigation }) => {
       <View style={styles.container}>
         <View style={styles.searchContainer}>
           {loading && !loadingMore && (
-            <View style={styles.fullScreenLoader}>
-              <ActivityIndicator size="large" color="#007AFF" />
+            <View style={styles.loadingContainer}>
+              <LoadingIndicator />
             </View>
           )}
 
@@ -243,8 +244,8 @@ const SearchPage = ({ navigation }) => {
           }}
           ListFooterComponent={() => (
             loadingMore ? (
-              <View style={styles.loadingFooter}>
-                <ActivityIndicator size="small" color="#007AFF" />
+              <View style={styles.loadingContainer}>
+                <LoadingIndicator />
               </View>
             ) : null
           )}
@@ -354,11 +355,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
-  },
-  loadingFooter: {
-    paddingVertical: 20,
-    alignItems: 'center',
-    backgroundColor: 'transparent',
   },
 });
 

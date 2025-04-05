@@ -1,6 +1,6 @@
 //React and React Native core imports
-import React, { useState, useLayoutEffect } from 'react';
-import { View, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
@@ -13,6 +13,7 @@ import formValidation from '../../utils/formValidation';
 //Custom component imports and styling
 import { AppText, AppButton, AppTextInput } from '../../components/Typography';
 import commonStyles from '../../styles/commonStyles';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /*
   SignUp Screen
@@ -99,7 +100,9 @@ const SignUp = ({ navigation }) => {
           />
 
           {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
+            <View style={styles.loadingContainer}>
+              <LoadingIndicator />
+            </View>
           ) : (
             <>
               <AppButton

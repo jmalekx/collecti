@@ -67,7 +67,7 @@ const layoutStyles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f8f8f8',
+    backgroundColor: 'transparent',
     zIndex: 1,
   },
   embedContainer: {

@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 //Custom component imports and styling
 import commonStyles, { colours } from '../styles/commonStyles';
 import { AppSubheading } from './Typography';
+import LoadingIndicator from './LoadingIndicator';
 
 /*
   SuggestedCollections Component
@@ -43,7 +44,7 @@ const SuggestedCollections = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color="#007AFF" />
+        <LoadingIndicator />
       </View>
     );
   }
@@ -106,11 +107,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-  },
-  loadingContainer: {
-    height: 130,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   collectionCard: {
     width: 130,

@@ -1,6 +1,6 @@
 // React and React Native core imports
 import React, { useState } from 'react';
-import { View, Image, Platform, ScrollView, StyleSheet, useWindowDimensions, ActivityIndicator, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { View, Image, Platform, ScrollView, StyleSheet, useWindowDimensions, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 
 // Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
@@ -15,6 +15,7 @@ import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
 import commonStyles from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 /*
   SignIn Screem
@@ -128,11 +129,9 @@ const SignIn = ({ navigation }) => {
               />
 
               {loading ? (
-                <ActivityIndicator
-                  size="large"
-                  color="#0000ff"
-                  accessibilityLabel="Loading indicator"
-                />
+                <View style={styles.loadingContainer}>
+                  <LoadingIndicator />
+                </View>
               ) : (
                 <>
                   {/* Login button */}

@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Image, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
@@ -179,10 +179,6 @@ const styles = StyleSheet.create({
   profileImage: {
     width: '100%',
     height: '100%',
-  },
-  loadingContainer: {
-    justifyContent: 'center',
-    alignItems: 'center'
   },
   fillerImage: {
     width: '100%',
