@@ -12,10 +12,11 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 
 //Custom component imports and styling
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, { shadowStyles } from '../../styles/commonStyles';
 import ProfileHeader from '../../components/layout/ProfileHeader';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/utilities/SearchBar';
+import { shadowStyles } from '../../styles/commonStyles';
 
 /*
   Collections component displays the user's collections and allows searching through them.
@@ -136,10 +137,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadowStyles.light,
     overflow: 'hidden',
   },
   collectionName: {

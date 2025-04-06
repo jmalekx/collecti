@@ -14,7 +14,7 @@ import { uploadImageToCloudinary } from '../../../services/storage';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
-import commonStyles from '../../../styles/commonStyles';
+import commonStyles, { shadowStyles } from '../../../styles/commonStyles';
 import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
 
 /*
@@ -160,7 +160,7 @@ const EditProfile = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <LoadingIndicator/>
+        <LoadingIndicator />
       </View>
     );
   }
@@ -279,11 +279,7 @@ const styles = StyleSheet.create({
     top: -5,
     backgroundColor: 'white',
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    ...shadowStyles.light,
   },
   changeImageButton: {
     position: 'absolute',
@@ -292,11 +288,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 18,
     padding: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    ...shadowStyles.light,
   },
   label: {
     fontSize: 16,
@@ -342,11 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 18,
     padding: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 2,
+    ...shadowStyles.light,
   },
 });
 

@@ -13,7 +13,7 @@ import { useBookmarks } from '../../hooks/useBookmarks';
 import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, {shadowStyles} from '../../styles/commonStyles';
 import { AppButton } from '../../components/utilities/Typography';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 
@@ -180,10 +180,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    ...shadowStyles.light,
   },
   collectionImage: {
     width: 80,

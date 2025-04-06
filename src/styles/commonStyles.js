@@ -35,6 +35,30 @@ const colours = {
   buttonsTextPink: '#D67A98',
 }
 
+const shadowStyles = {
+  light: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  medium: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  heavy: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
+  }
+};
+
 const layoutStyles = StyleSheet.create({
   container: {
     flex: 1,
@@ -184,11 +208,7 @@ const inputStyles = StyleSheet.create({
     width: 320,
     marginVertical: 8,
     borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.07,
-    shadowRadius: 5,
-    elevation: 2,
+    ...shadowStyles.light,
   },
   input: {
     backgroundColor: 'white',
@@ -222,11 +242,7 @@ const searchStyles = StyleSheet.create({
     height: 42,
     paddingHorizontal: 16,
     marginVertical: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    ...shadowStyles.medium,
     marginBottom: 20,
   },
   searchIcon: {
@@ -281,8 +297,9 @@ const commonStyles = {
   ...inputStyles,
   ...headerStyles,
   ...searchStyles,
+  ...shadowStyles,
   Bg,
 };
 
-export { typography, headerStyles, colours };
+export { typography, headerStyles, colours, shadowStyles };
 export default commonStyles;

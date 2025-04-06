@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles, { colours } from './commonStyles';
+import { shadowStyles } from './commonStyles';
 
 const homestyles = StyleSheet.create({
   //===== HEADER STYLES =====
@@ -70,11 +70,7 @@ const homestyles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    ...shadowStyles.light,
   },
   thumbnailContainer: {
     height: 90,

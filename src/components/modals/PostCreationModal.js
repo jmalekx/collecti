@@ -17,6 +17,7 @@ import { AppTextInput, AppButton, AppHeading } from '../utilities/Typography';
 import LoadingIndicator from '../utilities/LoadingIndicator';
 import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 import addbuttonstyles from '../../styles/addbuttonstyles';
+import settingstyles from '../../styles/settingstyles';
 
 /*
   PostCreation Modal Component
@@ -355,6 +356,8 @@ const PostCreationModal = ({
     }
   };
 
+  // Update the modal structure and improve styling
+
   return (
     <Modal
       animationType="slide"
@@ -365,11 +368,8 @@ const PostCreationModal = ({
         onClose();
       }}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={addbuttonstyles.modalBg}
-      >
-        <View style={addbuttonstyles.modalContainer}>
+      <View style={addbuttonstyles.modalBg}>
+        <View style={[addbuttonstyles.modalContainer, { padding: 20 }]}>
           <View style={addbuttonstyles.modalHeader}>
             <AppHeading style={addbuttonstyles.modalTitle}>Add to Collection</AppHeading>
             <TouchableOpacity onPress={() => {
@@ -380,7 +380,7 @@ const PostCreationModal = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={addbuttonstyles.scrollContainer}>
+          <ScrollView style={[addbuttonstyles.scrollContainer, { marginBottom: 16 }]}>
             {/* Tab Selector */}
             <View style={addbuttonstyles.tabContainer}>
               <TouchableOpacity
@@ -438,30 +438,32 @@ const PostCreationModal = ({
             {/* URL Input Section */}
             {activeTab === 'url' && (
               <View style={addbuttonstyles.urlSection}>
-                <TextInput
-                  placeholder="Paste an Image URL here"
-                  value={imageUrl}
-                  onChangeText={text => {
-                    setImageUrl(text);
-                    //Auto-detect platform based on URL
-                    if (text.includes('instagram.com')) {
-                      setCurrentPlatform('instagram');
-                    }
-                    else if (text.includes('tiktok.com')) {
-                      setCurrentPlatform('tiktok');
-                    }
-                    else if (text.includes('pinterest.com')) {
-                      setCurrentPlatform('pinterest');
-                    }
-                    else if (text.includes('youtube.com') || text.includes('youtu.be')) {
-                      setCurrentPlatform('youtube');
-                    }
-                    else {
-                      setCurrentPlatform('other');
-                    }
-                  }}
-                  style={addbuttonstyles.input}
-                />
+                <View style={[addbuttonstyles.standardInputContainer]}>
+                  <TextInput
+                    placeholder="Paste an Image URL here"
+                    value={imageUrl}
+                    onChangeText={text => {
+                      setImageUrl(text);
+                      //Auto-detect platform based on URL
+                      if (text.includes('instagram.com')) {
+                        setCurrentPlatform('instagram');
+                      }
+                      else if (text.includes('tiktok.com')) {
+                        setCurrentPlatform('tiktok');
+                      }
+                      else if (text.includes('pinterest.com')) {
+                        setCurrentPlatform('pinterest');
+                      }
+                      else if (text.includes('youtube.com') || text.includes('youtu.be')) {
+                        setCurrentPlatform('youtube');
+                      }
+                      else {
+                        setCurrentPlatform('other');
+                      }
+                    }}
+                    style={addbuttonstyles.standardInput}
+                  />
+                </View>
 
                 {/* Platform indicator */}
                 {imageUrl && (
@@ -483,21 +485,25 @@ const PostCreationModal = ({
             )}
 
             {/* Notes Section */}
-            <TextInput
-              placeholder="Notes"
-              value={notes}
-              onChangeText={setNotes}
-              multiline
-              style={[addbuttonstyles.input, addbuttonstyles.textArea]}
-            />
+            <View style={addbuttonstyles.standardInputContainer}>
+              <TextInput
+                placeholder="Notes"
+                value={notes}
+                onChangeText={setNotes}
+                multiline
+                style={[addbuttonstyles.standardInput, addbuttonstyles.textArea]}
+              />
+            </View>
 
             {/* Tags Input */}
-            <TextInput
-              placeholder="Tags (comma separated)"
-              value={tags}
-              onChangeText={setTags}
-              style={addbuttonstyles.input}
-            />
+            <View style={addbuttonstyles.standardInputContainer}>
+              <TextInput
+                placeholder="Tags (comma separated)"
+                value={tags}
+                onChangeText={setTags}
+                style={addbuttonstyles.standardInput}
+              />
+            </View>
 
             {/* Collection Selector Section */}
             <View style={addbuttonstyles.collectionSelectorSection}>
@@ -506,12 +512,14 @@ const PostCreationModal = ({
               {isNewCollection ? (
                 //New Collection Input
                 <View style={addbuttonstyles.newCollectionContainer}>
-                  <AppTextInput
-                    placeholder="New Collection Name"
-                    value={newCollectionName}
-                    onChangeText={setNewCollectionName}
-                    style={addbuttonstyles.newCollectionInput}
-                  />
+                  <View style={[{ flex: 1, marginRight: 8 }]}>
+                    <TextInput
+                      placeholder="New Collection Name"
+                      value={newCollectionName}
+                      onChangeText={setNewCollectionName}
+                      style={addbuttonstyles.standardInput}
+                    />
+                  </View>
                   <TouchableOpacity
                     style={addbuttonstyles.checkmarkButton}
                     onPress={handleQuickAddCollection}
@@ -562,7 +570,7 @@ const PostCreationModal = ({
               <LoadingIndicator text="Uploading image..." />
             </View>
           ) : (
-            <View style={[addbuttonstyles.buttonRow, { marginHorizontal: 0 }]}>
+            <View style={addbuttonstyles.buttonRow}>
               <TouchableOpacity
                 style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
                 onPress={() => {
@@ -581,7 +589,7 @@ const PostCreationModal = ({
             </View>
           )}
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 };

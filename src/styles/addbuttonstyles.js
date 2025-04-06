@@ -3,7 +3,8 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Third-party library external imports
-import commonStyles, { colours } from './commonStyles';
+import commonStyles, { colours, typography, shadowStyles } from './commonStyles';
+import settingstyles from './settingstyles';
 
 const addbuttonstyles = StyleSheet.create({
   //===== CONTAINER AND BACKDROP STYLES =====
@@ -36,11 +37,7 @@ const addbuttonstyles = StyleSheet.create({
     borderRadius: 24,
     width: '92%',
     maxHeight: '85%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
+    ...shadowStyles.heavy,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -75,11 +72,7 @@ const addbuttonstyles = StyleSheet.create({
   },
   activeTabButton: {
     backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadowStyles.light,
   },
   tabButtonText: {
     color: colours.subTexts,
@@ -98,17 +91,7 @@ const addbuttonstyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    color: '#555',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    marginBottom: 16,
-    padding: 14,
-    borderRadius: 12,
-    backgroundColor: '#f9f9f9',
-    fontSize: 15,
-    color: '#333',
+    color: colours.subTexts,
   },
   textArea: {
     height: 80,
@@ -142,11 +125,7 @@ const addbuttonstyles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...shadowStyles.light,
   },
   selectedImage: {
     width: '100%',
@@ -160,19 +139,11 @@ const addbuttonstyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.9)',
     borderRadius: 20,
     padding: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    ...shadowStyles.heavy,
   },
   //===== URL SECTION STYLES =====
   urlSection: {
     marginBottom: 20,
-  },
-  urlInput: {
-    height: 50,
-    fontSize: 15,
   },
   platformIndicator: {
     flexDirection: 'row',
@@ -186,17 +157,6 @@ const addbuttonstyles = StyleSheet.create({
     color: '#555',
     fontSize: 14,
     fontWeight: '500',
-  },
-  //===== NOTES AND TAGS STYLES =====
-  notesInput: {
-    height: 100,
-    textAlignVertical: 'top',
-    marginBottom: 18,
-    fontSize: 15,
-  },
-  tagsInput: {
-    marginBottom: 18,
-    fontSize: 15,
   },
   //===== COLLECTION SELECTOR STYLES =====
   collectionSelectorSection: {
@@ -236,32 +196,17 @@ const addbuttonstyles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    ...shadowStyles.light,
   },
   //===== BUTTON STYLES =====
   buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
+    ...settingstyles.buttonRow,
   },
   actionButton: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    ...settingstyles.actionButton,
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
+    ...settingstyles.cancelButton,
   },
   confirmButton: {
     backgroundColor: colours.buttonsTextPink,
@@ -269,12 +214,10 @@ const addbuttonstyles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: colours.mainTexts,
   },
   buttonTextWhite: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
+    ...settingstyles.actionButtonText,
   },
   //===== FLOATING ADD BUTTON STYLES =====
   addBtn: {
@@ -288,11 +231,7 @@ const addbuttonstyles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 6,
+    ...shadowStyles.medium,
     zIndex: 1001,
     pointerEvents: 'auto',
   },
@@ -320,11 +259,7 @@ const addbuttonstyles = StyleSheet.create({
     backgroundColor: colours.buttonsTextPink,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    ...shadowStyles.medium,
   },
   menuItemLabel: {
     marginBottom: 4,
@@ -335,16 +270,30 @@ const addbuttonstyles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 10,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
+    ...shadowStyles.light,
   },
   //===== LOADING STYLES =====
   loadingContainer: {
     ...commonStyles.loadingContainer,
-  }
+  },
+  //===== INPUT STYLES =====
+  standardInputContainer: {
+    width: '100%',
+    marginVertical: 8,
+    borderRadius: 15,
+    ...shadowStyles.light,
+  },
+  standardInput: {
+    backgroundColor: 'white',
+    height: 55,
+    borderColor: colours.secondary,
+    borderWidth: 2,
+    borderRadius: 15,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    fontFamily: typography.fontRegular,
+    fontSize: 16,
+  },
 });
 
 export default addbuttonstyles;

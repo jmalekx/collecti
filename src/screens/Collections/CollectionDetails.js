@@ -17,7 +17,7 @@ import { usePagination } from '../../hooks/usePagination';
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import { AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, {shadowStyles} from '../../styles/commonStyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
@@ -593,10 +593,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    ...shadowStyles.light,
     position: 'relative',
     width: '48%',
     margin: '1%',
@@ -693,11 +690,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...shadowStyles.medium,
   },
   modalHeader: {
     flexDirection: 'row',

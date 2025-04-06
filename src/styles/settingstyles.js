@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import { colours } from './commonStyles';
+import { colours, shadowStyles } from './commonStyles';
 
 const settingstyles = StyleSheet.create({
   //===== MAIN SETTINGS SCREEN STYLES =====
@@ -75,11 +75,7 @@ const settingstyles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    ...shadowStyles.medium,
   },
   //Modal icon styles
   iconsContainer: {

@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import { typography } from '../../styles/commonStyles';
+import { typography, shadowStyles } from '../../styles/commonStyles';
 import { trackToast, setToastId, removeToast } from '../../utils/toastManager';
 
 /*
@@ -104,38 +104,22 @@ export const toastConfig = {
   success: {
     backgroundColor: '#e7f5e8',
     iconColor: '#2ECC71',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3
+    ...shadowStyles.medium,
   },
   danger: {
     backgroundColor: '#ffe2e4',
     iconColor: '#ff626d',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3
+    ...shadowStyles.medium,
   },
   warning: {
     backgroundColor: '#fff3e3',
     iconColor: '#feb37c',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3 
+    ...shadowStyles.medium,
   },
   info: {
     backgroundColor: '#eaf2ff',
     iconColor: '#006efc',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    elevation: 3
+    ...shadowStyles.medium,
   }
 };
 
