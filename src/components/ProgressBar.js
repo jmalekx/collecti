@@ -45,10 +45,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   activeBar: {
-    backgroundColor: colours.buttonsTextPink, // Color for completed steps
+    backgroundColor: colours.buttonsTextPink, 
   },
   inactiveBar: {
-    backgroundColor: colours.tertiary, // Color for incomplete steps
+    backgroundColor: colours.tertiary,
   },
 });
 

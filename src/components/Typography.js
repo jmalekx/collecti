@@ -83,10 +83,11 @@ export const AppButton = ({ style, textStyle, onPress, title, ...props }) => {
   );
 };
 
-export const AppTextInput = ({ style, placeholderTextColor = "#999", ...props }) => (
+export const AppTextInput = ({ style, placeholderTextColor = "#999", leftIcon, ...props }) => (
   <View style={commonStyles.inputContainer}>
+    {leftIcon && <View style={commonStyles.leftIconContainer}>{leftIcon}</View>}
     <TextInput
-      style={[commonStyles.input, style]}
+      style={[commonStyles.input, leftIcon && commonStyles.inputWithIcon, style]}
       placeholderTextColor={placeholderTextColor}
       {...props}
     />

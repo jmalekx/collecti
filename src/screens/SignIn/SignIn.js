@@ -4,6 +4,7 @@ import { View, Image, Platform, ScrollView, StyleSheet, useWindowDimensions, Key
 
 // Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import { Ionicons } from '@expo/vector-icons';
 
 // Project services and utilities
 import { signIn } from '../../services/auth';
@@ -13,7 +14,7 @@ import formValidation from '../../utils/formValidation';
 // Custom component imports and styling
 import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import LoadingIndicator from '../../components/LoadingIndicator';
 
@@ -89,14 +90,13 @@ const SignIn = ({ navigation }) => {
           <View style={styles.logoContainer}>
             <Image
               source={Name}
-              style={{ height: 170 }}
+              style={[{ height: 170 }, styles.nameImage]}
               resizeMode='contain'
             />
             <Image
               source={Logo}
               style={styles.logo}
               resizeMode='contain'
-              accessibilityLabel="Application logo"
             />
           </View>
 
@@ -108,25 +108,36 @@ const SignIn = ({ navigation }) => {
               <AppText style={styles.subHeaderText}>Please enter your details below</AppText>
             </View>
 
+            {/* Divider */}
+            <View style={styles.divider} />
+
             {/* Form */}
             <View style={[styles.formContainer, { width: '80%' }]}>
               {/* Email */}
-              <AppTextInput
-                value={email}
-                placeholder="Email"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                onChangeText={setEmail}
-              />
+              <View style={styles.inputContainer}>
+                <AppTextInput
+                  value={email}
+                  placeholder="Email"
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  onChangeText={setEmail}
+                  style={styles.input}
+                  leftIcon={<Ionicons name="mail-outline" size={18} color={colours.buttonsHighlight} />}
+                />
+              </View>
 
               {/* Password */}
-              <AppTextInput
-                secureTextEntry={true}
-                value={password}
-                placeholder="Password"
-                autoCapitalize="none"
-                onChangeText={setPassword}
-              />
+              <View style={styles.inputContainer}>
+                <AppTextInput
+                  secureTextEntry={true}
+                  value={password}
+                  placeholder="Password"
+                  autoCapitalize="none"
+                  onChangeText={setPassword}
+                  style={styles.input}
+                  leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colours.buttonsHighlight} />}
+                />
+              </View>
 
               {loading ? (
                 <View style={styles.loadingContainer}>
@@ -179,7 +190,34 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     maxWidth: 200,
-    marginTop: -60,
+    marginTop: -70,
+  },
+  nameImage: {
+    marginLeft: 20,
+  },
+  headerText: {
+    ...commonStyles.headerText,
+    fontSize: 32,
+  },
+  subHeaderText: {
+    ...commonStyles.subHeaderText,
+    marginTop: 0,
+  },
+  headerContainer: {
+    ...commonStyles.headerContainer,
+    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginLeft: 40,
+    alignSelf: 'stretch',
+  },
+  bottomContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
 })
 

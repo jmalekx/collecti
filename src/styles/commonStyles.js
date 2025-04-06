@@ -78,6 +78,14 @@ const layoutStyles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#fff',
   },
+  divider: {
+    height: 2,
+    backgroundColor: colours.buttonsTextPink,
+    width: '80%',
+    marginBottom: 20,
+    alignSelf: 'center',
+    opacity: 0.4,
+  },
 });
 
 const textStyles = StyleSheet.create({
@@ -202,6 +210,16 @@ const inputStyles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
+  leftIconContainer: {
+    position: 'absolute',
+    left: 16,
+    height: '100%',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  inputWithIcon: {
+    paddingLeft: 46,
+  }
 });
 
 const optionStyles = StyleSheet.create({
