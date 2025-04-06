@@ -23,6 +23,7 @@ const colours = {
   tertiary: '#fffbf4',
 
   lighterpink: '#FFF0F5',
+  grey: '#c0c0c060',
 
   mainTexts: '#333',
   subTexts: '#666',
@@ -43,12 +44,6 @@ const layoutStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
-  },
-  optionsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginBottom: 20,
   },
   signContainer: {
     flexDirection: 'row',
@@ -173,7 +168,7 @@ const buttonStyles = StyleSheet.create({
     left: 20,
   },
   pinterestButton: {
-    backgroundColor: '#E60023',
+    backgroundColor: colours.buttonsTextPink,
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -231,22 +226,6 @@ const inputStyles = StyleSheet.create({
   inputWithIcon: {
     paddingLeft: 46,
   }
-});
-
-const optionStyles = StyleSheet.create({
-  option: {
-    backgroundColor: "#FFDCDC",
-    padding: 10,
-    borderRadius: 20,
-    margin: 5,
-  },
-  optionText: {
-    color: "#D54B4B",
-    fontWeight: "bold",
-  },
-  optionSelected: {
-    backgroundColor: '#c0c0c0',
-  },
 });
 
 const Bg = React.memo(({ children, style }) => {
@@ -326,7 +305,6 @@ const commonStyles = {
   ...textStyles,
   ...buttonStyles,
   ...inputStyles,
-  ...optionStyles,
   ...headerStyles,
   ...authStyles,
   Bg,

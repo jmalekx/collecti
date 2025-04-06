@@ -71,6 +71,7 @@ const Screen1 = ({ navigation }) => {
         <View style={onboardingstyles.onboardHeading}>
           <AppHeading style={onboardingstyles.welcomeText}>Welcome</AppHeading>
           <View style={onboardingstyles.toNameContainer}>
+
             <AppText style={onboardingstyles.toText}>to</AppText>
             <Image
               source={Name}
@@ -78,14 +79,17 @@ const Screen1 = ({ navigation }) => {
               resizeMode='cover'
               tintColor={colours.mainTexts}
             />
+
           </View>
 
           {/* What is it */}
           <View style={onboardingstyles.howItWorksContainer}>
             <AppText style={onboardingstyles.headerTexts}>What is Collecti?</AppText>
+
             <AppText style={[onboardingstyles.SubTexts, onboardingstyles.SubText]}>
               A space for all your scroll-stopping finds.
             </AppText>
+
             <AppText style={[onboardingstyles.SubTexts, onboardingstyles.SubText]}>
               With Collecti, inspiration sticks – no more endless searching.
               Organise your fav content into one central hub.
@@ -97,11 +101,13 @@ const Screen1 = ({ navigation }) => {
         {/* How it works */}
         <View style={onboardingstyles.centerContent}>
           <AppText style={onboardingstyles.headerTexts}>How does Collecti work?</AppText>
+
           <AppText style={onboardingstyles.SubText}>
             Use the share feature from your favourite apps to save
             content directly into Collecti.You can easily organise,
             categorise, revisit and stay inspired.
           </AppText>
+
           <AppText style={onboardingstyles.SubText}>
             It's your content, organised your way.
           </AppText>

@@ -51,7 +51,7 @@ const Screen2 = ({ navigation }) => {
       case 'Youtube':
         return '#FF0000';
       default:
-        return '#4CAF50'; 
+        return '#4CAF50';
     }
   };
 
@@ -84,86 +84,33 @@ const Screen2 = ({ navigation }) => {
 
           {/* Options */}
           <View style={onboardingstyles.optionsContainer}>
-            <View style={onboardingstyles.optionsRow}>
-              {platformOptions.slice(0, 3).map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    onboardingstyles.option,
-                    selectedOptions.includes(option.name) && onboardingstyles.optionSelected
-                  ]}
-                  onPress={() => handleOptionPress(option.name)}
-                >
-                  <View 
+            {platformOptions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  onboardingstyles.option,
+                  selectedOptions.includes(option.name) && onboardingstyles.optionSelected
+                ]}
+                onPress={() => handleOptionPress(option.name)}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons
+                    name={option.icon}
+                    size={22}  // Increased icon size
+                    color={selectedOptions.includes(option.name) ? getPlatformColor(option.name) : getPlatformColor(option.name)}
+                    style={{ marginRight: 5 }}
+                  />
+                  <AppBoldText
                     style={[
-                      onboardingstyles.iconContainer,
-                      { backgroundColor: selectedOptions.includes(option.name) 
-                        ? colours.lighterpink 
-                        : `${getPlatformColor(option.name)}20` }
+                      onboardingstyles.optionText,
+                      selectedOptions.includes(option.name) && onboardingstyles.optionTextSelected
                     ]}
                   >
-                    <Ionicons 
-                      name={option.icon} 
-                      size={24} 
-                      color={selectedOptions.includes(option.name) 
-                        ? colours.buttonsTextPink 
-                        : getPlatformColor(option.name)} 
-                    />
-                  </View>
-                  <AppBoldText style={[
-                    onboardingstyles.optionText,
-                    selectedOptions.includes(option.name) && onboardingstyles.optionTextSelected
-                  ]}>
                     {option.name}
                   </AppBoldText>
-                  {selectedOptions.includes(option.name) && (
-                    <View style={onboardingstyles.checkmarkContainer}>
-                      <Ionicons name="checkmark-circle" size={16} color={colours.buttonsTextPink} />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View style={onboardingstyles.optionsRow}>
-              {platformOptions.slice(3).map((option, index) => (
-                <TouchableOpacity
-                  key={index + 3}
-                  style={[
-                    onboardingstyles.option,
-                    selectedOptions.includes(option.name) && onboardingstyles.optionSelected
-                  ]}
-                  onPress={() => handleOptionPress(option.name)}
-                >
-                  <View 
-                    style={[
-                      onboardingstyles.iconContainer,
-                      { backgroundColor: selectedOptions.includes(option.name) 
-                        ? colours.lighterpink 
-                        : `${getPlatformColor(option.name)}20` }
-                    ]}
-                  >
-                    <Ionicons 
-                      name={option.icon} 
-                      size={24} 
-                      color={selectedOptions.includes(option.name) 
-                        ? colours.buttonsTextPink 
-                        : getPlatformColor(option.name)} 
-                    />
-                  </View>
-                  <AppBoldText style={[
-                    onboardingstyles.optionText,
-                    selectedOptions.includes(option.name) && onboardingstyles.optionTextSelected
-                  ]}>
-                    {option.name}
-                  </AppBoldText>
-                  {selectedOptions.includes(option.name) && (
-                    <View style={onboardingstyles.checkmarkContainer}>
-                      <Ionicons name="checkmark-circle" size={16} color={colours.buttonsTextPink} />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 

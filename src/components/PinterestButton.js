@@ -116,20 +116,16 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
   return (
     <TouchableOpacity
       style={[
-        styles.pinterestButton,
-        pinterestConnected && styles.pinterestConnected
+        commonStyles.pinterestButton,
+        pinterestConnected && commonStyles.pinterestConnected
       ]}
       onPress={pinterestConnected ? handlePinterestDisconnect : handlePinterestAuth}
     >
-      <Text style={styles.pinterestButtonText}>
+      <Text style={commonStyles.pinterestButtonText}>
         {pinterestConnected ? 'Disconnect Pinterest' : 'Connect to Pinterest'}
       </Text>
     </TouchableOpacity>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-});
 
 export default PinterestButton;

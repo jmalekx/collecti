@@ -12,8 +12,9 @@ import { getCollectionSuggestions, completeOnboardingProcess } from '../../servi
 
 //Custom component imports and styling
 import ProgressBar from "../../components/ProgressBar";
-import commonStyles from "../../styles/commonStyles";
-import { AppText, AppHeading, AppButton } from '../../components/Typography';
+import commonStyles, { colours } from "../../styles/commonStyles";
+import onboardingstyles from "../../styles/onboardingstyles";
+import { AppText, AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';
 
 /*
   Onboarding Screen4 Component
@@ -74,93 +75,83 @@ const Screen4 = ({ navigation }) => {
   };
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={onboardingstyles.container}>
 
         {/* Back button */}
         <TouchableOpacity
-          style={styles.backButton}
+          style={onboardingstyles.backButton}
           onPress={() => navigation.goBack()}
           disabled={isProcessing}
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={24} color={colours.mainTexts} />
         </TouchableOpacity>
 
         {/* Progress indicator */}
         <ProgressBar currentStep={4} totalSteps={4} />
 
         {/* Main content */}
-        <AppHeading>What would you like to collect?</AppHeading>
-        <AppText>
-          We selected some common collections for you, but you can always change or add your own later.
-        </AppText>
+        <View style={onboardingstyles.contentContainer}>
+          <View style={onboardingstyles.headerContainer}>
+            <AppHeading style={onboardingstyles.heading}>What would you like to collect?</AppHeading>
+            <AppText style={onboardingstyles.subheading}>
+              Choose from some common collections to get started
+              — you can customise or add your own anytime.
+            </AppText>
+          </View>
 
-        {/* Options */}
-        <View style={styles.optionsContainer}>
-          {collectionSuggestions.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              disabled={isProcessing}
-              style={[
-                styles.option,
-                selectedOptions.includes(option) && styles.optionSelected,
-                isProcessing && styles.disabled
-              ]}
-              onPress={() => handleOptionPress(option)}
-            >
-              <AppText>{option}</AppText>
-            </TouchableOpacity>
-          ))}
+          {/* Options */}
+          <View style={onboardingstyles.optionsContainer}>
+            {collectionSuggestions.map((option, index) => (
+              <TouchableOpacity
+                key={index}
+                disabled={isProcessing}
+                style={[
+                  onboardingstyles.option,
+                  selectedOptions.includes(option) && onboardingstyles.optionSelected,
+                  isProcessing && { opacity: 0.7 }
+                ]}
+                onPress={() => handleOptionPress(option)}
+              >
+                <AppBoldText
+                  style={[
+                    onboardingstyles.optionText,
+                    selectedOptions.includes(option) && onboardingstyles.optionTextSelected
+                  ]}
+                >
+                  {option}
+                </AppBoldText>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
-        {/* Continue button */}
-        <AppButton
-          style={styles.button}
-          onPress={handleCompleteOnboarding}
-          disabled={isProcessing}
-          title={isProcessing ? 'Processing...' : 'Continue'}
-        />
-
-        {/* Skip button */}
+        {/* Skip button - styled to match other screens */}
         <TouchableOpacity
           onPress={handleSkipOnboarding}
           disabled={isProcessing}
+          style={onboardingstyles.skipButton}
         >
-          <Text style={[
-            styles.skipText,
-            isProcessing && styles.disabled
+          <AppSmallText style={[
+            onboardingstyles.skipText,
+            isProcessing && onboardingstyles.disabled
           ]}>
             Skip
-          </Text>
+          </AppSmallText>
         </TouchableOpacity>
+
+        {/* Continue button */}
+        <View style={onboardingstyles.buttonContainer}>
+          <AppButton
+            style={onboardingstyles.button}
+            onPress={handleCompleteOnboarding}
+            disabled={isProcessing}
+            title={isProcessing ? 'Processing...' : 'Continue'}
+          />
+
+        </View>
       </View>
     </commonStyles.Bg>
   );
 }
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  optionSelected: {
-    backgroundColor: '#c0c0c0',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  optionsContainer: {
-    width: '100%',
-    marginVertical: 20,
-  },
-  option: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-  },
-  skipText: {
-    marginTop: 15,
-    textAlign: 'center',
-    color: '#666',
-    textDecorationLine: 'underline',
-  }
-});
 
 export default Screen4;

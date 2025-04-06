@@ -24,6 +24,31 @@ const onboardingstyles = StyleSheet.create({
     zIndex: 10,
     padding: 8,
   },
+  optionsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: -16,
+    margin: 10,
+  },
+  option: {
+    backgroundColor: colours.grey,
+    padding: 12,
+    borderRadius: 20,
+    margin: 4,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  optionSelected: {
+    backgroundColor: colours.primary,
+  },
+  optionTextSelected: {
+    color: colours.buttonsTextPink,
+  },
+  optionText: {
+    color: colours.mainTexts,
+    fontSize: 14,
+  },
   headerContainer: {
     alignItems: 'center',
     marginBottom: 30,
@@ -34,11 +59,13 @@ const onboardingstyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
     lineHeight: 32,
+    color: colours.mainTexts,
   },
   subheading: {
     fontSize: 16,
     textAlign: 'center',
     color: colours.subTexts,
+    marginBottom: 12,
   },
   buttonContainer: {
     width: '100%',
@@ -119,38 +146,6 @@ const onboardingstyles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: -20,
   },
-  optionsContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  optionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 15,
-  },
-  option: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colours.tertiary,
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 8,
-    width: 95,
-    height: 95,
-    borderWidth: 1,
-    borderColor: '#eee',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-    position: 'relative',
-  },
-  optionSelected: {
-    backgroundColor: colours.lighterpink,
-    borderColor: colours.buttonsTextPink,
-    borderWidth: 1.5,
-  },
   iconContainer: {
     width: 46,
     height: 46,
@@ -159,62 +154,25 @@ const onboardingstyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  optionText: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: colours.mainTexts,
-  },
-  optionTextSelected: {
-    color: colours.buttonsTextPink,
-  },
   checkmarkContainer: {
     position: 'absolute',
     top: 5,
     right: 5,
   },
 
-  //Screen3
-  pinterestContainer: {
+  //Screen4
+  disabled: {
+    opacity: 0.7,
+  },
+  skipButton: {
+    paddingVertical: 8,
     alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    padding: 20,
-    marginTop: 30,
   },
-  pinterestHeading: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginBottom: 15,
-    color: colours.mainTexts,
-  },
-  pinterestDescription: {
-    fontSize: 16,
-    textAlign: 'center',
+  skipText: {
+    marginBottom: -10,
     color: colours.subTexts,
-    marginBottom: 25,
-    lineHeight: 22,
-    paddingHorizontal: 10,
-  },
-  pinterestButton: {
-    marginTop: 15,
-  },
-  almostThereContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-    padding: 20,
-    marginTop: 50,
-  },
-  almostThereImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 30,
-  },
-  almostThereText: {
-    fontSize: 28,
-    textAlign: 'center',
-    color: colours.mainTexts,
-    marginBottom: 20,
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });
 

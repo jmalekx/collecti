@@ -40,23 +40,29 @@ const Screen3 = ({ route, navigation }) => {
 
         {/* Main content */}
         {selectedOptions.includes('Pinterest') ? (
-          <View style={onboardingstyles.pinterestContainer}>
-            <AppHeading style={onboardingstyles.pinterestHeading}>Connect to Pinterest</AppHeading>
-            <AppText style={onboardingstyles.pinterestDescription}>
-              If you connect directly to Pinterest, you can save your own pins and their information more easily into Collecti.
-              
-              This integration helps extract images and titles automatically, making your collecting experience smoother.
-              
-              This step is optional but can significantly enhance your experience with the app.
+          <View style={onboardingstyles.contentContainer}>
+
+            <AppHeading style={onboardingstyles.heading}>Connect to Pinterest</AppHeading>
+
+            <AppText style={onboardingstyles.subheading}>
+              This integration helps extract images and titles automatically
+              from your own pins, making your collecting experience smoother.
             </AppText>
-            <View style={onboardingstyles.pinterestButton}>
+
+            <AppText style={onboardingstyles.subheading}>
+              This step is optional but can significantly enhance your
+              experience with Collecti.
+            </AppText>
+
+            <View>
               <PinterestButton />
             </View>
+
           </View>
         ) : (
-          <View style={onboardingstyles.almostThereContainer}>
-            <AppHeading style={onboardingstyles.almostThereText}>Almost there...</AppHeading>
-            <AppText style={onboardingstyles.pinterestDescription}>
+          <View style={onboardingstyles.contentContainer}>
+            <AppHeading style={onboardingstyles.heading}>Almost there...</AppHeading>
+            <AppText style={onboardingstyles.subheading}>
               Just one more step to complete your setup and start your collecting journey!
             </AppText>
           </View>
