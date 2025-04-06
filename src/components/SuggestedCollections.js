@@ -14,6 +14,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 
 //Custom component imports and styling
 import commonStyles, { colours } from '../styles/commonStyles';
+import homestyles from '../styles/homestyles';
 import { AppSubheading } from './Typography';
 import LoadingIndicator from './LoadingIndicator';
 
@@ -43,7 +44,7 @@ const SuggestedCollections = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={commonStyles.loadingContainer}>
         <LoadingIndicator />
       </View>
     );
@@ -54,8 +55,8 @@ const SuggestedCollections = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
+    <View style={homestyles.container}>
+      <View style={homestyles.headerContainer}>
         <AppSubheading>Suggested Collections</AppSubheading>
         <TouchableOpacity onPress={refreshRecommendations}>
           <Ionicons name="refresh-outline" size={20} color={colours.buttonsText} />
@@ -69,19 +70,19 @@ const SuggestedCollections = () => {
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.collectionCard}
+            style={homestyles.collectionCard}
             onPress={() => navigateToCollection(item.id, item.ownerId)}
           >
-            <View style={styles.thumbnailContainer}>
+            <View style={homestyles.thumbnailContainer}>
               <RenderThumbnail
                 thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
                 scale={0.5}
-                containerStyle={styles.thumbnailWrapper}
-                thumbnailStyle={styles.thumbnail}
+                containerStyle={homestyles.thumbnailWrapper}
+                thumbnailStyle={homestyles.thumbnail}
               />
             </View>
-            <View style={styles.cardContent}>
-              <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
+            <View style={homestyles.cardContent}>
+              <Text style={homestyles.collectionName} numberOfLines={1}>{item.name}</Text>
             </View>
           </TouchableOpacity>
         )}
@@ -90,63 +91,5 @@ const SuggestedCollections = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  ...commonStyles,
-  container: {
-    marginVertical: 16,
-    width: '100%',
-    height: 170,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  collectionCard: {
-    width: 130,
-    height: 130,
-    marginRight: 12,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  thumbnailContainer: {
-    height: 90,
-    width: '100%',
-  },
-  thumbnailWrapper: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-  },
-  cardContent: {
-    padding: 10,
-  },
-  collectionName: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  collectionStats: {
-    fontSize: 12,
-    color: '#666',
-  }
-});
 
 export default SuggestedCollections;

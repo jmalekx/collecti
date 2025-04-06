@@ -14,6 +14,7 @@ import { useUserData } from '../../hooks/useUserData';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
+import homestyles from '../../styles/homestyles';
 import SuggestedCollections from '../../components/SuggestedCollections';
 import UserStats from '../../components/UserStats';
 import filler from '../../images/homedecor.png';
@@ -92,7 +93,7 @@ const HomePage = () => {
   if (!pageReady) {
     return (
       <commonStyles.Bg>
-        <View style={[styles.container, styles.loadingContainer]}>
+        <View style={[commonStyles.container, commonStyles.loadingContainer]}>
           <LoadingIndicator/>
         </View>
       </commonStyles.Bg>
@@ -101,38 +102,38 @@ const HomePage = () => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
 
         {/* Header with greeting and profile image */}
-        <View style={styles.header}>
-          <View style={styles.greetingContainer}>
-            <Text style={styles.greeting}>Hello,</Text>
-            <Text style={styles.username}>{userName}</Text>
+        <View style={homestyles.header}>
+          <View style={homestyles.greetingContainer}>
+            <Text style={homestyles.greeting}>Hello,</Text>
+            <Text style={homestyles.username}>{userName}</Text>
           </View>
 
-          <View style={styles.profileContainer}>
+          <View style={homestyles.profileContainer}>
             {profileImage ? (
-              <Image source={{ uri: profileImage }} style={styles.profileImage} />
+              <Image source={{ uri: profileImage }} style={homestyles.profileImage} />
             ) : (
               //Use DEFAULT_PROFILE_PICTURE instead of initials when no profile image
               <Image
                 source={{ uri: DEFAULT_PROFILE_PICTURE }}
-                style={styles.profileImage}
+                style={homestyles.profileImage}
               />
             )}
           </View>
         </View>
-        <Image source={filler} style={styles.fillerImage} />
+        <Image source={filler} style={homestyles.fillerImage} />
 
         {/* Stats Collage Component */}
-        <AppSubheading style={styles.headerContainer}>Your Collecti Insights</AppSubheading>
+        <AppSubheading style={commonStyles.headerContainer}>Your Collecti Insights</AppSubheading>
         <UserStats
           user={user}
           collections={collections}
         />
 
         {/* Suggested Collections Section */}
-        <View style={styles.section}>
+        <View>
           <SuggestedCollections />
         </View>
 
@@ -140,52 +141,5 @@ const HomePage = () => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingTop: 8,
-  },
-  section: {
-    flex: 1,
-    marginBottom: 16
-  },
-  greetingContainer: {
-    flexDirection: 'column',
-  },
-  greeting: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  username: {
-    fontSize: 22,
-    color: '#666',
-    marginTop: -2.5,
-  },
-  profileContainer: {
-    width: 45,
-    height: 45,
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: '#f0f0f0',
-    borderWidth: 3,
-    borderColor: 'rgba(255, 255, 255, 0.7)',
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-  },
-  fillerImage: {
-    width: '100%',
-    height: 95,
-    resizeMode: 'cover',
-    marginBottom: 12,
-  },
-});
 
 export default HomePage;
