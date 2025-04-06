@@ -3,10 +3,10 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles, { colours } from './commonStyles';
+import { colours } from './commonStyles';
 
 const settingstyles = StyleSheet.create({
-  //settings
+  //===== MAIN SETTINGS SCREEN STYLES =====
   settingsContainer: {
     paddingVertical: 16,
     paddingHorizontal: 20,
@@ -23,13 +23,20 @@ const settingstyles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 2,
   },
+  versionText: {
+    textAlign: 'center',
+    color: colours.darkergrey,
+    fontSize: 12,
+    paddingVertical: 20,
+  },
+  //===== SETTING BUTTON STYLES =====
   settingButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
-    backgroundColor: colours.tertiary, 
+    backgroundColor: colours.tertiary,
   },
   lastSettingButton: {
     borderBottomWidth: 0,
@@ -48,20 +55,14 @@ const settingstyles = StyleSheet.create({
   chevronIcon: {
     color: colours.darkergrey,
   },
+  //===== DELETE ACCOUNT STYLES =====
   deleteButton: {
     backgroundColor: '#ffe6e6',
   },
   deleteText: {
     color: '#e53935',
   },
-  versionText: {
-    textAlign: 'center',
-    color: colours.darkergrey,
-    fontSize: 12,
-    paddingVertical: 20,
-  },
-
-  //confirm modal
+  //===== MODAL STYLES =====
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
@@ -80,6 +81,7 @@ const settingstyles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  //Modal icon styles
   iconsContainer: {
     width: 70,
     height: 70,
@@ -97,6 +99,7 @@ const settingstyles = StyleSheet.create({
   warningIcon: {
     backgroundColor: 'rgba(255, 149, 0, 0.1)',
   },
+  //Modal text styles
   title: {
     fontSize: 18,
     fontWeight: 'bold',
@@ -110,11 +113,11 @@ const settingstyles = StyleSheet.create({
     color: '#585f6e',
     lineHeight: 20,
   },
-  // Input field styles
+  //===== INPUT FIELD STYLES =====
   inputContainer: {
     width: '100%',
     marginVertical: 15,
-    marginTop:-5,
+    marginTop: -5,
   },
   inputLabel: {
     fontSize: 14,
@@ -132,26 +135,39 @@ const settingstyles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     color: colours.mainTexts,
   },
+  //===== BUTTON STYLES =====
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     marginTop: 8,
   },
+  //Cancel button
   cancelButton: {
     flex: 1,
     paddingVertical: 12,
     marginRight: 8,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: '#F2F2F7',
     alignItems: 'center',
   },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  //Action buttons
   actionButton: {
     flex: 1,
     paddingVertical: 12,
     marginLeft: 8,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+  },
+  actionButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   primaryButton: {
     backgroundColor: colours.buttonsText,
@@ -161,16 +177,6 @@ const settingstyles = StyleSheet.create({
   },
   warningButton: {
     backgroundColor: '#FF9500',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
   },
 });
 

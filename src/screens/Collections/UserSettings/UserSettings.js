@@ -125,7 +125,7 @@ const UserSettings = ({ navigation }) => {
         </View>
 
         {/* App version */}
-        <Text style={settingstyles.versionText}>Collecti v1.0.0</Text>
+        <Text style={settingstyles.versionText}>Jessica Malek{'\n'}Collecti v1.0.0</Text>
 
         {/* Modals - keep as they are */}
         <ConfirmationModal

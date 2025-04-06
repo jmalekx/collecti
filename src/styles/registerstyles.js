@@ -6,6 +6,7 @@ import { StyleSheet } from 'react-native';
 import commonStyles, { colours } from './commonStyles';
 
 const registerstyles = StyleSheet.create({
+  //===== COMMON CONTAINER STYLES =====
   root: {
     flex: 1,
     alignItems: 'center',
@@ -16,8 +17,7 @@ const registerstyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 40,
   },
-
-  //SignUp
+  //===== SIGNUP SPECIFIC STYLES =====
   UpheaderContainer: {
     marginBottom: 8,
     alignItems: 'flex-start',
@@ -34,8 +34,7 @@ const registerstyles = StyleSheet.create({
     opacity: 0.9,
     zIndex: 0,
   },
-
-  //SignIn
+  //===== SIGNIN FORM STYLES =====
   authInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -45,8 +44,9 @@ const registerstyles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
+  //===== TEXT STYLES =====
   headerText: {
-    fontSize: 28,
+    fontSize: 32,
     color: colours.mainTexts,
   },
   subHeaderText: {
@@ -54,11 +54,12 @@ const registerstyles = StyleSheet.create({
     color: colours.mainTexts,
     textAlign: 'center',
     opacity: 0.85,
-    marginTop:0,
+    marginTop: 0,
   },
+  //===== BUTTON STYLES =====
   authButton: {
-    marginLeft:0,
-    marginRight:0,
+    marginLeft: 0,
+    marginRight: 0,
     backgroundColor: colours.buttons,
     borderRadius: 8,
     shadowColor: colours.mainTexts,
@@ -77,7 +78,7 @@ const registerstyles = StyleSheet.create({
     ...commonStyles.textBold,
     color: colours.buttonsTextPink,
   },
-
+  //===== LOGO STYLES =====
   logoContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -94,10 +95,7 @@ const registerstyles = StyleSheet.create({
   nameImage: {
     marginLeft: 20,
   },
-  headerText: {
-    color: colours.mainTexts,
-    fontSize: 32,
-  },
+  //===== BOTTOM SECTION STYLES =====
   bottomContainer: {
     width: '100%',
     alignItems: 'center',
@@ -108,7 +106,6 @@ const registerstyles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   }
-
 });
 
 export default registerstyles;

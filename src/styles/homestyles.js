@@ -6,8 +6,7 @@ import { StyleSheet } from 'react-native';
 import commonStyles, { colours } from './commonStyles';
 
 const homestyles = StyleSheet.create({
-
-  //homepage
+  //===== HEADER STYLES =====
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -47,8 +46,7 @@ const homestyles = StyleSheet.create({
     resizeMode: 'cover',
     marginBottom: 12,
   },
-
-  //suggested collections
+  //===== SUGGESTED COLLECTIONS =====
   container: {
     marginVertical: 16,
     width: '100%',
@@ -104,8 +102,7 @@ const homestyles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
-
-  //stats
+  //===== STATS CARDS =====
   statsCollage: {
     flexDirection: 'row',
     justifyContent: 'space-between',
