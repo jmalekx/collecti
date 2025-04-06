@@ -1,6 +1,6 @@
 //React and React Native core imports
-import React from 'react';
-import { Text, TouchableOpacity, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
+import { Text, TouchableOpacity, Animated, TextInput, View } from 'react-native';
 
 //Custom component imports and styling
 import commonStyles, { typography } from '../styles/commonStyles';
@@ -46,17 +46,42 @@ export const AppSmallText = ({ style, children, ...props }) => (
   </Text>
 );
 
-export const AppButton = ({ style, textStyle, onPress, title, ...props }) => (
-  <TouchableOpacity
-    style={[commonStyles.button, style]}
-    onPress={onPress}
-    {...props}
-  >
-    <Text style={[commonStyles.buttonText, { fontFamily: typography.fontBold }, textStyle]}>
-      {title}
-    </Text>
-  </TouchableOpacity>
-);
+export const AppButton = ({ style, textStyle, onPress, title, ...props }) => {
+  const buttonScale = useState(new Animated.Value(1))[0];
+
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.97,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      if (onPress) {
+        onPress();
+      }
+    });
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ scale: buttonScale }], alignSelf: 'stretch' }}>
+      <TouchableOpacity
+        style={[commonStyles.button, style]}
+        onPress={handlePress}
+        {...props}
+      >
+        <Text style={[commonStyles.buttonText, { fontFamily: typography.fontBold }, textStyle]}>
+          {title}
+        </Text>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
 export const AppTextInput = ({ style, placeholderTextColor = "#999", ...props }) => (
   <View style={commonStyles.inputContainer}>
