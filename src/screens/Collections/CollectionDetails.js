@@ -17,7 +17,7 @@ import { usePagination } from '../../hooks/usePagination';
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import { AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
-import commonStyles, {shadowStyles} from '../../styles/commonStyles';
+import commonStyles, { shadowStyles } from '../../styles/commonStyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
@@ -328,6 +328,8 @@ const CollectionDetails = ({ route, navigation }) => {
 
         {/* Posts List */}
         <FlatList
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           data={paginatedPosts}
           keyExtractor={(item) => item.id}
           numColumns={numColumns}

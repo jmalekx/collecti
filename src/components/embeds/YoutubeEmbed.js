@@ -150,6 +150,8 @@ const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         scrollEnabled={false}
         onLoadStart={() => setLoading(true)}
         onLoadEnd={() => setLoading(false)}

@@ -13,7 +13,7 @@ import { useBookmarks } from '../../hooks/useBookmarks';
 import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
-import commonStyles, {shadowStyles} from '../../styles/commonStyles';
+import commonStyles, { shadowStyles } from '../../styles/commonStyles';
 import { AppButton } from '../../components/utilities/Typography';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 
@@ -145,6 +145,8 @@ const Bookmarks = () => {
           </View>
         ) : (
           <FlatList
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
             data={paginatedBookmarks}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}

@@ -86,6 +86,8 @@ const SignIn = ({ navigation }) => {
             justifyContent: 'space-between'
           }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
         >
           {/* Logo section */}
           <View style={registerstyles.logoContainer}>

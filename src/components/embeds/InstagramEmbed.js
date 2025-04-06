@@ -179,6 +179,8 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
       )}
 
       <WebView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         key={key}
         ref={webViewRef}
         source={{ html: customHtml }}

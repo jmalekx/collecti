@@ -213,7 +213,7 @@ const SearchPage = ({ navigation }) => {
             placeholder="Search collections..."
           />
         </View>
-        
+
         {loading && !loadingMore && (
           <View style={styles.loadingContainer}>
             <LoadingIndicator />
@@ -221,6 +221,8 @@ const SearchPage = ({ navigation }) => {
         )}
 
         <FlatList
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           data={results}
           keyExtractor={(item, index) => item.uniqueId || `${item.id}_${index}`} // Fallback key
           numColumns={2}

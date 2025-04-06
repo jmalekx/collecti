@@ -198,7 +198,7 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
     return (
       <View style={[styles.container, style]}>
         <View style={styles.loadingContainer}>
-          <LoadingIndicator/>
+          <LoadingIndicator />
         </View>
       </View>
     );
@@ -248,6 +248,8 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   return (
     <View style={[styles.container, style]}>
       <WebView
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         source={{ html: generateHtml() }}
         style={styles.webview}
         onLoadEnd={() => setLoading(false)}

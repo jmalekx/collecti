@@ -67,6 +67,7 @@ const SuggestedCollections = () => {
         horizontal
         data={recommendations}
         keyExtractor={(item) => `${item.ownerId}_${item.id}`}
+        showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
           <TouchableOpacity

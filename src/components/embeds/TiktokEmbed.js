@@ -121,6 +121,8 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         style={styles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
         scalesPageToFit={true}
         scrollEnabled={false}
         injectedJavaScript={`
