@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Modal, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, Modal, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, TextInput, Platform, Image } from 'react-native';
 
 //Third-party library external imports
 import * as ImagePicker from 'expo-image-picker';
@@ -40,7 +40,7 @@ const PostCreationModal = ({
   platform,
   toast
 }) => {
-  
+
   //Content managing
   const [image, setImage] = useState(null); //Image URI from local device gallery
   const [imageUrl, setImageUrl] = useState(''); //Remote image URL(uploaded to cloudinary)
@@ -438,7 +438,7 @@ const PostCreationModal = ({
             {/* URL Input Section */}
             {activeTab === 'url' && (
               <View style={addbuttonstyles.urlSection}>
-                <AppTextInput
+                <TextInput
                   placeholder="Paste an Image URL here"
                   value={imageUrl}
                   onChangeText={text => {
@@ -460,7 +460,7 @@ const PostCreationModal = ({
                       setCurrentPlatform('other');
                     }
                   }}
-                  style={addbuttonstyles.urlInput}
+                  style={addbuttonstyles.input}
                 />
 
                 {/* Platform indicator */}
@@ -483,20 +483,20 @@ const PostCreationModal = ({
             )}
 
             {/* Notes Section */}
-            <AppTextInput
+            <TextInput
               placeholder="Notes"
               value={notes}
               onChangeText={setNotes}
               multiline
-              style={addbuttonstyles.notesInput}
+              style={[addbuttonstyles.input, addbuttonstyles.textArea]}
             />
 
             {/* Tags Input */}
-            <AppTextInput
+            <TextInput
               placeholder="Tags (comma separated)"
               value={tags}
               onChangeText={setTags}
-              style={addbuttonstyles.tagsInput}
+              style={addbuttonstyles.input}
             />
 
             {/* Collection Selector Section */}
@@ -562,22 +562,22 @@ const PostCreationModal = ({
               <LoadingIndicator text="Uploading image..." />
             </View>
           ) : (
-            <View style={addbuttonstyles.buttonRow}>
-              <AppButton
+            <View style={[addbuttonstyles.buttonRow, { marginHorizontal: 0 }]}>
+              <TouchableOpacity
                 style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
-                title="Cancel"
                 onPress={() => {
                   resetModalStates();
                   onClose();
                 }}
-                textStyle={addbuttonstyles.buttonText}
-              />
-              <AppButton
+              >
+                <Text style={addbuttonstyles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
                 style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
-                title="Add Post"
                 onPress={handleAddPost}
-                textStyle={addbuttonstyles.buttonTextWhite}
-              />
+              >
+                <Text style={addbuttonstyles.buttonTextWhite}>Add Post</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
