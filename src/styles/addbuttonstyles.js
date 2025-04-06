@@ -163,7 +163,7 @@ const addbuttonstyles = StyleSheet.create({
   sectionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 14,
+    marginBottom: 12,
     color: colours.mainTexts,
   },
   pickerContainer: {

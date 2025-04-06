@@ -1,10 +1,10 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, Modal, TouchableOpacity } from 'react-native';
+import { View, Modal, TouchableOpacity, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import { AppTextInput, AppButton, AppHeading } from '../utilities/Typography';
+import { AppHeading } from '../utilities/Typography';
 import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 import addbuttonstyles from '../../styles/addbuttonstyles';
 
@@ -64,7 +64,7 @@ const CollectionCreationModal = ({ visible, onClose, onCreateCollection, toast }
       }}
     >
       <View style={addbuttonstyles.modalBg}>
-        <View style={addbuttonstyles.modalContainer}>
+        <View style={[addbuttonstyles.modalContainer, { padding: 20 }]}>
           <View style={addbuttonstyles.modalHeader}>
             <AppHeading style={addbuttonstyles.modalTitle}>Create New Collection</AppHeading>
             <TouchableOpacity onPress={() => {
@@ -75,38 +75,46 @@ const CollectionCreationModal = ({ visible, onClose, onCreateCollection, toast }
             </TouchableOpacity>
           </View>
 
-          <AppTextInput
-            style={addbuttonstyles.input}
-            placeholder="Collection Name"
-            value={newCollectionName}
-            onChangeText={setNewCollectionName}
-          />
+          <View>
+            <Text style={addbuttonstyles.sectionLabel}>Collection Details</Text>
+          </View>
 
-          <AppTextInput
-            style={[addbuttonstyles.input, addbuttonstyles.textArea]}
-            placeholder="Description (optional)"
-            value={newCollectionDescription}
-            onChangeText={setNewCollectionDescription}
-            multiline={true}
-            numberOfLines={3}
-          />
+          <View style={addbuttonstyles.standardInputContainer}>
+            <TextInput
+              placeholder="Collection Name"
+              value={newCollectionName}
+              onChangeText={setNewCollectionName}
+              style={addbuttonstyles.standardInput}
+            />
+          </View>
+
+          <View style={addbuttonstyles.standardInputContainer}>
+            <TextInput
+              placeholder="Description (optional)"
+              value={newCollectionDescription}
+              onChangeText={setNewCollectionDescription}
+              multiline={true}
+              numberOfLines={3}
+              style={[addbuttonstyles.standardInput, addbuttonstyles.textArea]}
+            />
+          </View>
 
           <View style={addbuttonstyles.buttonRow}>
-            <AppButton
+            <TouchableOpacity
               style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
-              title="Cancel"
               onPress={() => {
                 resetState();
                 onClose();
               }}
-              textStyle={addbuttonstyles.buttonText}
-            />
-            <AppButton
+            >
+              <Text style={addbuttonstyles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
-              title="Create Collection"
               onPress={handleAddCollection}
-              textStyle={addbuttonstyles.buttonTextWhite}
-            />
+            >
+              <Text style={addbuttonstyles.buttonTextWhite}>Create Collection</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

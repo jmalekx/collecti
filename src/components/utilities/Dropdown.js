@@ -10,7 +10,7 @@ import { colours } from '../../styles/commonStyles';
 import addbuttonstyles from '../../styles/addbuttonstyles';
 
 /*
-  CustomDropdown Component
+  Custom Dropdown Component
 
   A reusable styled dropdown selector that uses a modal approach for better
   positioning and visibility within scrollable containers.
