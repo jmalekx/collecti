@@ -66,7 +66,7 @@ const Screen1 = ({ navigation }) => {
           resizeMode='contain'
         />
 
-        {/* Heading and nameSmall.png - Moved to right side */}
+        {/* Heading */}
         <View style={styles.onboardHeading}>
           <AppHeading style={styles.welcomeText}>Welcome</AppHeading>
           <View style={styles.toNameContainer}>
@@ -78,22 +78,31 @@ const Screen1 = ({ navigation }) => {
               tintColor={'#333'}
             />
           </View>
+
+          {/* What is it */}
           <View style={styles.howItWorksContainer}>
-            <AppText style={styles.howItWorksText}>What is Collecti?</AppText>
-            <AppText style={[styles.howItWorksSubText, styles.SubText]}>
+            <AppText style={styles.headerTexts}>What is Collecti?</AppText>
+            <AppText style={[styles.SubTexts, styles.SubText]}>
               A space for all your scroll-stopping finds.
             </AppText>
-            <AppText style={[styles.howItWorksSubText, styles.SubText]}>
-              Organise your favourite content into one central hub.
+            <AppText style={[styles.SubTexts, styles.SubText]}>
+              With Collecti, inspiration sticks – no more endless searching.
+              Organise your fav content into one central hub.
             </AppText>
+
           </View>
         </View>
 
-        {/* Descriptive text */}
+        {/* How it works */}
         <View style={styles.centerContent}>
-          <AppText style={styles.howItWorksText}>How does Collecti work?</AppText>
+          <AppText style={styles.headerTexts}>How does Collecti work?</AppText>
           <AppText style={styles.SubText}>
-            Share your favourite content into one central hub.
+            Use the share feature from your favourite apps to save
+            content directly into Collecti.You can easily organise,
+            categorise, revisit and stay inspired.
+          </AppText>
+          <AppText style={styles.SubText}>
+            It's your content, organised your way.
           </AppText>
         </View>
 
@@ -114,19 +123,20 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'space-between',
+    marginBottom: 40,
   },
   onboardHeading: {
     marginRight: 20,
-    marginTop: 20,
+    marginTop: 100,
     marginBottom: 0,
   },
   howItWorksContainer: {
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop: 30,
+    marginTop: 40,
   },
-  howItWorksText: {
+  headerTexts: {
     textAlign: 'right',
     width: '60%',
     color: '#333',
@@ -134,14 +144,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
-  howItWorksSubText: {
-    width: '50%',
+  SubTexts: {
+    width: '55%',
   },
   SubText: {
     color: '#333',
     fontStyle: 'italic',
     textAlign: 'right',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   shareImage: {
     position: 'absolute',
@@ -153,7 +163,7 @@ const styles = StyleSheet.create({
   },
   centerContent: {
     alignItems: 'flex-end',
-    marginTop: 160,
+    marginTop: 8,
     paddingRight: 20,
     width: '100%',
   },
@@ -181,6 +191,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginBottom: 20,
+    margin: 20,
   },
 });
 

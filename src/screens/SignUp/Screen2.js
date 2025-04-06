@@ -83,6 +83,10 @@ const Screen2 = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   ...commonStyles,
+  button: {
+    marginBottom: 20,
+    margin: 20,
+  },
 });
 
 export default Screen2;

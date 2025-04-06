@@ -61,6 +61,10 @@ const Screen3 = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   ...commonStyles,
+  button: {
+    marginBottom: 20,
+    margin: 20,
+  },
 });
 
 export default Screen3;
