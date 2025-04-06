@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import { colours, shadowStyles } from './commonStyles';
+import { colours, shadowStyles, typography } from './commonStyles';
 
 const settingstyles = StyleSheet.create({
   //===== MAIN SETTINGS SCREEN STYLES =====
@@ -173,6 +173,98 @@ const settingstyles = StyleSheet.create({
   },
   warningButton: {
     backgroundColor: '#FF9500',
+  },
+
+  //===== PROFILE EDITOR STYLES =====
+  profileContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  profilePictureSection: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#fff',
+  },
+  pickImageButton: {
+    position: 'relative',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+    marginBottom: 12,
+
+    ...shadowStyles.light,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    shadowColor: colours.buttonsTextPink,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,  
+    shadowRadius: 22,     
+    elevation: 15,  
+  },
+  pickImageText: {
+    color: colours.subTexts,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  //Profile image control buttons
+  removeImageButton: {
+    position: 'absolute',
+    right: -8,
+    top: -8,
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 4,
+    ...shadowStyles.medium,
+  },
+  changeImageButton: {
+    position: 'absolute',
+    right: -5,
+    bottom: -5,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 8,
+    ...shadowStyles.medium,
+  },
+  removeProfilePictureButton: {
+    position: 'absolute',
+    left: -5,
+    bottom: -5,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 8,
+    ...shadowStyles.medium,
+  },
+  //Save button and loading state
+  saveButton: {
+    backgroundColor: colours.buttonsTextPink,
+    borderRadius: 12,
+  },
+  disabledButton: {
+    backgroundColor: 'rgba(214, 122, 152, 0.6)',
+  },
+  savingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  savingText: {
+    color: '#fff',
+    marginLeft: 8,
+    fontWeight: '500',
+    fontFamily: typography.fontRegular,
+  },
+  //Form input styles
+  profileInputContainer: {
+    marginBottom: 20,
   },
 });
 

@@ -51,7 +51,7 @@ export const toastConfig = {
     flexDirection: 'row',
     alignItems: 'flex-start',
     width: '100%',
-    maxWidth: 330,
+    maxWidth: 350,
     marginVertical: 5,
     overflow: 'hidden',
   },

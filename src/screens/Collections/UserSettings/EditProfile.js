@@ -1,165 +1,48 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import React from 'react';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 
 //Third-party library external imports
-import { useToast } from 'react-native-toast-notifications';
-import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
-import { getUserProfile, updateUserProfile } from '../../../services/users';
-
-import { uploadImageToCloudinary } from '../../../services/storage';
+import useProfileManagement from '../../../hooks/useProfileManagement';
 
 //Custom component imports and styling
-import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
-import commonStyles, { shadowStyles } from '../../../styles/commonStyles';
+import commonStyles, { colours } from '../../../styles/commonStyles';
 import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
+import { AppSubheading, AppText } from '../../../components/utilities/Typography';
+import settingstyles from '../../../styles/settingstyles';
+import addbuttonstyles from '../../../styles/addbuttonstyles';
 
 /*
-  EditProfile Screen
+  EditProfile Component
 
   Component for editing user profile information.
-  Uses the users service for data operations and follows
-  the MVC pattern for separation of concerns.
+  Separates UI concerns from data management using custom hook.
+  Allows changing username and profile picture
 */
 
 const EditProfile = ({ navigation }) => {
-
-  //State transitions
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  //Content managing
-  const [username, setUsername] = useState('');
-  const [profilePicture, setProfilePicture] = useState('');
-  const [localImage, setLocalImage] = useState(null); // For storing local image URI before upload
-
-  //Context state
-  const toast = useToast();
-
-  //Remove profile picture completely
-  const removeProfilePicture = () => {
-    setProfilePicture('');
-    setLocalImage(null);
-    showToast(toast, "Profile picture will be removed on save", { type: TOAST_TYPES.INFO });
-  };
-
-  //Load user profile data on component mount
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        setLoading(true);
-
-        //Call service to get user profile
-        const userData = await getUserProfile();
-
-        if (userData) {
-          setUsername(userData.username || '');
-          setProfilePicture(userData.profilePicture || '');
-        }
-      }
-      catch (error) {
-        showToast(toast, "Failed to load profile", { type: TOAST_TYPES.DANGER });
-      }
-      finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, [toast]);
-
-  //Image selection handler
-  const selectImage = async () => {
-    try {
-      //Request permission to access media library
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        showToast(toast, "Permission to access media library is required", { type: TOAST_TYPES.WARNING });
-        return;
-      }
-
-      //Launch image picker with options
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1], //Square aspect ratio for profile picture
-        quality: 0.5,
-        compress: 0.5,
-        base64: false,
-      });
-
-      if (!result.canceled) {
-        setLocalImage(result.assets[0].uri);
-      }
-    }
-    catch (error) {
-      showToast(toast, "Failed to pick image", { type: TOAST_TYPES.DANGER });
-    }
-  };
-
-  //Remove selected image
-  const removeSelectedImage = () => {
-    setLocalImage(null);
-  };
-
-  //Handle profile save action
-  const handleSaveProfile = async () => {
-    try {
-      setSaving(true);
-
-      let profileImageUrl = profilePicture;
-
-      //Upload new image if selected
-      if (localImage) {
-        try {
-          setUploadingImage(true);
-          showToast(toast, "Uploading profile picture...", { type: TOAST_TYPES.INFO });
-
-          //Upload to Cloudinary
-          const uploadedUrl = await uploadImageToCloudinary(localImage);
-          if (!uploadedUrl) {
-            throw new Error("Failed to upload image");
-          }
-
-          profileImageUrl = uploadedUrl;
-          setUploadingImage(false);
-        }
-        catch (uploadError) {
-          showToast(toast, "Failed to upload profile picture", { type: TOAST_TYPES.DANGER });
-          setSaving(false);
-          return;
-        }
-      }
-
-      //Build update data object
-      const updateData = {
-        username: username,
-        profilePicture: profileImageUrl, // This will be empty string if user removed profile pic
-        updatedAt: new Date().toISOString()
-      };
-
-      //Call service to update profile
-      await updateUserProfile(updateData);
-
-      showToast(toast, "Profile updated successfully", { type: TOAST_TYPES.SUCCESS });
-      navigation.goBack();
-    }
-    catch (error) {
-      showToast(toast, "Failed to update profile", { type: TOAST_TYPES.DANGER });
-    }
-    finally {
-      setSaving(false);
-    }
-  };
+  //===== PROFILE MANAGEMENT HOOK =====
+  const {
+    loading,
+    saving,
+    uploadingImage,
+    username,
+    setUsername,
+    profilePicture,
+    localImage,
+    selectImage,
+    removeSelectedImage,
+    removeProfilePicture,
+    handleSaveProfile
+  } = useProfileManagement(navigation);
 
   //Loading state render
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={commonStyles.loadingContainer}>
         <LoadingIndicator />
       </View>
     );
@@ -167,175 +50,96 @@ const EditProfile = ({ navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={settingstyles.profileContainer}>
 
         {/* Profile picture section */}
-        <View style={styles.profilePictureSection}>
-          <Text style={styles.label}>Profile Picture</Text>
+        <View style={settingstyles.profilePictureSection}>
+        <AppSubheading style={commonStyles.headerContainer}>Profile Picture</AppSubheading>
 
           {localImage ? (
-            <View style={styles.profileImageContainer}>
-              <Image source={{ uri: localImage }} style={styles.profileImage} />
+            <View style={settingstyles.profileImageContainer}>
+              <Image source={{ uri: localImage }} style={settingstyles.profileImage} />
               <TouchableOpacity
-                style={styles.removeImageButton}
+                style={settingstyles.removeImageButton}
                 onPress={removeSelectedImage}
               >
-                <Ionicons name="close-circle" size={24} color="#FF3B30" />
+                <Ionicons name="close-circle" size={24} color={colours.buttonsTextPink} />
               </TouchableOpacity>
             </View>
           ) : profilePicture ? (
-            <View style={styles.profileImageContainer}>
-              <Image source={{ uri: profilePicture }} style={styles.profileImage} />
+            <View style={settingstyles.profileImageContainer}>
+              <Image source={{ uri: profilePicture }} style={settingstyles.profileImage} />
               <TouchableOpacity
-                style={styles.changeImageButton}
+                style={settingstyles.changeImageButton}
                 onPress={selectImage}
               >
-                <Ionicons name="camera" size={24} color="#007AFF" />
+                <Ionicons name="camera" size={24} color={colours.buttonsTextPink} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.removeProfilePictureButton}
+                style={settingstyles.removeProfilePictureButton}
                 onPress={removeProfilePicture}
               >
-                <Ionicons name="trash-outline" size={20} color="#FF3B30" />
+                <Ionicons name="trash-outline" size={20} color={colours.buttonsTextPink} />
               </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
-              style={styles.pickImageButton}
+              style={settingstyles.pickImageButton}
               onPress={selectImage}
             >
-              <Ionicons name="person-circle-outline" size={60} color="#007AFF" />
-              <Text style={styles.pickImageText}>Select Profile Picture</Text>
+              <Ionicons name="person-circle-outline" size={60} color={colours.buttonsTextPink} />
+              <AppText style={settingstyles.pickImageText}>Select Profile Picture</AppText>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Username input */}
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your username"
-          value={username}
-          onChangeText={setUsername}
-        />
+        <View style={settingstyles.profileInputContainer}>
+          <AppSubheading style={commonStyles.headerContainer}>Username</AppSubheading>
+          <View style={addbuttonstyles.standardInputContainer}>
+            <TextInput
+              style={addbuttonstyles.standardInput}
+              placeholder="Enter your username"
+              value={username}
+              onChangeText={setUsername}
+              placeholderTextColor={colours.subTexts}
+            />
+          </View>
+        </View>
 
         {/* Save button with loading state */}
-        <TouchableOpacity
-          style={[styles.button, (saving || uploadingImage) && styles.disabledButton]}
-          onPress={handleSaveProfile}
-          disabled={saving || uploadingImage}
-        >
-          {saving || uploadingImage ? (
-            <View style={styles.savingContainer}>
-              <ActivityIndicator size="small" color="#fff" />
-              <Text style={styles.savingText}>
-                {uploadingImage ? "Uploading image..." : "Saving..."}
-              </Text>
-            </View>
-          ) : (
-            <Text style={styles.buttonText}>Save Changes</Text>
-          )}
-        </TouchableOpacity>
+        <View style={[settingstyles.buttonRow]}>
+          <TouchableOpacity
+            style={[addbuttonstyles.cancelButton, {backgroundColor: 'white', borderColor: colours.primary, borderWidth: 1}]}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={addbuttonstyles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              addbuttonstyles.actionButton,
+              settingstyles.saveButton,
+              (saving || uploadingImage) && settingstyles.disabledButton
+            ]}
+            onPress={handleSaveProfile}
+            disabled={saving || uploadingImage}
+          >
+            {saving || uploadingImage ? (
+              <View style={settingstyles.savingContainer}>
+                <ActivityIndicator size="small" color="#fff" />
+                <Text style={addbuttonstyles.buttonTextWhite}>
+                  {uploadingImage ? "Uploading..." : "Saving..."}
+                </Text>
+              </View>
+            ) : (
+              <Text style={addbuttonstyles.buttonTextWhite}>Save Changes</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </View>
-    </commonStyles.Bg >
+    </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  profilePictureSection: {
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  profileImageContainer: {
-    position: 'relative',
-    marginTop: 12,
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  pickImageButton: {
-    width: 120,
-    height: 120,
-    borderWidth: 2,
-    borderColor: '#e0e0e0',
-    borderStyle: 'dashed',
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9f9f9',
-    marginTop: 12,
-  },
-  pickImageText: {
-    marginTop: 8,
-    color: '#666',
-    fontSize: 14,
-  },
-  removeImageButton: {
-    position: 'absolute',
-    right: -5,
-    top: -5,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    ...shadowStyles.light,
-  },
-  changeImageButton: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'white',
-    borderRadius: 18,
-    padding: 6,
-    ...shadowStyles.light,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingLeft: 8,
-    borderRadius: 8,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  disabledButton: {
-    backgroundColor: '#A0C8FF', // Lighter blue for disabled state
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  savingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  savingText: {
-    color: '#fff',
-    marginLeft: 8,
-    fontWeight: '500',
-  },
-  removeProfilePictureButton: {
-    position: 'absolute',
-    left: 0,
-    bottom: 0,
-    backgroundColor: 'white',
-    borderRadius: 18,
-    padding: 6,
-    ...shadowStyles.light,
-  },
-});
 
 export default EditProfile;
