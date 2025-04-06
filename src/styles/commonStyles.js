@@ -108,6 +108,7 @@ const textStyles = StyleSheet.create({
   textRegular: {
     fontFamily: typography.fontRegular,
     color: '#333',
+    fontSize: 14,
   },
   textBold: {
     fontFamily: typography.fontBold,

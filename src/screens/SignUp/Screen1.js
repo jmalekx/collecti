@@ -79,17 +79,22 @@ const Screen1 = ({ navigation }) => {
             />
           </View>
           <View style={styles.howItWorksContainer}>
-            <AppText style={styles.howItWorksText}>How does Collecti work?</AppText>
-            <AppSmallText style={styles.howItWorksSubText} >Share your favourite content into one central hub.</AppSmallText>
+            <AppText style={styles.howItWorksText}>What is Collecti?</AppText>
+            <AppText style={[styles.howItWorksSubText, styles.SubText]}>
+              A space for all your scroll-stopping finds.
+            </AppText>
+            <AppText style={[styles.howItWorksSubText, styles.SubText]}>
+              Organise your favourite content into one central hub.
+            </AppText>
           </View>
         </View>
 
         {/* Descriptive text */}
         <View style={styles.centerContent}>
-          <AppText>How does Collecti work?</AppText>
-          <AppSmallText>
-            With collecti, inspiration sticks
-          </AppSmallText>
+          <AppText style={styles.howItWorksText}>How does Collecti work?</AppText>
+          <AppText style={styles.SubText}>
+            Share your favourite content into one central hub.
+          </AppText>
         </View>
 
         {/* Continue Button */}
@@ -125,15 +130,18 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     width: '60%',
     color: '#333',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: 'bold',
     fontStyle: 'italic',
   },
   howItWorksSubText: {
-    textAlign: 'right',
     width: '50%',
+  },
+  SubText: {
     color: '#333',
     fontStyle: 'italic',
+    textAlign: 'right',
+    marginBottom: 8,
   },
   shareImage: {
     position: 'absolute',
