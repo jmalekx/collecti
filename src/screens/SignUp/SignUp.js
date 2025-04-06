@@ -72,6 +72,11 @@ const SignUp = ({ navigation }) => {
 
   return (
     <commonStyles.Bg>
+      <Image
+        source={Thumbnail}
+        style={styles.thumbnail}
+        resizeMode="contain"
+      />
       <View style={styles.root}>
 
         <View style={styles.headerContainer}>
@@ -152,12 +157,7 @@ const SignUp = ({ navigation }) => {
           )}
         </KeyboardAvoidingView>
 
-        {/* Thumbnail image */}
-        <Image
-          source={Thumbnail}
-          style={styles.thumbnail}
-          resizeMode="contain"
-        />
+
       </View>
     </commonStyles.Bg>
   );
@@ -188,6 +188,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     opacity: 0.9,
+    zIndex: 0,
   },
 });
 
