@@ -16,7 +16,7 @@ import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
 import commonStyles, { colours } from '../../../styles/commonStyles';
 import settingstyles from '../../../styles/settingstyles';
 import PinterestButton from '../../../components/utilities/PinterestButton';
-import ConfirmationModal from '../../../components/utilities/ConfirmationModal';
+import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import { AppSubheading } from '../../../components/utilities/Typography';
 
 /*

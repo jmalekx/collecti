@@ -16,7 +16,7 @@ import { DEFAULT_THUMBNAIL } from '../../constants';
 //Custom component imports and styling
 import TabNavigator from '../../navigation/TabNavigator';
 import AddButton from '../layout/AddButton';
-import UnsupportedPlatformModal from '../utilities/UnsupportedPlatformModal';
+import UnsupportedPlatformModal from '../modals/UnsupportedPlatformModal';
 
 /*
   MainLayout Component

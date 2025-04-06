@@ -17,7 +17,7 @@ import { formatDate, formatPlatform } from '../../../utils/formatting';
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
 import commonStyles from '../../../styles/commonStyles';
-import ConfirmationModal from '../../../components/utilities/ConfirmationModal';
+import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import LinkTexts from '../../../components/utilities/LinkTexts';
 import RenderPosts from '../../../components/utilities/RenderPosts';
 import LoadingIndicator from '../../../components/utilities/LoadingIndicator';

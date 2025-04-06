@@ -18,7 +18,7 @@ import { usePagination } from '../../hooks/usePagination';
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import { AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
 import commonStyles from '../../styles/commonStyles';
-import ConfirmationModal from '../../components/utilities/ConfirmationModal';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import SearchBar from '../../components/utilities/SearchBar';
