@@ -36,11 +36,11 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
-  
+
   //Context states
   const toast = useToast(); //Notification service singleton
   const isScreenFocused = useIsFocused(); //Navigation focus observer
-  
+
   //Animation hook - moved from component to its own hook
   const {
     rotateInterpolation,
@@ -64,7 +64,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           <View style={addbuttonstyles.backdrop} />
         </TouchableWithoutFeedback>
       )}
-      
+
       {/* Collection Creation Modal */}
       <CollectionCreationModal
         visible={isCollectionModalOpen}
@@ -94,7 +94,8 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
               { translateY: postButtonTranslateY },
               { scale: scaleInterpolation }
             ],
-            opacity: opacityInterpolation
+            opacity: opacityInterpolation,
+            pointerEvents: isOptionsOpen ? 'auto' : 'none'
           }
         ]}
       >
@@ -121,7 +122,8 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
               { translateY: collectionButtonTranslateY },
               { scale: scaleInterpolation }
             ],
-            opacity: opacityInterpolation
+            opacity: opacityInterpolation,
+            pointerEvents: isOptionsOpen ? 'auto' : 'none'
           }
         ]}
       >
@@ -140,7 +142,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       </Animated.View>
 
       {/* Add Button */}
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }}>
+      <View style={addbuttonstyles.btnContainer}>
         <TouchableOpacity
           style={addbuttonstyles.addBtn}
           onPress={() => setIsOptionsOpen(!isOptionsOpen)}

@@ -163,22 +163,22 @@ const addbuttonstyles = StyleSheet.create({
   sectionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 14, 
-    color: colours.mainTexts, 
+    marginBottom: 14,
+    color: colours.mainTexts,
   },
   pickerContainer: {
     borderWidth: 1.5,
     borderColor: colours.secondary,
-    borderRadius: 16, 
+    borderRadius: 16,
     backgroundColor: 'white',
     overflow: 'hidden',
     paddingHorizontal: 5,
-    ...shadowStyles.light, 
+    ...shadowStyles.light,
   },
   picker: {
     height: 50,
     color: colours.mainTexts,
-    fontFamily: typography.fontBold, 
+    fontFamily: typography.fontBold,
   },
   newCollectionContainer: {
     flexDirection: 'row',
@@ -220,6 +220,15 @@ const addbuttonstyles = StyleSheet.create({
     ...settingstyles.actionButtonText,
   },
   //===== FLOATING ADD BUTTON STYLES =====
+  btnContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 100, 
+    alignItems: 'center',
+    pointerEvents: 'box-none'
+  },
   addBtn: {
     position: 'absolute',
     bottom: 40,
@@ -293,6 +302,137 @@ const addbuttonstyles = StyleSheet.create({
     paddingVertical: 10,
     fontFamily: typography.fontRegular,
     fontSize: 16,
+  },
+  //===== DROPDOWN STYLES =====
+  customDropdownSection: {
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  dropdownOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  //===== DROPDOWN STYLES =====
+  dropdownContainer: {
+    position: 'relative',
+    zIndex: 1,
+    marginBottom: 16,
+  },
+  dropdownSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    paddingHorizontal: 16,
+    borderWidth: 1.5,
+    borderColor: colours.secondary,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    ...shadowStyles.light,
+  },
+  dropdownSelectorOpen: {
+    borderColor: colours.buttonsTextPink,
+  },
+  dropdownSelectedText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: typography.fontRegular,
+    color: colours.mainTexts,
+  },
+  dropdownPlaceholderText: {
+    color: colours.subTexts,
+    fontFamily: typography.fontRegular,
+  },
+  dropdownUnsortedSelectedText: {
+    fontStyle: 'italic',
+  },
+  dropdownModalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 24,
+  },
+  dropdownOptionsContainer: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '85%',
+    maxHeight: 400,
+    ...shadowStyles.heavy,
+    overflow: 'hidden',
+  },
+  dropdownOptionsHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colours.secondary,
+  },
+  dropdownOptionsTitle: {
+    fontSize: 18,
+    fontFamily: typography.fontBold,
+    color: colours.mainTexts,
+  },
+  dropdownOptionsScroll: {
+    maxHeight: 330,
+  },
+  dropdownOptionsContent: {
+    padding: 0,
+  },
+  dropdownOption: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colours.secondary,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dropdownPinnedOption: {
+    backgroundColor: 'rgba(0, 0, 0, 0.03)',
+  },
+  dropdownSelectedOption: {
+    backgroundColor: 'rgba(214, 122, 152, 0.1)',
+  },
+  dropdownHighlightedOption: {
+    backgroundColor: 'rgba(214, 122, 152, 0.05)',
+  },
+  dropdownOptionText: {
+    fontSize: 16,
+    fontFamily: typography.fontRegular,
+    color: colours.mainTexts,
+  },
+  dropdownSelectedOptionText: {
+    fontFamily: typography.fontBold,
+    color: colours.buttonsTextPink,
+  },
+  dropdownHighlightedOptionText: {
+    fontWeight: '500',
+  },
+  dropdownUnsortedOptionText: {
+    fontStyle: 'italic',
+  },
+  dropdownAddNewOption: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colours.secondary,
+    backgroundColor: 'rgba(214, 122, 152, 0.05)',
+  },
+  dropdownAddNewOptionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dropdownAddNewOptionText: {
+    marginLeft: 8,
+    fontSize: 16,
+    fontFamily: typography.fontBold,
+    color: colours.buttonsTextPink,
   },
 });
 

@@ -1,12 +1,11 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
-import { Picker } from '@react-native-picker/picker';
 
 //Project services and utilities
 
@@ -22,6 +21,7 @@ import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import SearchBar from '../../components/utilities/SearchBar';
+import Dropdown from '../../components/utilities/Dropdown';
 
 /*
 
@@ -413,23 +413,25 @@ const CollectionDetails = ({ route, navigation }) => {
                 <>
                   <Text style={styles.modalLabel}>Select Target Collection:</Text>
                   {collections.length > 0 ? (
-                    <View style={styles.pickerContainer}>
-                      <Picker
+                    <View style={styles.dropdownContainer}>
+                      <Dropdown
+                        options={collections.map(collection => ({
+                          label: collection.name,
+                          value: collection.id
+                        }))}
+                        pinnedOptions={[
+                          { label: "+ Create New Collection", value: "new" }
+                        ]}
                         selectedValue={selectedTargetCollection}
-                        onValueChange={(itemValue) => {
-                          if (itemValue === 'new') {
+                        onValueChange={(value) => {
+                          if (value === 'new') {
                             setIsAddingNewCollection(true);
                           } else {
-                            setSelectedTargetCollection(itemValue);
+                            setSelectedTargetCollection(value);
                           }
                         }}
-                        style={styles.picker}
-                      >
-                        {collections.map((collection) => (
-                          <Picker.Item key={collection.id} label={collection.name} value={collection.id} />
-                        ))}
-                        <Picker.Item label="+ Create New Collection" value="new" />
-                      </Picker>
+                        placeholder="Select a collection"
+                      />
                     </View>
                   ) : (
                     <View style={styles.noCollectionsContainer}>
@@ -719,8 +721,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     overflow: 'hidden',
   },
-  picker: {
-    height: 50,
+  dropdownContainer: {
+    marginBottom: 16,
   },
   input: {
     borderWidth: 1,

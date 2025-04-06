@@ -5,7 +5,6 @@ import { View, Modal, Text, ScrollView, TouchableOpacity, KeyboardAvoidingView, 
 //Third-party library external imports
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 
 //Project services and utilities
 import { uploadImageToCloudinary } from '../../services/storage';
@@ -13,11 +12,12 @@ import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } f
 import pinterestService from '../../services/pinterest/pinterestServices';
 
 //Custom component imports and styling
-import { AppTextInput, AppButton, AppHeading } from '../utilities/Typography';
+import { AppHeading } from '../utilities/Typography';
 import LoadingIndicator from '../utilities/LoadingIndicator';
 import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 import addbuttonstyles from '../../styles/addbuttonstyles';
-import { typography } from '../../styles/commonStyles';
+import { colours } from '../../styles/commonStyles';
+import Dropdown from '../utilities/Dropdown';
 
 /*
   PostCreation Modal Component
@@ -356,8 +356,6 @@ const PostCreationModal = ({
     }
   };
 
-  // Update the modal structure and improve styling
-
   return (
     <Modal
       animationType="slide"
@@ -431,7 +429,7 @@ const PostCreationModal = ({
                     style={addbuttonstyles.pickImageButton}
                     onPress={selectImage}
                   >
-                    <Ionicons name="image-outline" size={40} color="#007AFF" />
+                    <Ionicons name="image-outline" size={40} color={colours.buttonsTextPink} />
                     <Text style={addbuttonstyles.pickImageText}>Select Image from Gallery</Text>
                   </TouchableOpacity>
                 )}
@@ -531,39 +529,38 @@ const PostCreationModal = ({
                   </TouchableOpacity>
                 </View>
               ) : (
-                //Collection Selection
-                <View style={addbuttonstyles.pickerContainer}>
-                  <Picker
-                    selectedValue={selectedCollection}
-                    onValueChange={(itemValue) => {
-                      if (itemValue === 'new') {
-                        setIsNewCollection(true);
-                      } else {
-                        setSelectedCollection(itemValue);
-                      }
-                    }}
-                    style={addbuttonstyles.picker}
-                    itemStyle={{ fontFamily: typography.fontRegular }}
-                  >
-                    {/* Show the pending collection at the top if it exists */}
-                    {pendingNewCollection && (
-                      <Picker.Item
-                        key={pendingNewCollection.id}
-                        label={`${pendingNewCollection.name} (New)`}
-                        value={pendingNewCollection.id}
-                      />
-                    )}
-
-                    {collections.map((collection) => (
-                      <Picker.Item
-                        key={collection.id}
-                        label={collection.name}
-                        value={collection.id}
-                      />
-                    ))}
-                    <Picker.Item label="+ Add New Collection" value="new" />
-                  </Picker>
-                </View>
+                //Collection Selection with custom dropwdown
+                <Dropdown
+                  options={collections
+                    //Filter out the Unsorted collection to place it at the top
+                    .filter(collection => collection.name !== 'Unsorted')
+                    //Map all remaining collections to dropdown options format
+                    .map(collection => ({
+                      label: collection.name,
+                      value: collection.id
+                    }))
+                  }
+                  pinnedOptions={[
+                    //If pending new collection exists add it to pinned options
+                    ...(pendingNewCollection ? [{
+                      label: `${pendingNewCollection.name} (New)`,
+                      value: pendingNewCollection.id
+                    }] : []),
+                    //Add Unsorted to pinned options if it exists
+                    ...(collections.find(c => c.name === 'Unsorted') ? [{
+                      label: 'Unsorted',
+                      value: collections.find(c => c.name === 'Unsorted').id
+                    }] : [])
+                  ]}
+                  selectedValue={selectedCollection}
+                  onValueChange={(value) => setSelectedCollection(value)}
+                  placeholder="Select a collection"
+                  addNewOption={true}
+                  addNewLabel="+ Add New Collection"
+                  onAddNew={() => setIsNewCollection(true)}
+                  //Highlight pending new collection if it exists
+                  highlightedValues={pendingNewCollection ? [pendingNewCollection.id] : []}
+                />
               )}
             </View>
           </ScrollView>
@@ -571,7 +568,7 @@ const PostCreationModal = ({
           {/* Modal Footer */}
           {isLoading ? (
             <View style={addbuttonstyles.loadingContainer}>
-              <LoadingIndicator text="Uploading image..." />
+              <LoadingIndicator />
             </View>
           ) : (
             <View style={addbuttonstyles.buttonRow}>
