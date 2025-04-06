@@ -75,7 +75,7 @@ const Screen1 = ({ navigation }) => {
               source={Name}
               style={styles.nameImage}
               resizeMode='cover'
-              tintColor={'#333'}
+              tintColor={colours.mainTexts}
             />
           </View>
 
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   headerTexts: {
     textAlign: 'right',
     width: '60%',
-    color: '#333',
+    color: colours.mainTexts,
     fontSize: 16,
     fontWeight: 'bold',
     fontStyle: 'italic',
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     width: '55%',
   },
   SubText: {
-    color: '#333',
+    color: colours.mainTexts,
     fontStyle: 'italic',
     textAlign: 'right',
     marginBottom: 12,
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     fontSize: 40,
     width: '100%',
-    color: '#333',
+    color: colours.mainTexts,
   },
   toNameContainer: {
     flexDirection: 'row',
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: '100%',
     justifyContent: 'flex-end',
-    color: '#333',
+    color: colours.mainTexts,
   },
   toText: {
     marginRight: 5,
@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   button: {
+    ...commonStyles.authButton,
     marginBottom: 20,
     margin: 20,
   },

@@ -27,10 +27,10 @@ const Screen3 = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
 
         {/* Back button */}
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={commonStyles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
@@ -50,7 +50,7 @@ const Screen3 = ({ route, navigation }) => {
 
         {/* Continue button */}
         <AppButton
-          style={styles.button}
+          style={commonStyles.button}
           onPress={() => navigation.navigate('Screen4', { selectedOptions })}
           title='Continue'
         />
@@ -58,13 +58,5 @@ const Screen3 = ({ route, navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  button: {
-    marginBottom: 20,
-    margin: 20,
-  },
-});
 
 export default Screen3;

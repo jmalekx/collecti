@@ -22,6 +22,11 @@ const colours = {
   secondary: '#FCF5E8',
   tertiary: '#fffbf4',
 
+  lighterpink: '#FFF0F5',
+
+  mainTexts: '#333',
+  subTexts: '#666',
+
   buttons: '#f7d89b',
   buttonsHighlight: '#8a6620',
   buttonsText: '#aa790f',
@@ -102,12 +107,12 @@ const textStyles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     textAlign: 'center',
-    color: '#666',
+    color: colours.subTexts,
     marginBottom: 20,
   },
   textRegular: {
     fontFamily: typography.fontRegular,
-    color: '#333',
+    color: colours.mainTexts,
     fontSize: 14,
   },
   textBold: {
@@ -121,7 +126,7 @@ const textStyles = StyleSheet.create({
     fontFamily: typography.fontBold,
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: colours.mainTexts,
   },
   textBody: {
     fontFamily: typography.fontRegular,
@@ -133,7 +138,7 @@ const textStyles = StyleSheet.create({
   },
   skipText: {
     marginTop: 15,
-    color: '#666',
+    color: colours.subTexts,
   },
 });
 
@@ -172,7 +177,7 @@ const buttonStyles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 20,
+    margin: 20,
   },
   pinterestButtonText: {
     color: '#fff',
@@ -180,7 +185,7 @@ const buttonStyles = StyleSheet.create({
     fontSize: 16,
   },
   pinterestConnected: {
-    backgroundColor: '#666',
+    backgroundColor: colours.subTexts,
   },
 
 });
@@ -214,7 +219,7 @@ const inputStyles = StyleSheet.create({
     flex: 1,
     height: '100%',
     fontSize: 16,
-    color: '#333',
+    color: colours.mainTexts,
   },
   leftIconContainer: {
     position: 'absolute',
@@ -285,11 +290,11 @@ const authStyles = {
   },
   headerText: {
     fontSize: 28,
-    color: '#333',
+    color: colours.mainTexts,
   },
   subHeaderText: {
     fontSize: 16,
-    color: '#333',
+    color: colours.mainTexts,
     textAlign: 'center',
     opacity: 0.85,
   },
@@ -297,7 +302,7 @@ const authStyles = {
     backgroundColor: colours.buttons,
     paddingVertical: 12,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: colours.mainTexts,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
