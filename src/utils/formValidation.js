@@ -1,5 +1,5 @@
 //Project services and utilities
-import { showToast, TOAST_TYPES } from '../components/Toasts';
+import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
 
 /*
   Form Validation Utility Module

@@ -1,7 +1,7 @@
 //Project services and utilities
 import { deletePost as deletePostService, getPost as fetchPost, updatePost as modifyPost } from './posts';
 import { openInPlatform } from './platformService';
-import { showToast, TOAST_TYPES } from '../components/Toasts';
+import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
 
 /*
   Post Actions Service Module

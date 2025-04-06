@@ -7,7 +7,7 @@ import { useToast } from 'react-native-toast-notifications';
 //Project services and utilities
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { getBookmarks, removeBookmark as removeBookmarkService, addBookmark as addBookmarkService, toggleBookmark as toggleBookmarkService } from '../services/bookmarks';
-import { showToast, TOAST_TYPES } from '../components/Toasts';
+import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
 
 /*
   useBookmarks Hook  

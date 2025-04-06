@@ -8,7 +8,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { getSimilarCollections, getRecentCollections } from '../services/recommendations';
 import { useUserData } from './useUserData';
 import { useBookmarks } from './useBookmarks';
-import { showToast, TOAST_TYPES } from '../components/Toasts';
+import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
 
 /*
   useRecommendations Hook

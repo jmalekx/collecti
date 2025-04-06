@@ -8,14 +8,15 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { signUp } from '../../services/auth';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
+
 import formValidation from '../../utils/formValidation';
 
 //Custom component imports and styling
-import { AppText, AppButton, AppTextInput } from '../../components/Typography';
+import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
+import { AppText, AppButton, AppTextInput } from '../../components/utilities/Typography';
 import commonStyles, { colours } from '../../styles/commonStyles';
 import registerstyles from '../../styles/registerstyles';
-import LoadingIndicator from '../../components/LoadingIndicator';
+import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import Thumbnail from '../../images/thumbnailNOBG.png';
 
 /*

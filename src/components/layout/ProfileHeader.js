@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles from '../styles/commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   ProfileHeader component displays the user's profile picture, username, and stats.

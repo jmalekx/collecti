@@ -14,8 +14,8 @@ import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
-import { AppButton } from '../../components/Typography';
-import RenderThumbnail from '../../components/RenderThumbnail';
+import { AppButton } from '../../components/utilities/Typography';
+import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 
 /*
   Bookmarks Screen

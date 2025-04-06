@@ -10,7 +10,7 @@ import ProgressBar from '../../components/utilities/ProgressBar';
 import PinterestButton from '../../components/utilities/PinterestButton';
 import commonStyles from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppText, AppHeading, AppButton } from '../../components/Typography';
+import { AppText, AppHeading, AppButton } from '../../components/utilities/Typography';
 
 /*
   Onboarding Screen3 Component

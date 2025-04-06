@@ -10,7 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } from '../../services/pinterest/pinterestHelpers';
 
 //Custom component imports and styling
-import LoadingIndicator from '../LoadingIndicator';
+import LoadingIndicator from '../utilities/LoadingIndicator';
 import commonStyles from '../../styles/commonStyles';
 
 /*

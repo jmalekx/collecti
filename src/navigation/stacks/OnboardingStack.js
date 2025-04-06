@@ -9,7 +9,7 @@ import Screen1 from '../../screens/SignUp/Screen1';
 import Screen2 from '../../screens/SignUp/Screen2';
 import Screen3 from '../../screens/SignUp/Screen3';
 import Screen4 from '../../screens/SignUp/Screen4';
-import MainLayout from '../../components/MainLayout';
+import MainLayout from '../../components/layout/MainLayout';
 
 const Stack = createNativeStackNavigator();
 

@@ -7,12 +7,13 @@ import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
 import { getCurrentUserId } from '../../services/firebase';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
+
 import { getCollection, updateCollection } from '../../services/collections';
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import commonStyles from '../../styles/commonStyles';
-import LoadingIndicator from '../../components/LoadingIndicator';
+import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 
 /*
   EditCollection Screen

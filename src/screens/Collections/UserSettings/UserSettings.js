@@ -9,14 +9,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { logOut } from '../../../services/auth';
 import { deleteUserAccount } from '../../../services/users';
 import { useToast } from 'react-native-toast-notifications';
-import { showToast, TOAST_TYPES } from '../../../components/Toasts';
+
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
 import commonStyles, { colours } from '../../../styles/commonStyles';
 import settingstyles from '../../../styles/settingstyles';
-import PinterestButton from '../../../components/PinterestButton';
-import ConfirmationModal from '../../../components/ConfirmationModal';
-import { AppSubheading } from '../../../components/Typography';
+import PinterestButton from '../../../components/utilities/PinterestButton';
+import ConfirmationModal from '../../../components/utilities/ConfirmationModal';
+import { AppSubheading } from '../../../components/utilities/Typography';
 
 /*
   UserSettings Screen

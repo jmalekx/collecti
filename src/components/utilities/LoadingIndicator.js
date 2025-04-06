@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 
 //Custom component imports and styling
-import { colours } from '../styles/commonStyles';
+import { colours } from '../../styles/commonStyles';
 
 /*
   LoadingIndicator Component

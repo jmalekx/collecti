@@ -13,9 +13,9 @@ import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
-import ProfileHeader from '../../components/ProfileHeader';
+import ProfileHeader from '../../components/layout/ProfileHeader';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
-import SearchBar from '../../components/SearchBar';
+import SearchBar from '../../components/utilities/SearchBar';
 
 /*
   Collections component displays the user's collections and allows searching through them.

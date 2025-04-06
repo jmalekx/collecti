@@ -6,7 +6,6 @@ import { View, Text, StatusBar } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { ToastProvider } from 'react-native-toast-notifications';
-import { toastConfig } from './src/components/Toasts';
 import { ShareIntentProvider } from 'expo-share-intent';
 import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
 
@@ -15,10 +14,11 @@ import { subscribeToAuthChanges } from './src/services/auth';
 import { getUserProfile } from './src/services/users';
 
 //Custom component imports and styling
-import MainLayout from './src/components/MainLayout';
+import { toastConfig } from './src/components/utilities/Toasts';
+import MainLayout from './src/components/layout/MainLayout';
 import AuthStack from './src/navigation/stacks/AuthStack';
 import OnboardingStack from './src/navigation/stacks/OnboardingStack';
-import LoadingIndicator from './src/components/LoadingIndicator';
+import LoadingIndicator from './src/components/utilities/LoadingIndicator';
 
 /*
   App Component

@@ -9,18 +9,18 @@ import { useToast } from 'react-native-toast-notifications';
 import { useFocusEffect } from '@react-navigation/native';
 
 //Project services and utilities
-import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 import { getPost } from '../../../services/posts';
 import { handlePostDeletion, handleOpenInPlatform } from '../../../services/postActionService';
 import { shouldShowPlatformLink, getPlatformDisplayName } from '../../../services/platformService';
 import { formatDate, formatPlatform } from '../../../utils/formatting';
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
 import commonStyles from '../../../styles/commonStyles';
 import ConfirmationModal from '../../../components/utilities/ConfirmationModal';
 import LinkTexts from '../../../components/utilities/LinkTexts';
 import RenderPosts from '../../../components/utilities/RenderPosts';
-import LoadingIndicator from '../../../components/LoadingIndicator';
+import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
 
 /*
   PostDetails Screen

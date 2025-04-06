@@ -8,16 +8,16 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Project services and utilities
 import { signIn } from '../../services/auth';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import formValidation from '../../utils/formValidation';
 
 // Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../components//utilities/Toasts';
 import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
 import commonStyles, { colours } from '../../styles/commonStyles';
 import registerstyles from '../../styles/registerstyles';
-import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
-import LoadingIndicator from '../../components/LoadingIndicator';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
+import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 
 /*
   SignIn Screem

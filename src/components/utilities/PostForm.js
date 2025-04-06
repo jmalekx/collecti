@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles from '../commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   PostForm Component

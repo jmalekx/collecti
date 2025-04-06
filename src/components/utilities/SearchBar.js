@@ -6,7 +6,7 @@ import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import commonStyles, {colours} from './../styles/commonStyles';
+import commonStyles, {colours} from '../../styles/commonStyles';
 
 /*
   SearchBar Component

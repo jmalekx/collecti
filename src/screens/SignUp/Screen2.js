@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';
+import { AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/utilities/Typography';
 
 /*
   Onboarding Screen2 Component

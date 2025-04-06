@@ -13,9 +13,9 @@ import { useCollectionSearch } from '../../hooks/useCollectionSearch';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
-import RenderThumbnail from '../../components/RenderThumbnail';
-import LoadingIndicator from '../../components/LoadingIndicator';
-import SearchBar from '../../components/SearchBar';
+import RenderThumbnail from '../../components/utilities/RenderThumbnail';
+import LoadingIndicator from '../../components/utilities/LoadingIndicator';
+import SearchBar from '../../components/utilities/SearchBar';
 
 /*
   SearchPage Component

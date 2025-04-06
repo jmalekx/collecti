@@ -11,7 +11,7 @@ import { loadPostForEditing, saveEditedPost } from '../../../services/postAction
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
-import LoadingIndicator from '../../../components/LoadingIndicator';
+import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
 
 /*
   EditPost Screen

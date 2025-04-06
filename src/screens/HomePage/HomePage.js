@@ -8,18 +8,19 @@ import { useToast } from 'react-native-toast-notifications';
 //Project services and utilities
 import { getUserProfile } from '../../services/users';
 import { getCurrentUser, getCurrentUserId } from '../../services/firebase';
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
+
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 import { useUserData } from '../../hooks/useUserData';
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import commonStyles from '../../styles/commonStyles';
 import homestyles from '../../styles/homestyles';
-import SuggestedCollections from '../../components/SuggestedCollections';
-import UserStats from '../../components/UserStats';
+import SuggestedCollections from '../../components/layout/SuggestedCollections';
+import UserStats from '../../components/layout/UserStats';
 import filler from '../../images/homedecor.png';
-import { AppSubheading } from '../../components/Typography';
-import LoadingIndicator from '../../components/LoadingIndicator';
+import { AppSubheading } from '../../components/utilities/Typography';
+import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 
 /* 
   HomePage Screen

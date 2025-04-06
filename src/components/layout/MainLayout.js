@@ -7,16 +7,16 @@ import { useToast } from 'react-native-toast-notifications';
 import { useShareIntentContext } from 'expo-share-intent';
 
 //Project services and utilities
-import { showToast, TOAST_TYPES } from './Toasts';
-import { getAllCollections, createCollection, updateCollection } from '../services/collections';
-import { createPost } from '../services/posts';
-import { getCurrentUserId } from '../services/firebase';
-import { DEFAULT_THUMBNAIL } from '../constants';
+import { showToast, TOAST_TYPES } from '../utilities/Toasts';
+import { getAllCollections, createCollection, updateCollection } from '../../services/collections';
+import { createPost } from '../../services/posts';
+import { getCurrentUserId } from '../../services/firebase';
+import { DEFAULT_THUMBNAIL } from '../../constants';
 
 //Custom component imports and styling
-import TabNavigator from '../navigation/TabNavigator';
-import AddButton from './AddButton';
-import UnsupportedPlatformModal from './UnsupportedPlatformModal';
+import TabNavigator from '../../navigation/TabNavigator';
+import AddButton from '../layout/AddButton';
+import UnsupportedPlatformModal from '../utilities/UnsupportedPlatformModal';
 
 /*
   MainLayout Component

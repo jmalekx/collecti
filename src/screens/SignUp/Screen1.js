@@ -6,7 +6,7 @@ import { View, StyleSheet, Image, Animated, Dimensions } from 'react-native';
 import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppText, AppHeading, AppButton } from '../../components/Typography';
+import { AppText, AppHeading, AppButton } from '../../components/utilities/Typography';
 import ShareScreen from '../../images/share.png';
 import Name from '../../images/nameSmall.png';
 

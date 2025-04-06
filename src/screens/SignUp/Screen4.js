@@ -7,14 +7,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
-import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getCollectionSuggestions, completeOnboardingProcess } from '../../services/onboarding';
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts'
 import ProgressBar from "../../components/utilities/ProgressBar";
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from "../../styles/onboardingstyles";
-import { AppText, AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';
+import { AppText, AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/utilities/Typography';
 
 /*
   Onboarding Screen4 Component

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Text, TouchableOpacity, Animated, TextInput, View } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles, { typography } from '../styles/commonStyles';
+import commonStyles, { typography } from '../../styles/commonStyles';
 
 /*
   Typography Component

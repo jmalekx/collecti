@@ -9,12 +9,13 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { getUserProfile, updateUserProfile } from '../../../services/users';
-import { showToast, TOAST_TYPES } from '../../../components/Toasts';
+
 import { uploadImageToCloudinary } from '../../../services/storage';
 
 //Custom component imports and styling
+import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
 import commonStyles from '../../../styles/commonStyles';
-import LoadingIndicator from '../../../components/LoadingIndicator';
+import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
 
 /*
   EditProfile Screen

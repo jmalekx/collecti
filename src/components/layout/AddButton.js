@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Modal, StyleSheet, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Modal, StyleSheet, Animated, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Image, KeyboardAvoidingView, Platform } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -13,12 +13,12 @@ import * as ImagePicker from 'expo-image-picker';
 import pinterestService from '../../services/pinterest/pinterestServices';
 import { uploadImageToCloudinary } from '../../services/storage';
 import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } from '../../services/pinterest/pinterestHelpers';
-import { showToast, TOAST_TYPES } from './Toasts';
+import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 
 //Custom component imports and styling
-import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
+import { AppText, AppHeading, AppButton, AppTextInput } from '../utilities/Typography';
 import commonStyles from '../../styles/commonStyles';
-import LoadingIndicator from './LoadingIndicator';
+import LoadingIndicator from '../utilities/LoadingIndicator';
 
 /*
   AddButton Component
@@ -65,6 +65,12 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   //State transitions
   const [activeTab, setActiveTab] = useState('image'); //Either image or url tab
   const [currentPlatform, setCurrentPlatform] = useState('gallery');
+
+  //Animation values for menu items
+  const animation = useRef(new Animated.Value(0)).current;
+  const postButtonAnimation = useRef(new Animated.Value(0)).current;
+  const collectionButtonAnimation = useRef(new Animated.Value(0)).current;
+
 
   //Context states
   const toast = useToast(); //Notification service singleton
@@ -124,6 +130,63 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       fetchPinterestData(sharedUrl);
     }
   }, [isModalOpen, platform, sharedUrl]);
+
+  // Toggle animation when menu opens/closes
+  useEffect(() => {
+    const animations = [
+      Animated.timing(animation, {
+        toValue: isOptionsOpen ? 1 : 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.stagger(100, [
+        Animated.timing(postButtonAnimation, {
+          toValue: isOptionsOpen ? 1 : 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.timing(collectionButtonAnimation, {
+          toValue: isOptionsOpen ? 1 : 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ])
+    ];
+
+    Animated.parallel(animations).start();
+  }, [isOptionsOpen]);
+
+  // Calculate transforms for the main button
+  const rotateInterpolation = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '45deg']
+  });
+
+  // Calculate transforms for the menu items
+  const postButtonTranslateY = postButtonAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -80]
+  });
+
+  const postButtonTranslateX = postButtonAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -40]
+  });
+
+  const collectionButtonTranslateY = collectionButtonAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -140]
+  });
+
+  const scaleInterpolation = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1]
+  });
+
+  const opacityInterpolation = animation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0, 1]
+  });
 
   //State restoration to initial
   const resetModalStates = () => {
@@ -710,37 +773,72 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
         </TouchableOpacity>
       </View>
 
-      {/* Add Options */}
-      {isOptionsOpen && (
-        <View
-          ref={optionsRef}
-          style={styles.addOptions}
+      <Animated.View
+        style={[
+          styles.menuItemContainer,
+          {
+            transform: [
+              { translateY: postButtonTranslateY },
+              { translateX: postButtonTranslateX },
+              { scale: scaleInterpolation }
+            ],
+            opacity: opacityInterpolation
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => {
+            resetModalStates();
+            setIsModalOpen(true);
+            setIsOptionsOpen(false);
+          }}
         >
-          <TouchableOpacity
-            style={styles.optionItem}
-            onPress={() => {
-              resetModalStates();
-              setIsModalOpen(true);
-              setIsOptionsOpen(false);
-            }}
-          >
-            <MaterialIcons name="post-add" size={24} color="#007bff" style={styles.menuIcon} />
-            <Text style={styles.optionText}>Add New Post</Text>
-          </TouchableOpacity>
+          <View style={styles.menuItemButton}>
+            <MaterialIcons name="post-add" size={20} color="#fff" />
+          </View>
+          <Text style={styles.menuItemLabel}>New Post</Text>
+        </TouchableOpacity>
+      </Animated.View>
 
-          <TouchableOpacity
-            style={styles.optionItem}
-            onPress={() => {
-              resetModalStates();
-              setIsCollectionModalOpen(true);
-              setIsOptionsOpen(false);
-            }}
-          >
-            <Ionicons name="folder-open" size={24} color="#007bff" style={styles.menuIcon} />
-            <Text style={styles.optionText}>Add New Collection</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      <Animated.View
+        style={[
+          styles.menuItemContainer,
+          {
+            transform: [
+              { translateY: collectionButtonTranslateY },
+              { scale: scaleInterpolation }
+            ],
+            opacity: opacityInterpolation
+          }
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => {
+            resetModalStates();
+            setIsCollectionModalOpen(true);
+            setIsOptionsOpen(false);
+          }}
+        >
+          <View style={styles.menuItemButton}>
+            <Ionicons name="folder-open" size={20} color="#fff" />
+          </View>
+          <Text style={styles.menuItemLabel}>New Collection</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* Add Button */}
+      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, pointerEvents: 'box-none' }}>
+        <TouchableOpacity
+          style={styles.addBtn}
+          onPress={() => setIsOptionsOpen(!isOptionsOpen)}
+        >
+          <Animated.View style={{ transform: [{ rotate: rotateInterpolation }] }}>
+            <Ionicons name="add-outline" size={30} color="#D67A98" />
+          </Animated.View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -1033,8 +1131,43 @@ const styles = StyleSheet.create({
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     pointerEvents: 'auto',
+  },
+  menuItemContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: '50%',
+    marginLeft: -30,
+    alignItems: 'center',
+    zIndex: 999,
+  },
+  menuItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  menuItemButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#007AFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+  },
+  menuItemLabel: {
+    marginTop: 5,
+    fontSize: 12,
+    color: '#333',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });
 

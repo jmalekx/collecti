@@ -15,8 +15,8 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 //Custom component imports and styling
 import commonStyles, { colours } from '../../styles/commonStyles';
 import homestyles from '../../styles/homestyles';
-import { AppSubheading } from '../Typography';
-import LoadingIndicator from '../LoadingIndicator';
+import { AppSubheading } from '../utilities/Typography';
+import LoadingIndicator from '../utilities/LoadingIndicator';
 
 /*
   SuggestedCollections Component

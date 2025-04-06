@@ -7,7 +7,7 @@ import { doc, getDoc, deleteDoc, setDoc, collection } from 'firebase/firestore';
 import { FIREBASE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
 
 //Project services and utilities
-import { showToast, TOAST_TYPES } from '../components/Toasts';
+import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
 import { getCollection, getAllCollections, deleteCollection as deleteCollectionService, createCollection } from '../services/collections';
 import { getCollectionPosts, deletePost as deletePostService, updateCollectionThumbnail, subscribeToPosts } from '../services/posts';
 
