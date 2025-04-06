@@ -201,13 +201,13 @@ const settingstyles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 12,
 
-    ...shadowStyles.light,
+    ...shadowStyles.medium,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     shadowColor: colours.buttonsTextPink,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.9,  
-    shadowRadius: 22,     
-    elevation: 15,  
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 1,  
+    shadowRadius: 30,     
+    elevation: 30,  
   },
   pickImageText: {
     color: colours.subTexts,
@@ -264,7 +264,7 @@ const settingstyles = StyleSheet.create({
   },
   //Form input styles
   profileInputContainer: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
 });
 
