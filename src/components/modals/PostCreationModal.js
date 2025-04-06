@@ -17,7 +17,7 @@ import { AppTextInput, AppButton, AppHeading } from '../utilities/Typography';
 import LoadingIndicator from '../utilities/LoadingIndicator';
 import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 import addbuttonstyles from '../../styles/addbuttonstyles';
-import settingstyles from '../../styles/settingstyles';
+import { typography } from '../../styles/commonStyles';
 
 /*
   PostCreation Modal Component
@@ -380,7 +380,10 @@ const PostCreationModal = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={[addbuttonstyles.scrollContainer, { marginBottom: 16 }]}>
+          <ScrollView style={[addbuttonstyles.scrollContainer, { marginBottom: 16 }]}
+            showsVerticalScrollIndicator={false}
+            showsHorizontalScrollIndicator={false}
+          >
             {/* Tab Selector */}
             <View style={addbuttonstyles.tabContainer}>
               <TouchableOpacity
@@ -540,6 +543,7 @@ const PostCreationModal = ({
                       }
                     }}
                     style={addbuttonstyles.picker}
+                    itemStyle={{ fontFamily: typography.fontRegular }}
                   >
                     {/* Show the pending collection at the top if it exists */}
                     {pendingNewCollection && (

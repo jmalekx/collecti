@@ -61,7 +61,7 @@ const addbuttonstyles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 20,
     borderRadius: 12,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colours.grey,
     padding: 4,
   },
   tabButton: {
@@ -99,7 +99,7 @@ const addbuttonstyles = StyleSheet.create({
   },
   //===== IMAGE SECTION STYLES =====
   imageSection: {
-    marginBottom: 20,
+    marginBottom: 8,
     alignItems: 'center',
   },
   pickImageButton: {
@@ -142,9 +142,6 @@ const addbuttonstyles = StyleSheet.create({
     ...shadowStyles.heavy,
   },
   //===== URL SECTION STYLES =====
-  urlSection: {
-    marginBottom: 20,
-  },
   platformIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,24 +158,27 @@ const addbuttonstyles = StyleSheet.create({
   //===== COLLECTION SELECTOR STYLES =====
   collectionSelectorSection: {
     marginBottom: 16,
+    marginTop: 12,
   },
   sectionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
+    marginBottom: 14, 
+    color: colours.mainTexts, 
   },
   pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 12,
-    marginBottom: 16,
-    backgroundColor: '#f9f9f9',
+    borderWidth: 1.5,
+    borderColor: colours.secondary,
+    borderRadius: 16, 
+    backgroundColor: 'white',
     overflow: 'hidden',
     paddingHorizontal: 5,
+    ...shadowStyles.light, 
   },
   picker: {
     height: 50,
+    color: colours.mainTexts,
+    fontFamily: typography.fontBold, 
   },
   newCollectionContainer: {
     flexDirection: 'row',

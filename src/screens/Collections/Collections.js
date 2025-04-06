@@ -16,7 +16,6 @@ import commonStyles, { shadowStyles } from '../../styles/commonStyles';
 import ProfileHeader from '../../components/layout/ProfileHeader';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/utilities/SearchBar';
-import { shadowStyles } from '../../styles/commonStyles';
 
 /*
   Collections component displays the user's collections and allows searching through them.
@@ -81,6 +80,8 @@ const Collections = ({ }) => {
 
         {/* Collection Grid */}
         <FlatList
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
           data={sortedCollections}
           keyExtractor={(item) => item.id}
           numColumns={2}
