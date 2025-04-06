@@ -24,7 +24,7 @@ import commonStyles from '../styles/commonStyles';
 
 */
 
-const PinterestButton = ({ onConnected, onDisconnected }) => {
+const PinterestButton = ({ onConnected, onDisconnected, style }) => {
 
   //State transitions
   const [pinterestConnected, setPinterestConnected] = useState(false);
@@ -117,7 +117,8 @@ const PinterestButton = ({ onConnected, onDisconnected }) => {
     <TouchableOpacity
       style={[
         commonStyles.pinterestButton,
-        pinterestConnected && commonStyles.pinterestConnected
+        pinterestConnected && commonStyles.pinterestConnected,
+        style
       ]}
       onPress={pinterestConnected ? handlePinterestDisconnect : handlePinterestAuth}
     >

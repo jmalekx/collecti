@@ -2,6 +2,9 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, TextInput, Modal } from 'react-native';
 
+//Third-party library external imports
+import { Ionicons } from '@expo/vector-icons';
+
 //Project services and utilities
 import { logOut } from '../../../services/auth';
 import { deleteUserAccount } from '../../../services/users';
@@ -9,9 +12,11 @@ import { useToast } from 'react-native-toast-notifications';
 import { showToast, TOAST_TYPES } from '../../../components/Toasts';
 
 //Custom component imports and styling
-import commonStyles from '../../../styles/commonStyles';
+import commonStyles, { colours } from '../../../styles/commonStyles';
+import settingstyles from '../../../styles/settingstyles';
 import PinterestButton from '../../../components/PinterestButton';
 import ConfirmationModal from '../../../components/ConfirmationModal';
+import { AppSubheading } from '../../../components/Typography';
 
 /*
   UserSettings Screen
@@ -69,35 +74,60 @@ const UserSettings = ({ navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
-        {/* Pinterest Integration Section */}
-        <PinterestButton />
+      <View style={[commonStyles.container, settingstyles.settingsContainer]}>
 
-        {/* Account Management Section */}
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('EditProfile')}
-        >
-          <Text style={styles.buttonText}>Edit Profile</Text>
-        </TouchableOpacity>
+        {/* Integrations */}
+        <AppSubheading style={commonStyles.headerContainer}> Integrations</AppSubheading>
+        <View style={settingstyles.sectionContainer}>
+          <View style={[settingstyles.settingButton, { padding: 10 }]}>
+            <View style={settingstyles.iconContainer}>
+              <Ionicons name="logo-pinterest" size={22} color="#E60023" />
+            </View>
+            <Text style={settingstyles.settingButtonText}>Pinterest</Text>
+            <PinterestButton style={{ margin: 0 }} />
+          </View>
+        </View>
 
-        {/* Logout Section */}
-        <TouchableOpacity
-          style={[styles.button]}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
+        {/* Account Section */}
+        <AppSubheading style={commonStyles.headerContainer}> Manage Account</AppSubheading>
+        <View style={settingstyles.sectionContainer}>
+          <TouchableOpacity
+            style={settingstyles.settingButton}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
+            <View style={settingstyles.iconContainer}>
+              <Ionicons name="person-outline" size={22} color={colours.subTexts} />
+            </View>
+            <Text style={settingstyles.settingButtonText}>Edit Profile</Text>
+            <Ionicons name="chevron-forward" size={18} style={settingstyles.chevronIcon} />
+          </TouchableOpacity>
 
-        {/* Delete Account Section */}
-        <TouchableOpacity
-          style={[styles.button, styles.deleteButton]}
-          onPress={() => setDeleteModalVisible(true)}
-        >
-          <Text style={[styles.buttonText, styles.deleteButtonText]}>Delete Account</Text>
-        </TouchableOpacity>
+          {/* Logout moved to Account section */}
+          <TouchableOpacity
+            style={[settingstyles.settingButton, settingstyles.lastSettingButton]}
+            onPress={() => setModalVisible(true)}
+          >
+            <View style={settingstyles.iconContainer}>
+              <Ionicons name="log-out-outline" size={22} color={colours.subTexts} />
+            </View>
+            <Text style={settingstyles.settingButtonText}>Logout</Text>
+          </TouchableOpacity>
 
-        {/* Logout Confirmation Modal */}
+          <TouchableOpacity
+            style={[settingstyles.settingButton, settingstyles.lastSettingButton, settingstyles.dangerButton]}
+            onPress={() => setDeleteModalVisible(true)}
+          >
+            <View style={settingstyles.iconContainer}>
+              <Ionicons name="trash-outline" size={22} color="#e53935" />
+            </View>
+            <Text style={[settingstyles.settingButtonText, settingstyles.dangerText]}>Delete Account</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* App version */}
+        <Text style={settingstyles.versionText}>Collecti v1.0.0</Text>
+
+        {/* Modals - keep as they are */}
         <ConfirmationModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
@@ -105,12 +135,11 @@ const UserSettings = ({ navigation }) => {
           message="Are you sure you want to log out? You'll need to login again to use the app."
           primaryAction={handleLogout}
           primaryText="Log out"
-          primaryStyle="danger"
+          primaryStyle="primary"
           secondaryText="Cancel"
           icon="log-out-outline"
         />
 
-        {/* Delete Account Modal with Password Confirmation */}
         <ConfirmationModal
           visible={deleteModalVisible}
           onClose={() => {
@@ -124,7 +153,6 @@ const UserSettings = ({ navigation }) => {
           primaryStyle="danger"
           secondaryText="Cancel"
           icon="trash-outline"
-          // Input-specific props
           showInput={true}
           inputValue={password}
           onInputChange={setPassword}
@@ -137,9 +165,5 @@ const UserSettings = ({ navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-});
 
 export default UserSettings;

@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
 import { AppText, AppHeading } from './Typography';
-import commonStyles from '../styles/commonStyles';
+import commonStyles, { colours } from '../styles/commonStyles';
 
 /*
   ConfirmationModal Component
@@ -56,7 +56,7 @@ const ConfirmationModal = ({
               <Ionicons name={icon} size={36} color={
                 primaryStyle === 'danger' ? '#FF3B30' :
                   primaryStyle === 'warning' ? '#FF9500' :
-                    '#007AFF'
+                    colours.buttonsText
               } />
             </View>
           )}
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   primaryIcon: {
-    backgroundColor: 'rgba(0, 122, 255, 0.1)',
+    backgroundColor: colours.buttons,
   },
   dangerIcon: {
     backgroundColor: 'rgba(255, 59, 48, 0.1)',
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colours.buttonsText,
   },
   dangerButton: {
     backgroundColor: '#FF3B30',
