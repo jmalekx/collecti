@@ -54,7 +54,7 @@ const EditProfile = ({ navigation }) => {
 
         {/* Profile picture section */}
         <View style={settingstyles.profilePictureSection}>
-        <AppSubheading style={commonStyles.headerContainer}>Profile Picture</AppSubheading>
+        <AppSubheading style={commonStyles.textSubheading}>Profile Picture</AppSubheading>
 
           {localImage ? (
             <View style={settingstyles.profileImageContainer}>
@@ -95,7 +95,7 @@ const EditProfile = ({ navigation }) => {
 
         {/* Username input */}
         <View style={settingstyles.profileInputContainer}>
-          <AppSubheading style={commonStyles.headerContainer}>Username</AppSubheading>
+          <AppSubheading style={commonStyles.textSubheading}>Username</AppSubheading>
           <View style={addbuttonstyles.standardInputContainer}>
             <TextInput
               style={addbuttonstyles.standardInput}
@@ -110,7 +110,7 @@ const EditProfile = ({ navigation }) => {
         {/* Save button with loading state */}
         <View style={[settingstyles.buttonRow]}>
           <TouchableOpacity
-            style={[addbuttonstyles.cancelButton, {backgroundColor: 'white', borderColor: colours.primary, borderWidth: 1}]}
+            style={[addbuttonstyles.cancelButton, {backgroundColor: 'white', borderColor: '#eee', borderWidth: 1.5}]}
             onPress={() => navigation.goBack()}
           >
             <Text style={addbuttonstyles.buttonText}>Cancel</Text>

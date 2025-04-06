@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -10,8 +10,10 @@ import { useToast } from 'react-native-toast-notifications';
 import { loadPostForEditing, saveEditedPost } from '../../../services/postActionService';
 
 //Custom component imports and styling
-import commonStyles from '../../../styles/commonStyles';
+import commonStyles, { colours, shadowStyles } from '../../../styles/commonStyles';
+import addbuttonstyles from '../../../styles/addbuttonstyles';
 import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
+import { AppText, AppSubheading } from '../../../components/utilities/Typography';
 
 /*
   EditPost Screen
@@ -25,6 +27,7 @@ const EditPost = ({ route, navigation }) => {
 
   //State transitions
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
 
   //Content managing
   const { collectionId, postId } = route.params;
@@ -57,6 +60,8 @@ const EditPost = ({ route, navigation }) => {
 
   //Form submission handler
   const handleSave = async () => {
+    setIsSaving(true);
+
     // Use service to save post data
     const success = await saveEditedPost(
       collectionId,
@@ -65,6 +70,7 @@ const EditPost = ({ route, navigation }) => {
       toast
     );
 
+    setIsSaving(false);
     if (success) {
       navigation.goBack();
     }
@@ -73,9 +79,11 @@ const EditPost = ({ route, navigation }) => {
   //Conditional loading render while data being fetched
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <LoadingIndicator/>
-      </View>
+      <commonStyles.Bg>
+        <View style={commonStyles.loadingContainer}>
+          <LoadingIndicator />
+        </View>
+      </commonStyles.Bg>
     );
   }
 
@@ -83,60 +91,130 @@ const EditPost = ({ route, navigation }) => {
     <commonStyles.Bg>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="close" size={24} color="#000" />
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleSave}>
-            <Ionicons name="checkmark" size={24} color="#000" />
+          <AppSubheading style={styles.headerTitle}>Edit Post</AppSubheading>
+          <TouchableOpacity
+            style={[styles.headerButton, styles.saveButton, isSaving && styles.disabledButton]}
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <LoadingIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons name="checkmark" size={24} color="#fff" />
+            )}
           </TouchableOpacity>
         </View>
 
-        <View style={styles.form}>
-          <Text style={styles.label}>Notes</Text>
-          <TextInput
-            style={styles.input}
-            value={notes}
-            onChangeText={setNotes}
-            multiline
-            placeholder="Add notes about this post..."
-          />
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.formContainer}>
+            <View style={styles.section}>
+              <AppSubheading style={commonStyles.textSubheading}>Notes</AppSubheading>
+              <View style={styles.standardInputContainer}>
+                <TouchableOpacity activeOpacity={1}>
+                  <TextInput
+                    style={[styles.standardInput, styles.textArea]}
+                    value={notes}
+                    onChangeText={setNotes}
+                    multiline
+                    placeholder="Add notes about this post..."
+                    placeholderTextColor={colours.subTexts}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          <Text style={styles.label}>Tags</Text>
-          <TextInput
-            style={styles.input}
-            value={tags}
-            onChangeText={setTags}
-            placeholder="Add tags (comma separated)"
-          />
-        </View>
+            <View style={styles.section}>
+            <AppSubheading style={commonStyles.textSubheading}>Tags</AppSubheading>
+              <View style={styles.standardInputContainer}>
+                <TouchableOpacity activeOpacity={1}>
+                  <TextInput
+                    style={styles.standardInput}
+                    value={tags}
+                    onChangeText={setTags}
+                    placeholder="Add tags (comma separated)"
+                    placeholderTextColor={colours.subTexts}
+                  />
+                </TouchableOpacity>
+              </View>
+              <AppText style={styles.helperText}>
+                Separate tags with commas (e.g., travel, inspiration, ideas)
+              </AppText>
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </commonStyles.Bg>
   );
 };
 
-// styles remain the same
 const styles = StyleSheet.create({
-  ...commonStyles,
+  container: {
+    flex: 1,
+    padding: 16,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16,
-  },
-  form: {
-    padding: 16,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
+    alignItems: 'center',
     marginBottom: 16,
-    fontSize: 16,
+    paddingVertical: 12,
+  },
+  headerButton: {
+    padding: 8,
+    borderRadius: 8,
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: colours.mainTexts,
+  },
+  saveButton: {
+    backgroundColor: colours.buttonsTextPink,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: 40,
+    ...shadowStyles.light,
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  formContainer: {
+    padding: 4,
+  },
+  section: {
+    ...addbuttonstyles.section,
+    marginBottom: 40,
+  },
+  sectionTitle: {
+    ...addbuttonstyles.sectionTitle,
+  },
+  standardInputContainer: {
+    ...addbuttonstyles.standardInputContainer,
+  },
+  standardInput: {
+    ...addbuttonstyles.standardInput,
+  },
+  textArea: {
+    ...addbuttonstyles.textArea,
+    minHeight: 120,
+  },
+  helperText: {
+    fontSize: 12,
+    color: colours.subTexts,
+    marginTop: 4,
+    marginLeft: 4,
+    fontStyle: 'italic',
   },
 });
 
