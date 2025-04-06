@@ -26,7 +26,12 @@ export const getPost = async (collectionId, postId, userId = getCurrentUserId())
 //Retrieving all posts within a user collection
 export const getCollectionPosts = async (collectionId, userId = getCurrentUserId()) => {
   try {
-    const snapshot = await getDocs(getPostsRef(collectionId, userId));
+    //Add query with orderBy to sort by createdAt in descending order
+    const postsQuery = query(
+      getPostsRef(collectionId, userId),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(postsQuery);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   }
   catch (error) {
@@ -81,7 +86,11 @@ export const deletePost = async (collectionId, postId, userId = getCurrentUserId
 
 //Realtime listener subscription for posts
 export const subscribeToPosts = (collectionId, callback, userId = getCurrentUserId()) => {
-  const postsQuery = query(getPostsRef(collectionId, userId));
+  //Use query with orderBy to sort by createdAt in descending order
+  const postsQuery = query(
+    getPostsRef(collectionId, userId),
+    orderBy('createdAt', 'desc') 
+  );
 
   const unsubscribe = onSnapshot(
     postsQuery,
