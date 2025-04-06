@@ -258,47 +258,6 @@ const headerStyles = {
   }
 };
 
-const authStyles = {
-  formContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  headerContainer: {
-    width: '100%',
-    marginBottom: 15,
-  },
-  headerText: {
-    fontSize: 28,
-    color: colours.mainTexts,
-  },
-  subHeaderText: {
-    fontSize: 16,
-    color: colours.mainTexts,
-    textAlign: 'center',
-    opacity: 0.85,
-  },
-  authButton: {
-    backgroundColor: colours.buttons,
-    paddingVertical: 12,
-    borderRadius: 8,
-    shadowColor: colours.mainTexts,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  authButtonText: {
-    color: colours.buttonsText,
-    fontSize: 16,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-  },
-  authLink: {
-    ...textStyles.textBold,
-    color: colours.buttonsTextPink,
-  }
-};
-
 //Merge all style objects for export
 const commonStyles = {
   ...layoutStyles,
@@ -306,7 +265,6 @@ const commonStyles = {
   ...buttonStyles,
   ...inputStyles,
   ...headerStyles,
-  ...authStyles,
   Bg,
 };
 

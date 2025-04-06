@@ -81,8 +81,8 @@ const SignUp = ({ navigation }) => {
       <View style={registerstyles.root}>
 
         <View style={registerstyles.UpheaderContainer}>
-          <AppText style={commonStyles.subHeaderText}>Create. Collect. Organise.</AppText>
-          <AppText style={commonStyles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
+          <AppText style={registerstyles.subHeaderText}>Create. Collect. Organise.</AppText>
+          <AppText style={registerstyles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
         </View>
 
         <View style={commonStyles.divider} />

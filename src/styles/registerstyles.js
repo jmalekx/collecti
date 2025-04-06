@@ -19,7 +19,6 @@ const registerstyles = StyleSheet.create({
 
   //SignUp
   UpheaderContainer: {
-    ...commonStyles.headerContainer,
     marginBottom: 8,
     alignItems: 'flex-start',
     alignSelf: 'stretch',
@@ -46,10 +45,6 @@ const registerstyles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  headerContainer: {
-    width: '100%',
-    marginBottom: 15,
-  },
   headerText: {
     fontSize: 28,
     color: colours.mainTexts,
@@ -59,6 +54,7 @@ const registerstyles = StyleSheet.create({
     color: colours.mainTexts,
     textAlign: 'center',
     opacity: 0.85,
+    marginTop:0,
   },
   authButton: {
     backgroundColor: colours.buttons,
@@ -98,19 +94,8 @@ const registerstyles = StyleSheet.create({
     marginLeft: 20,
   },
   headerText: {
-    ...commonStyles.headerText,
+    color: colours.mainTexts,
     fontSize: 32,
-  },
-  subHeaderText: {
-    ...commonStyles.subHeaderText,
-    marginTop: 0,
-  },
-  headerContainer: {
-    ...commonStyles.headerContainer,
-    marginBottom: 8,
-    alignItems: 'flex-start',
-    marginLeft: 40,
-    alignSelf: 'stretch',
   },
   bottomContainer: {
     width: '100%',

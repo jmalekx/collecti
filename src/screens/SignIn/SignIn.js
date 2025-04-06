@@ -104,7 +104,7 @@ const SignIn = ({ navigation }) => {
           {/* Bottom content container */}
           <View style={registerstyles.bottomContainer}>
             {/* Header text */}
-            <View style={registerstyles.headerContainer}>
+            <View style={registerstyles.UpheaderContainer}>
               <AppHeading style={registerstyles.headerText}>Welcome</AppHeading>
               <AppText style={registerstyles.subHeaderText}>Please enter your details below</AppText>
             </View>
