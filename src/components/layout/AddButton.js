@@ -165,18 +165,14 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
   // Calculate transforms for the menu items
   const postButtonTranslateY = postButtonAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -80]
+    outputRange: [0, -165]
   });
-
-  const postButtonTranslateX = postButtonAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, -40]
-  });
-
+  
   const collectionButtonTranslateY = collectionButtonAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -140]
+    outputRange: [0, -85] 
   });
+
 
   const scaleInterpolation = animation.interpolate({
     inputRange: [0, 1],
@@ -779,7 +775,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           {
             transform: [
               { translateY: postButtonTranslateY },
-              { translateX: postButtonTranslateX },
               { scale: scaleInterpolation }
             ],
             opacity: opacityInterpolation
@@ -797,7 +792,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           <View style={styles.menuItemButton}>
             <MaterialIcons name="post-add" size={20} color="#fff" />
           </View>
-          <Text style={styles.menuItemLabel}>New Post</Text>
+          <Text style={styles.menuItemLabel}>Post</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -824,7 +819,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           <View style={styles.menuItemButton}>
             <Ionicons name="folder-open" size={20} color="#fff" />
           </View>
-          <Text style={styles.menuItemLabel}>New Collection</Text>
+          <Text style={styles.menuItemLabel}>Collection</Text>
         </TouchableOpacity>
       </Animated.View>
 
@@ -1136,15 +1131,19 @@ const styles = StyleSheet.create({
   },
   menuItemContainer: {
     position: 'absolute',
-    bottom: 40,
-    left: '50%',
-    marginLeft: -30,
+    bottom: 20,
+    left: 0,
+    right: 0,
+    justifyContent: 'center',
     alignItems: 'center',
     zIndex: 999,
   },
   menuItem: {
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'column-reverse', // This flips the order
+    marginBottom: 0,
+    marginTop:10,
   },
   menuItemButton: {
     width: 50,
@@ -1160,7 +1159,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   menuItemLabel: {
-    marginTop: 5,
+    marginBottom: 4, // Changed from marginTop to marginBottom
     fontSize: 12,
     color: '#333',
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
