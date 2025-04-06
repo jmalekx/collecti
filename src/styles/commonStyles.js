@@ -86,6 +86,11 @@ const layoutStyles = StyleSheet.create({
     alignSelf: 'center',
     opacity: 0.4,
   },
+  authInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
 });
 
 const textStyles = StyleSheet.create({

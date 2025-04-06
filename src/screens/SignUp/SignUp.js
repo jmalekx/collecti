@@ -1,9 +1,10 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { View, TouchableOpacity, KeyboardAvoidingView, StyleSheet, Image } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { signUp } from '../../services/auth';
@@ -11,9 +12,10 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import formValidation from '../../utils/formValidation';
 
 //Custom component imports and styling
-import { AppText, AppButton, AppTextInput } from '../../components/Typography';
-import commonStyles from '../../styles/commonStyles';
+import { AppText, AppButton, AppTextInput, AppHeading } from '../../components/Typography';
+import commonStyles, { colours } from '../../styles/commonStyles';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import Thumbnail from '../../images/thumbnailNOBG.png';
 
 /*
   SignUp Screen
@@ -71,33 +73,61 @@ const SignUp = ({ navigation }) => {
   return (
     <commonStyles.Bg>
       <View style={styles.root}>
-        <KeyboardAvoidingView behavior='padding'>
-          <AppTextInput
-            value={username}
-            placeholder="Username"
-            autoCapitalize="none"
-            onChangeText={setUsername}
-          />
-          <AppTextInput
-            value={email}
-            placeholder="Email"
-            autoCapitalize="none"
-            onChangeText={setEmail}
-          />
-          <AppTextInput
-            secureTextEntry={true}
-            value={password}
-            placeholder="Password"
-            autoCapitalize="none"
-            onChangeText={setPassword}
-          />
-          <AppTextInput
-            secureTextEntry={true}
-            value={confirmPassword}
-            placeholder="Confirm Password"
-            autoCapitalize="none"
-            onChangeText={setConfirmPassword}
-          />
+
+        <View style={styles.headerContainer}>
+          <AppText style={styles.subHeaderText}>Create. Collect. Organise.</AppText>
+          <AppText style={styles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
+        </View>
+
+        <View style={styles.divider} />
+
+        <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
+          <View style={styles.authInputContainer}>
+            <AppTextInput
+              value={username}
+              placeholder="Username (optional)"
+              autoCapitalize="none"
+              onChangeText={setUsername}
+              style={styles.input}
+              leftIcon={<Ionicons name="person-outline" size={18} color={colours.buttonsHighlight} />}
+            />
+          </View>
+
+          <View style={styles.authInputContainer}>
+            <AppTextInput
+              value={email}
+              placeholder="Email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              onChangeText={setEmail}
+              style={styles.input}
+              leftIcon={<Ionicons name="mail-outline" size={18} color={colours.buttonsHighlight} />}
+            />
+          </View>
+
+          <View style={styles.authInputContainer}>
+            <AppTextInput
+              secureTextEntry={true}
+              value={password}
+              placeholder="Password"
+              autoCapitalize="none"
+              onChangeText={setPassword}
+              style={styles.input}
+              leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colours.buttonsHighlight} />}
+            />
+          </View>
+
+          <View style={styles.authInputContainer}>
+            <AppTextInput
+              secureTextEntry={true}
+              value={confirmPassword}
+              placeholder="Confirm Password"
+              autoCapitalize="none"
+              onChangeText={setConfirmPassword}
+              style={styles.input}
+              leftIcon={<Ionicons name="shield-checkmark-outline" size={18} color={colours.buttonsHighlight} />}
+            />
+          </View>
 
           {loading ? (
             <View style={styles.loadingContainer}>
@@ -121,18 +151,44 @@ const SignUp = ({ navigation }) => {
             </>
           )}
         </KeyboardAvoidingView>
+
+        {/* Thumbnail image */}
+        <Image
+          source={Thumbnail}
+          style={styles.thumbnail}
+          resizeMode="contain"
+        />
       </View>
     </commonStyles.Bg>
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   ...commonStyles,
   root: {
     flex: 1,
     alignItems: 'center',
-    padding: 20,
   },
-};
+  headerContainer: {
+    ...commonStyles.headerContainer,
+    marginBottom: 8,
+    alignItems: 'flex-start',
+    alignSelf: 'stretch',
+    marginLeft: 40,
+    marginTop: 30,
+  },
+  formContainer: {
+    width: '80%',
+    alignItems: 'center',
+  },
+  thumbnail: {
+    position: 'absolute',
+    bottom: -30,
+    right: -80,
+    width: 200,
+    height: 200,
+    opacity: 0.9,
+  },
+});
 
 export default SignUp;

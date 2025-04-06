@@ -88,7 +88,7 @@ const Screen1 = ({ navigation }) => {
         <View style={styles.centerContent}>
           <AppText>How does Collecti work?</AppText>
           <AppSmallText>
-            Share your favourite content into one central hub.
+            With collecti, inspiration sticks
           </AppSmallText>
         </View>
 
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop:30,
+    marginTop: 30,
   },
   howItWorksText: {
     textAlign: 'right',

@@ -114,7 +114,7 @@ const SignIn = ({ navigation }) => {
             {/* Form */}
             <View style={[styles.formContainer, { width: '80%' }]}>
               {/* Email */}
-              <View style={styles.inputContainer}>
+              <View style={styles.authInputContainer}>
                 <AppTextInput
                   value={email}
                   placeholder="Email"
@@ -127,7 +127,7 @@ const SignIn = ({ navigation }) => {
               </View>
 
               {/* Password */}
-              <View style={styles.inputContainer}>
+              <View style={styles.authInputContainer}>
                 <AppTextInput
                   secureTextEntry={true}
                   value={password}
@@ -213,11 +213,6 @@ const styles = StyleSheet.create({
   bottomContainer: {
     width: '100%',
     alignItems: 'center',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
   },
 })
 
