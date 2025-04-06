@@ -6,7 +6,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import ProgressBar from '../../components/ProgressBar';
+import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
 import { AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';

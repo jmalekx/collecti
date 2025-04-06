@@ -6,8 +6,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import WebView from 'react-native-webview';
 
 //Custom component imports and styling
-import commonStyles from './../styles/commonStyles';
-import LoadingIndicator from './../components/LoadingIndicator';
+import commonStyles from '../../styles/commonStyles';
+import LoadingIndicator from '../LoadingIndicator';
 
 /*
   TiktokEmbed Component

@@ -3,10 +3,10 @@ import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import InstagramEmbed from './InstagramEmbed';
-import TikTokEmbed from './TiktokEmbed';
-import YouTubeEmbed from './YoutubeEmbed';
-import PinterestEmbed from './PinterestEmbed';
+import InstagramEmbed from '../embeds/InstagramEmbed';
+import TikTokEmbed from '../embeds/TiktokEmbed';
+import YouTubeEmbed from '../embeds/YoutubeEmbed';
+import PinterestEmbed from '../embeds/PinterestEmbed';
 
 /*
   RenderThumbnail Component

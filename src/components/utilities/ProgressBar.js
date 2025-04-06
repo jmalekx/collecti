@@ -3,7 +3,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import { colours } from '../styles/commonStyles';
+import { colours } from '../../styles/commonStyles';
 
 /*
   ProgressBar Component

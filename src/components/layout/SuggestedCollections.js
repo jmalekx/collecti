@@ -7,16 +7,16 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
-import { useRecommendations } from '../hooks/useRecommendations';
-import RenderThumbnail from './RenderThumbnail';
-import { DEFAULT_THUMBNAIL } from '../constants';
-import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { useRecommendations } from '../../hooks/useRecommendations';
+import RenderThumbnail from '../utilities/RenderThumbnail';
+import { DEFAULT_THUMBNAIL } from '../../constants';
+import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 
 //Custom component imports and styling
-import commonStyles, { colours } from '../styles/commonStyles';
-import homestyles from '../styles/homestyles';
-import { AppSubheading } from './Typography';
-import LoadingIndicator from './LoadingIndicator';
+import commonStyles, { colours } from '../../styles/commonStyles';
+import homestyles from '../../styles/homestyles';
+import { AppSubheading } from '../Typography';
+import LoadingIndicator from '../LoadingIndicator';
 
 /*
   SuggestedCollections Component

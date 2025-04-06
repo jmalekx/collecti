@@ -6,8 +6,8 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { WebView } from 'react-native-webview';
 
 //Custom component imports and styling
-import LoadingIndicator from './LoadingIndicator';
-import commonStyles from '../styles/commonStyles';
+import LoadingIndicator from '../LoadingIndicator';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   InstagramEmbed Component

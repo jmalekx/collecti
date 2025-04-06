@@ -6,11 +6,11 @@ import { TouchableOpacity, Text, StyleSheet, Linking } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
-import pinterestService from '../services/pinterest/pinterestServices';
-import { TOAST_TYPES, showToast } from './Toasts';
+import pinterestService from '../../services/pinterest/pinterestServices';
+import { TOAST_TYPES, showToast } from '../Toasts';
 
 //Custom component imports and styling
-import commonStyles from '../styles/commonStyles';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   PinteresButton Component

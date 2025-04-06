@@ -17,9 +17,9 @@ import { formatDate, formatPlatform } from '../../../utils/formatting';
 
 //Custom component imports and styling
 import commonStyles from '../../../styles/commonStyles';
-import ConfirmationModal from '../../../components/ConfirmationModal';
-import LinkTexts from '../../../components/LinkTexts';
-import RenderPosts from '../../../components/RenderPosts';
+import ConfirmationModal from '../../../components/utilities/ConfirmationModal';
+import LinkTexts from '../../../components/utilities/LinkTexts';
+import RenderPosts from '../../../components/utilities/RenderPosts';
 import LoadingIndicator from '../../../components/LoadingIndicator';
 
 /*

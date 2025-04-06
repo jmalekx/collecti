@@ -6,8 +6,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import ProgressBar from '../../components/ProgressBar';
-import PinterestButton from '../../components/PinterestButton';
+import ProgressBar from '../../components/utilities/ProgressBar';
+import PinterestButton from '../../components/utilities/PinterestButton';
 import commonStyles from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
 import { AppText, AppHeading, AppButton } from '../../components/Typography';

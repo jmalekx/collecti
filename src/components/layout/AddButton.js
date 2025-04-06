@@ -10,14 +10,14 @@ import { useIsFocused } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 
 //Project services and utilities
-import pinterestService from '../services/pinterest/pinterestServices';
-import { uploadImageToCloudinary } from '../services/storage';
-import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } from '../services/pinterest/pinterestHelpers';
+import pinterestService from '../../services/pinterest/pinterestServices';
+import { uploadImageToCloudinary } from '../../services/storage';
+import { extractPinId, resolveShortUrl, createPinUrl, isDirectPinterestImage } from '../../services/pinterest/pinterestHelpers';
 import { showToast, TOAST_TYPES } from './Toasts';
 
 //Custom component imports and styling
 import { AppText, AppHeading, AppButton, AppTextInput } from './Typography';
-import commonStyles from '../styles/commonStyles';
+import commonStyles from '../../styles/commonStyles';
 import LoadingIndicator from './LoadingIndicator';
 
 /*

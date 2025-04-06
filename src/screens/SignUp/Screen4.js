@@ -11,7 +11,7 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import { getCollectionSuggestions, completeOnboardingProcess } from '../../services/onboarding';
 
 //Custom component imports and styling
-import ProgressBar from "../../components/ProgressBar";
+import ProgressBar from "../../components/utilities/ProgressBar";
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from "../../styles/onboardingstyles";
 import { AppText, AppHeading, AppButton, AppSmallText, AppBoldText } from '../../components/Typography';

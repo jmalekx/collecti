@@ -3,7 +3,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Image, Animated, Dimensions } from 'react-native';
 
 //Custom component imports and styling
-import ProgressBar from '../../components/ProgressBar';
+import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
 import { AppText, AppHeading, AppButton } from '../../components/Typography';

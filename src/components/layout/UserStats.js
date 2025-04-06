@@ -6,8 +6,8 @@ import { View, StyleSheet, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and stylingy
-import { colours } from '../styles/commonStyles';
-import homestyles from '../styles/homestyles';
+import { colours } from '../../styles/commonStyles';
+import homestyles from '../../styles/homestyles';
 
 /*
   UserStats Component

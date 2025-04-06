@@ -6,9 +6,9 @@ import { View, Text, Modal, TouchableOpacity, StyleSheet, TextInput } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import { AppText, AppHeading } from './Typography';
-import commonStyles, { colours } from '../styles/commonStyles';
-import settingstyles from '../styles/settingstyles';
+import { AppText, AppHeading } from '../Typography';
+import commonStyles, { colours } from '../../styles/commonStyles';
+import settingstyles from '../../styles/settingstyles';
 
 /*
   ConfirmationModal Component

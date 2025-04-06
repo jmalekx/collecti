@@ -7,11 +7,11 @@ import { WebView } from 'react-native-webview';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 //Project services and utilities
-import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } from '../services/pinterest/pinterestHelpers';
+import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } from '../../services/pinterest/pinterestHelpers';
 
 //Custom component imports and styling
-import LoadingIndicator from './LoadingIndicator';
-import commonStyles from '../styles/commonStyles';
+import LoadingIndicator from '../LoadingIndicator';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   PinterestEmbed Component

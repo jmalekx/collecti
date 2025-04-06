@@ -6,7 +6,7 @@ import { Text, Linking } from 'react-native';
 import LinkifyIt from 'linkify-it';
 
 //Custom component imports and styling
-import { colours } from '../styles/commonStyles';
+import { colours } from '../../styles/commonStyles';
 /*
   LinkTexts Component
 

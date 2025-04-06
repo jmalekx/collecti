@@ -14,7 +14,7 @@ import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
 import ProfileHeader from '../../components/ProfileHeader';
-import RenderThumbnail from '../../components/RenderThumbnail';
+import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/SearchBar';
 
 /*
