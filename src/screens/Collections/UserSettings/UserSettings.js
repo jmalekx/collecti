@@ -114,13 +114,13 @@ const UserSettings = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[settingstyles.settingButton, settingstyles.lastSettingButton, settingstyles.dangerButton]}
+            style={[settingstyles.settingButton, settingstyles.lastSettingButton, settingstyles.deleteButton]}
             onPress={() => setDeleteModalVisible(true)}
           >
             <View style={settingstyles.iconContainer}>
               <Ionicons name="trash-outline" size={22} color="#e53935" />
             </View>
-            <Text style={[settingstyles.settingButtonText, settingstyles.dangerText]}>Delete Account</Text>
+            <Text style={[settingstyles.settingButtonText, settingstyles.deleteText]}>Delete Account</Text>
           </TouchableOpacity>
         </View>
 
