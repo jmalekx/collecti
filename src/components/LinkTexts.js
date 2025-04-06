@@ -5,6 +5,8 @@ import { Text, Linking } from 'react-native';
 //Third-party library external imports
 import LinkifyIt from 'linkify-it';
 
+//Custom component imports and styling
+import { colours } from '../styles/commonStyles';
 /*
   LinkTexts Component
 
@@ -43,7 +45,7 @@ const LinkTexts = ({ text, style }) => {
     elements.push(
       <Text
         key={`link-${i}`}
-        style={[style, { color: '#007AFF', textDecorationLine: 'underline' }]}
+        style={[style, { color: colours.buttonsTextPink, textDecorationLine: 'underline' }]}
         onPress={() => Linking.openURL(match.url)}
       >
         {match.text}
