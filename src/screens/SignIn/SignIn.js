@@ -15,6 +15,7 @@ import formValidation from '../../utils/formValidation';
 import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
 import commonStyles, { colours } from '../../styles/commonStyles';
+import registerstyles from '../../styles/registerstyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/Typography';
 import LoadingIndicator from '../../components/LoadingIndicator';
 
@@ -87,79 +88,79 @@ const SignIn = ({ navigation }) => {
           keyboardShouldPersistTaps="handled"
         >
           {/* Logo section */}
-          <View style={styles.logoContainer}>
+          <View style={registerstyles.logoContainer}>
             <Image
               source={Name}
-              style={[{ height: 170 }, styles.nameImage]}
+              style={[{ height: 170 }, registerstyles.nameImage]}
               resizeMode='contain'
             />
             <Image
               source={Logo}
-              style={styles.logo}
+              style={registerstyles.logo}
               resizeMode='contain'
             />
           </View>
 
           {/* Bottom content container */}
-          <View style={styles.bottomContainer}>
+          <View style={registerstyles.bottomContainer}>
             {/* Header text */}
-            <View style={styles.headerContainer}>
-              <AppHeading style={styles.headerText}>Welcome</AppHeading>
-              <AppText style={styles.subHeaderText}>Please enter your details below</AppText>
+            <View style={registerstyles.headerContainer}>
+              <AppHeading style={registerstyles.headerText}>Welcome</AppHeading>
+              <AppText style={registerstyles.subHeaderText}>Please enter your details below</AppText>
             </View>
 
             {/* Divider */}
-            <View style={styles.divider} />
+            <View style={commonStyles.divider} />
 
             {/* Form */}
-            <View style={[styles.formContainer, { width: '80%' }]}>
+            <View style={[registerstyles.formContainer, { width: '80%' }]}>
               {/* Email */}
-              <View style={styles.authInputContainer}>
+              <View style={registerstyles.authInputContainer}>
                 <AppTextInput
                   value={email}
                   placeholder="Email"
                   autoCapitalize="none"
                   keyboardType="email-address"
                   onChangeText={setEmail}
-                  style={styles.input}
+                  style={registerstyles.input}
                   leftIcon={<Ionicons name="mail-outline" size={18} color={colours.buttonsHighlight} />}
                 />
               </View>
 
               {/* Password */}
-              <View style={styles.authInputContainer}>
+              <View style={registerstyles.authInputContainer}>
                 <AppTextInput
                   secureTextEntry={true}
                   value={password}
                   placeholder="Password"
                   autoCapitalize="none"
                   onChangeText={setPassword}
-                  style={styles.input}
+                  style={registerstyles.input}
                   leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colours.buttonsHighlight} />}
                 />
               </View>
 
               {loading ? (
-                <View style={styles.loadingContainer}>
+                <View style={commonStyles.loadingContainer}>
                   <LoadingIndicator />
                 </View>
               ) : (
                 <>
                   {/* Login button */}
                   <AppButton
-                    style={[styles.authButton, { alignSelf: 'stretch' }]}
-                    textStyle={styles.authButtonText}
+                    style={[registerstyles.authButton, { alignSelf: 'stretch' }]}
+                    textStyle={registerstyles.authButtonText}
                     title="Login"
                     onPress={handleSignIn}
                   />
 
                   {/* Sign up link */}
-                  <View style={styles.signContainer}>
+                  <View style={registerstyles.signContainer}>
                     <AppText>Don't have an account? </AppText>
                     <TouchableOpacity
                       onPress={() => navigation.navigate('SignUp')}
                     >
-                      <AppText style={styles.authLink}>Sign Up</AppText>
+                      <AppText style={registerstyles.authLink}>Sign Up</AppText>
                     </TouchableOpacity>
                   </View>
                 </>
@@ -171,49 +172,5 @@ const SignIn = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  root: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  logoContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    marginTop: -10,
-  },
-  logo: {
-    width: 150,
-    height: 150,
-    maxWidth: 200,
-    marginTop: -70,
-  },
-  nameImage: {
-    marginLeft: 20,
-  },
-  headerText: {
-    ...commonStyles.headerText,
-    fontSize: 32,
-  },
-  subHeaderText: {
-    ...commonStyles.subHeaderText,
-    marginTop: 0,
-  },
-  headerContainer: {
-    ...commonStyles.headerContainer,
-    marginBottom: 8,
-    alignItems: 'flex-start',
-    marginLeft: 40,
-    alignSelf: 'stretch',
-  },
-  bottomContainer: {
-    width: '100%',
-    alignItems: 'center',
-  },
-})
 
 export default SignIn;

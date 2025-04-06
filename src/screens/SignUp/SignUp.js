@@ -12,8 +12,9 @@ import { showToast, TOAST_TYPES } from '../../components/Toasts';
 import formValidation from '../../utils/formValidation';
 
 //Custom component imports and styling
-import { AppText, AppButton, AppTextInput, AppHeading } from '../../components/Typography';
+import { AppText, AppButton, AppTextInput } from '../../components/Typography';
 import commonStyles, { colours } from '../../styles/commonStyles';
+import registerstyles from '../../styles/registerstyles';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import Thumbnail from '../../images/thumbnailNOBG.png';
 
@@ -74,83 +75,84 @@ const SignUp = ({ navigation }) => {
     <commonStyles.Bg>
       <Image
         source={Thumbnail}
-        style={styles.thumbnail}
+        style={registerstyles.thumbnail}
         resizeMode="contain"
       />
-      <View style={styles.root}>
+      <View style={registerstyles.root}>
 
-        <View style={styles.headerContainer}>
-          <AppText style={styles.subHeaderText}>Create. Collect. Organise.</AppText>
-          <AppText style={styles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
+        <View style={registerstyles.UpheaderContainer}>
+          <AppText style={commonStyles.subHeaderText}>Create. Collect. Organise.</AppText>
+          <AppText style={commonStyles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
         </View>
 
-        <View style={styles.divider} />
+        <View style={commonStyles.divider} />
 
-        <KeyboardAvoidingView behavior='padding' style={styles.formContainer}>
-          <View style={styles.authInputContainer}>
+        {/* Update the KeyboardAvoidingView with similar styling to SignIn */}
+        <KeyboardAvoidingView behavior='padding' style={[registerstyles.formContainer, { width: '80%' }]}>
+          <View style={registerstyles.authInputContainer}>
             <AppTextInput
               value={username}
               placeholder="Username (optional)"
               autoCapitalize="none"
               onChangeText={setUsername}
-              style={styles.input}
+              style={registerstyles.input}
               leftIcon={<Ionicons name="person-outline" size={18} color={colours.buttonsHighlight} />}
             />
           </View>
 
-          <View style={styles.authInputContainer}>
+          <View style={registerstyles.authInputContainer}>
             <AppTextInput
               value={email}
               placeholder="Email"
               autoCapitalize="none"
               keyboardType="email-address"
               onChangeText={setEmail}
-              style={styles.input}
+              style={registerstyles.input}
               leftIcon={<Ionicons name="mail-outline" size={18} color={colours.buttonsHighlight} />}
             />
           </View>
 
-          <View style={styles.authInputContainer}>
+          <View style={registerstyles.authInputContainer}>
             <AppTextInput
               secureTextEntry={true}
               value={password}
               placeholder="Password"
               autoCapitalize="none"
               onChangeText={setPassword}
-              style={styles.input}
+              style={registerstyles.input}
               leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colours.buttonsHighlight} />}
             />
           </View>
 
-          <View style={styles.authInputContainer}>
+          <View style={registerstyles.authInputContainer}>
             <AppTextInput
               secureTextEntry={true}
               value={confirmPassword}
               placeholder="Confirm Password"
               autoCapitalize="none"
               onChangeText={setConfirmPassword}
-              style={styles.input}
+              style={registerstyles.input}
               leftIcon={<Ionicons name="shield-checkmark-outline" size={18} color={colours.buttonsHighlight} />}
             />
           </View>
 
           {loading ? (
-            <View style={styles.loadingContainer}>
+            <View style={registerstyles.loadingContainer}>
               <LoadingIndicator />
             </View>
           ) : (
             <>
               <AppButton
-                style={styles.authButton}
-                textStyle={styles.authButtonText}
+                style={registerstyles.authButton}
+                textStyle={registerstyles.authButtonText}
                 title='Sign Up'
                 onPress={handleSignUp}
               />
 
-              <View style={styles.signContainer}>
+              <View style={registerstyles.signContainer}>
                 <AppText>Already have an account? </AppText>
                 <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-                  <AppText style={styles.authLink}>Sign In</AppText>
+                  <AppText style={registerstyles.authLink}>Sign In</AppText>
                 </TouchableOpacity>
               </View>
             </>
@@ -162,34 +164,5 @@ const SignUp = ({ navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  root: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerContainer: {
-    ...commonStyles.headerContainer,
-    marginBottom: 8,
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
-    marginLeft: 40,
-    marginTop: 30,
-  },
-  formContainer: {
-    width: '80%',
-    alignItems: 'center',
-  },
-  thumbnail: {
-    position: 'absolute',
-    bottom: -30,
-    right: -80,
-    width: 200,
-    height: 200,
-    opacity: 0.9,
-    zIndex: 0,
-  },
-});
 
 export default SignUp;

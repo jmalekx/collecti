@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ProgressBar from '../../components/ProgressBar';
 import PinterestButton from '../../components/PinterestButton';
 import commonStyles from "../../styles/commonStyles";
+import onboardingstyles from '../../styles/onboardingstyles';
 import { AppText, AppHeading, AppButton } from '../../components/Typography';
 
 /*
@@ -22,15 +23,15 @@ import { AppText, AppHeading, AppButton } from '../../components/Typography';
 
 const Screen3 = ({ route, navigation }) => {
 
-  //Roiute parameters
+  //Route parameters
   const { selectedOptions } = route.params;
 
   return (
     <commonStyles.Bg>
-      <View style={commonStyles.container}>
+      <View style={onboardingstyles.container}>
 
         {/* Back button */}
-        <TouchableOpacity style={commonStyles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={onboardingstyles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
 
@@ -39,18 +40,31 @@ const Screen3 = ({ route, navigation }) => {
 
         {/* Main content */}
         {selectedOptions.includes('Pinterest') ? (
-          <View>
-            <AppText>Connect to Pinterest</AppText>
-            <AppText>This way you can directly save your pins</AppText>
-            <PinterestButton />
+          <View style={onboardingstyles.pinterestContainer}>
+            <AppHeading style={onboardingstyles.pinterestHeading}>Connect to Pinterest</AppHeading>
+            <AppText style={onboardingstyles.pinterestDescription}>
+              If you connect directly to Pinterest, you can save your own pins and their information more easily into Collecti.
+              
+              This integration helps extract images and titles automatically, making your collecting experience smoother.
+              
+              This step is optional but can significantly enhance your experience with the app.
+            </AppText>
+            <View style={onboardingstyles.pinterestButton}>
+              <PinterestButton />
+            </View>
           </View>
         ) : (
-          <AppHeading>Almost there...</AppHeading>
+          <View style={onboardingstyles.almostThereContainer}>
+            <AppHeading style={onboardingstyles.almostThereText}>Almost there...</AppHeading>
+            <AppText style={onboardingstyles.pinterestDescription}>
+              Just one more step to complete your setup and start your collecting journey!
+            </AppText>
+          </View>
         )}
 
         {/* Continue button */}
         <AppButton
-          style={commonStyles.button}
+          style={onboardingstyles.button}
           onPress={() => navigation.navigate('Screen4', { selectedOptions })}
           title='Continue'
         />
