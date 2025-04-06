@@ -24,6 +24,7 @@ const colours = {
 
   lighterpink: '#FFF0F5',
   grey: '#c0c0c060',
+  darkergrey: '#999',
 
   mainTexts: '#333',
   subTexts: '#666',
@@ -49,15 +50,6 @@ const layoutStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 24,
-    height: 50,
   },
   loadingContainer: {
     position: 'absolute',
@@ -144,6 +136,8 @@ const buttonStyles = StyleSheet.create({
     paddingHorizontal: 40,
     borderRadius: 8,
     marginTop: 20,
+    marginLeft:20,
+    marginRight:20,
   },
   buttonText: {
     color: colours.buttonsText,
@@ -207,15 +201,6 @@ const inputStyles = StyleSheet.create({
     fontFamily: typography.fontRegular,
     fontSize: 16,
   },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    height: '100%',
-    fontSize: 16,
-    color: colours.mainTexts,
-  },
   leftIconContainer: {
     position: 'absolute',
     left: 16,
@@ -225,6 +210,37 @@ const inputStyles = StyleSheet.create({
   },
   inputWithIcon: {
     paddingLeft: 46,
+  }
+});
+
+const searchStyles = StyleSheet.create({
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f9f9f9',
+    borderRadius: 25,
+    height: 46,
+    paddingHorizontal: 16,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: '#eaeaea',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    padding: 0,
+  },
+  clearButton: {
+    padding: 2,
   }
 });
 
@@ -265,6 +281,7 @@ const commonStyles = {
   ...buttonStyles,
   ...inputStyles,
   ...headerStyles,
+  ...searchStyles,
   Bg,
 };
 

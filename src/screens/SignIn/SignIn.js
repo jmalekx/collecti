@@ -148,7 +148,7 @@ const SignIn = ({ navigation }) => {
                 <>
                   {/* Login button */}
                   <AppButton
-                    style={[registerstyles.authButton, { alignSelf: 'stretch' }]}
+                    style={registerstyles.authButton}
                     textStyle={registerstyles.authButtonText}
                     title="Login"
                     onPress={handleSignIn}

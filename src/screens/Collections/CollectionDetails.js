@@ -20,6 +20,7 @@ import commonStyles from '../../styles/commonStyles';
 import ConfirmationModal from '../../components/ConfirmationModal';
 import RenderThumbnail from '../../components/RenderThumbnail';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import SearchBar from '../../components/SearchBar';
 
 /*
 
@@ -318,16 +319,11 @@ const CollectionDetails = ({ route, navigation }) => {
         </View>
 
         {/* Add Search Bar */}
-        <View style={commonStyles.searchContainer}>
-          <Ionicons name="search" size={20} color="#777" style={commonStyles.searchIcon} />
-          <TextInput
-            style={commonStyles.searchInput}
-            placeholder="Search posts..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor="#999"
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search collections..."
+        />
 
         {/* Posts List */}
         <FlatList

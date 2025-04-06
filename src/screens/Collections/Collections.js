@@ -15,6 +15,7 @@ import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 import commonStyles from '../../styles/commonStyles';
 import ProfileHeader from '../../components/ProfileHeader';
 import RenderThumbnail from '../../components/RenderThumbnail';
+import SearchBar from '../../components/SearchBar';
 
 /*
   Collections component displays the user's collections and allows searching through them.
@@ -71,16 +72,11 @@ const Collections = ({ }) => {
         />
 
         {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search collections..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor="#999"
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search collections..."
+        />
 
         {/* Collection Grid */}
         <FlatList

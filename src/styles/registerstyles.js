@@ -57,8 +57,9 @@ const registerstyles = StyleSheet.create({
     marginTop:0,
   },
   authButton: {
+    marginLeft:0,
+    marginRight:0,
     backgroundColor: colours.buttons,
-    paddingVertical: 12,
     borderRadius: 8,
     shadowColor: colours.mainTexts,
     shadowOffset: { width: 0, height: 1 },

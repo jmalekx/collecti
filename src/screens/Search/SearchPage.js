@@ -15,6 +15,7 @@ import { useCollectionSearch } from '../../hooks/useCollectionSearch';
 import commonStyles from '../../styles/commonStyles';
 import RenderThumbnail from '../../components/RenderThumbnail';
 import LoadingIndicator from '../../components/LoadingIndicator';
+import SearchBar from '../../components/SearchBar';
 
 /*
   SearchPage Component
@@ -205,28 +206,19 @@ const SearchPage = ({ navigation }) => {
   return (
     <commonStyles.Bg>
       <View style={styles.container}>
-        <View style={styles.searchContainer}>
-          {loading && !loadingMore && (
-            <View style={styles.loadingContainer}>
-              <LoadingIndicator />
-            </View>
-          )}
-
-          <Ionicons name="search-outline" size={24} color="#666" style={styles.searchIcon} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search collections..."
+        <View>
+          <SearchBar
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholderTextColor="#999"
-            autoCapitalize="none"
+            placeholder="Search collections..."
           />
-          {searchQuery !== '' && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={20} color="#666" />
-            </TouchableOpacity>
-          )}
         </View>
+        
+        {loading && !loadingMore && (
+          <View style={styles.loadingContainer}>
+            <LoadingIndicator />
+          </View>
+        )}
 
         <FlatList
           data={results}
