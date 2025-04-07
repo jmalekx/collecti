@@ -10,6 +10,7 @@ import { Animated } from 'react-native';
   - Button rotation animation
   - Menu items translate, scale and opacity animations
   - Staggered animation sequence
+  
 */
 
 const useMenuAnimation = (isOpen) => {

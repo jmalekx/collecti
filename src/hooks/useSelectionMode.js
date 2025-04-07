@@ -10,6 +10,7 @@ import { useState, useCallback } from 'react';
   - Maintains selection mode state boolean
   - Tracks selected items as an array of IDs
   - Provides memoised callback functions for selection operations
+  
 */
 
 export const useSelectionMode = () => {

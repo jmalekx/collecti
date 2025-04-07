@@ -9,6 +9,7 @@ import ConfirmationModal from './ConfirmationModal';
 
   Modal displayed when user attempts to share from an unsupported platform
   Provides guidance on alternative ways to save content
+  
 */
 
 const UnsupportedPlatformModal = ({

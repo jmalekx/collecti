@@ -28,6 +28,7 @@ import { AppSubheading } from '../../../components/utilities/Typography';
   - Profile management (via navigation)
   - Account deletion
   Uses service layer for authentication operations.
+  
 */
 
 const UserSettings = ({ navigation }) => {

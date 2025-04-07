@@ -14,6 +14,7 @@ import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
   Custom hook for managing user profile data and image handling
   Separates data management concerns from the UI component
   Handles profile loading, image selection, and profile updates
+  
 */
 
 const useProfileManagement = (navigation) => {

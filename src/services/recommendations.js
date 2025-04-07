@@ -15,6 +15,7 @@ import { FIREBASE_DB } from '../../FirebaseConfig';
   Content-based filtering: matching user preferences derivded from their existing
   collections and bookmarks
   Other recommendations: fallback when there is not enough user data
+  
 */
 
 //Get collections similar to user bookmarks or collections

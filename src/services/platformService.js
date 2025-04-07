@@ -9,6 +9,7 @@ import { isDirectPinterestImage } from './pinterest/pinterestHelpers';
 
   For platform-specific operations providing centralised service
   for URL extraction and platform operations.
+  
 */
 
 //Extract URL helper

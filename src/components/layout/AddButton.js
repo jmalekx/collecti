@@ -30,6 +30,7 @@ import { colours } from '../../styles/commonStyles';
     - URL input
     - Collection selection
     - New collection creation
+    
 */
 
 const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl, platform }) => {

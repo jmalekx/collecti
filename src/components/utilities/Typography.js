@@ -14,6 +14,7 @@ import commonStyles, { typography } from '../../styles/commonStyles';
   - Consistent font family and size
   - Centralised styling for text components
   - Customisable text components for different use cases
+  
 */
 
 export const AppText = ({ style, children, ...props }) => (

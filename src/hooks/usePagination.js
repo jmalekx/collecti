@@ -8,6 +8,7 @@ import { useState, useCallback, useEffect } from 'react';
   - Manages progressive loading of items in list
   - Efficient rendering of large datasetes by loading items in batches as user scrolls
   Initially in collectiondetails, but made hook for reusability across whole app eg bookmarks
+  
 */
 
 export const usePagination = (items = [], initialItemsPerPage = 10, incrementAmount = 10) => {

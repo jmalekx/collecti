@@ -8,6 +8,7 @@ import { createCollection } from './collections';
 
   Provides centralised functionality for onboarding process.
   Gets collection suggestions and creates initial collections for new users.
+  
 */
 
 export const getCollectionSuggestions = () => [

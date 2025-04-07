@@ -15,6 +15,7 @@ import { colours } from '../../styles/commonStyles';
 
   Handles the modal for moving multiple posts to an existing collection 
   or creating a new collection and moving posts to it.
+  
 */
 
 const GroupActionModal = ({ 

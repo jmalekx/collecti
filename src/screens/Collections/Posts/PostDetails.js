@@ -29,6 +29,7 @@ import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
   Implements Composite View Pattern to display details of post info with
   platform-specific rendering. Displays content, metadata and appropriate actions
   based on user authentication
+  
 */
 
 const PostDetails = ({ route, navigation }) => {

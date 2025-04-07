@@ -19,6 +19,7 @@ import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
   - Asynchronous data fetching with loading states
   - Error handling and fallback mechanisms
   - Refresh functionality for recommendations
+  
 */
 
 export const useRecommendations = (maxResults = 6) => {

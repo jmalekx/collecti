@@ -11,6 +11,7 @@ import { getCurrentUserId } from './firebase';
     
   Implements image storage services for app. Abstracts image upload process and
   provides consistent interface for storing user-generated content in scalable cloud environment.
+  
 */
 
 //Cloudinary config

@@ -25,6 +25,7 @@ import Thumbnail from '../../images/thumbnailNOBG.png';
   Implements user registration flow following MVC architecture (handling view aspect
   while auth service acts as model and controller for data manipulation)
   - Component only handling UI and user interaction
+  
 */
 
 const SignUp = ({ navigation }) => {

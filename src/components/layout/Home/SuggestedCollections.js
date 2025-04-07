@@ -27,6 +27,7 @@ import LoadingIndicator from '../../utilities/LoadingIndicator';
   2. Looading state management
   3. Empty state handling
   4. Interactive UI elements
+  
 */
 
 const SuggestedCollections = () => {

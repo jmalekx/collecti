@@ -29,6 +29,7 @@ import LoadingIndicator from '../../components/utilities/LoadingIndicator';
   -Delete: Remove bookmarked collection (via hook)
   -Navigation: View the bookmarked collections
   -Pagination: Load bookmarks incrementally as user scrolls
+  
 */
 
 const Bookmarks = () => {

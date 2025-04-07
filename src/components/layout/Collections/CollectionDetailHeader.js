@@ -12,6 +12,7 @@ import collectionstyles from '../../../styles/collectionstyles';
 
   Displays the header section of a collection detail screen, including the collection name,
   back button, and action buttons based on current mode (selection mode or normal mode).
+  
 */
 
 const CollectionDetailHeader = ({ 

@@ -20,6 +20,7 @@ import commonStyles from '../../styles/commonStyles';
   - scale: Scale factor for embeds (default values by platform can be overridden)
   - containerStyle: Style for the container view (passed from parent)
   - thumbnailStyle: Style for the image/embed (passed from parent)
+  
 */
 
 const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) => {

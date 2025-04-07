@@ -12,6 +12,7 @@ import commonStyles, { colours } from '../../styles/commonStyles';
   of pusling circles with cascading animation pattern to indicate loading or processing state.
   The component is reusable and can be used in various parts of the application 
   where loading state needs to be indicated.
+  
 */
 
 const LoadingIndicator = ({ text = '', size = 'normal', style }) => {

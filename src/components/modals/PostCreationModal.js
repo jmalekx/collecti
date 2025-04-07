@@ -29,6 +29,7 @@ import Dropdown from '../utilities/Dropdown';
   - Pinterest integration for importing pins
   - Collection selection and quick creation
   - Post submission logic
+  
 */
 
 const PostCreationModal = ({

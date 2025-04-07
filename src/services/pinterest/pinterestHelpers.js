@@ -8,6 +8,7 @@
     - Creating canonical Pinterest URLs
     - Extracting image URLs from Pinterest API responses
     - Checking pin ownership
+    
  */
 
 //Extract pin ID from various formats

@@ -21,6 +21,7 @@ import { getCollectionPosts, deletePost as deletePostService, updateCollectionTh
   - Moving posts between collections
   - Deleting single or multiple posts
   - Real-time updates through Firebase subscriptions
+  
 */
 
 export const useCollectionDetails = (collectionId, ownerId, isExternalCollection) => {

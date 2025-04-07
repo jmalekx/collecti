@@ -21,6 +21,7 @@ import poststyles from '../../../styles/poststyles';
   Implements (MVC) Model-View-Controller pattern for post editing with proper
   service abstraction and CRUD operations, separating concerns between UI and data.
   Manages editing post metadata using service layer.
+  
 */
 
 const EditPost = ({ route, navigation }) => {

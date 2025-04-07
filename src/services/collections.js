@@ -11,6 +11,7 @@ import { getCollectionRef, getCollectionsRef, getCurrentUserId } from './firebas
 
   Implements Firestore CRUD operations for user collections
   Implements realtime listeners for collections
+  
 */
 
 //Retrieving single collection of a user

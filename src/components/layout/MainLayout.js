@@ -23,6 +23,7 @@ import UnsupportedPlatformModal from '../modals/UnsupportedPlatformModal';
 
   Contains tab navigator and floating add button for the entire app
   Manages shared state and content operations for the app.
+  
 */
 
 const MainLayout = () => {

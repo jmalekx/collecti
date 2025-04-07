@@ -18,6 +18,7 @@ import poststyles from '../../styles/poststyles';
   
   Renders post content based on platform type with appropriate
   embeds and presentation logic.
+  
 */
 
 const RenderPosts = ({ post, toast }) => {

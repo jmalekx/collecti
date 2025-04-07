@@ -14,6 +14,7 @@ import RenderThumbnail from '../../utilities/RenderThumbnail';
   Displays a single post item in the collection grid.
   Handles rendering the thumbnail, platform icon, selection state,
   and handles press/long-press interactions.
+  
 */
 
 const PostGrid = ({

@@ -16,6 +16,7 @@ import { colours } from '../../styles/commonStyles';
   - Collection name input
   - Collection description input
   - Validation and creation logic
+  
 */
 
 const CollectionCreationModal = ({ visible, onClose, onCreateCollection, toast }) => {

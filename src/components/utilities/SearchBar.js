@@ -14,6 +14,7 @@ import commonStyles, {colours} from '../../styles/commonStyles';
   This component implements a search bar with an icon and a clear button.
   It is used for searching items in the application.
   - The search bar is a controlled component, meaning its value is managed by the parent component.
+  
 */
 
 const SearchBar = ({ value, onChangeText, placeholder = "Search...", style }) => {

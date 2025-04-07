@@ -13,6 +13,7 @@ import { colours } from '../../styles/commonStyles';
   Utility component rendering text with clickable URL links.
   If user chooses to paste a link into description field of a post or collection,
   uses linkify-it library to detect the urls and render as touchabele elements.
+  
 */
 
 //Initialise linkify-it instance

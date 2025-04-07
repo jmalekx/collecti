@@ -21,6 +21,7 @@ import { AppText, AppHeading, AppButton, AppSmallText, AppBoldText } from '../..
 
   Implements final onboarding screen for app. Facilitates user selection of interests
   for initial collection creation. Utilises state management for selected options.
+  
 */
 
 const Screen4 = ({ navigation }) => {

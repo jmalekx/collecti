@@ -19,6 +19,7 @@ import { AppText, AppHeading, AppButton } from '../../components/utilities/Typog
   Conditonal UI render based on user selections from previous screen.
   If user selected Pinterest, prompted to connect OAuth pinterest account in order
   for API to work and collect from Pinterest
+  
 */
 
 const Screen3 = ({ route, navigation }) => {

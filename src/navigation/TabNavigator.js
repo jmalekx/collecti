@@ -23,6 +23,7 @@ const { width } = Dimensions.get('window');
   It includes four tabs: Home, Search, Bookmarks, and Collections.
   Each tab is associated with a stack navigator that manages its own screens.
   This serves as the main navigation structure for the authenticated part of the app.
+  
 */
 
 const TabNavigator = () => {

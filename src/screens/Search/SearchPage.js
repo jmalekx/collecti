@@ -28,6 +28,7 @@ import SearchBar from '../../components/utilities/SearchBar';
   - Bookmarking functionality for collections
   - Collection details navigation
   - Real-time search with debouncing for performance
+  
 */
 
 const SearchPage = ({ navigation }) => {

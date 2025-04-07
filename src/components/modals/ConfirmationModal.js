@@ -15,6 +15,7 @@ import settingstyles from '../../styles/settingstyles';
 
   Reusable dialogue modal following Strategy pattern for states. Implements multiple
   semantic types (confirmation, warning, error) with optional input field support.
+  
 */
 
 const ConfirmationModal = ({

@@ -19,6 +19,7 @@ import embedstyles from '../../styles/embedstyles';
   - URL parsing and validation
   - Injected JS for Custom HTML for embedding
   - iFrame isolation and content security
+  
 */
 
 const YouTubeEmbed = ({ url, style, scale = 1, isInteractive = false }) => {

@@ -10,6 +10,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from '../../FirebaseConfig';
   Provides standardised firestore doc and collection references with path construction
   Centralises database path defintions to ensure consistencty across application data
   access layer.
+  
 */
 
 //Current user helper

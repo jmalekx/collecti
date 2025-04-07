@@ -19,6 +19,7 @@ import { subscribeToPosts } from '../services/posts';
     - User profile
     - Collections
     - Posts
+    
 */
 
 export const useUserData = () => {

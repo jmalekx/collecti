@@ -22,6 +22,7 @@ import SearchBar from '../../components/utilities/SearchBar';
   Props:
   - userProfile: The user's profile data.
   - collections: The user's collections data.
+  
 */
 
 const Collections = ({ }) => {

@@ -14,6 +14,7 @@ import { DEFAULT_PROFILE_PICTURE } from '../constants';
   Provides functions for subscribing to user profile changes, creating new profiles,
   updating existing profiles, and deleting user accounts
   Handles user authentication and reauthentication for sensitive operations
+  
 */
 
 //Subscribe to user profile changes

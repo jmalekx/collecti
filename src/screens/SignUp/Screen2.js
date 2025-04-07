@@ -17,6 +17,7 @@ import { AppHeading, AppButton, AppSmallText, AppBoldText } from '../../componen
   Implements second onboarding screen for app. Facilitates user selection of platforms
   user wishes to collect from. Utilises state management for selected options 
   and propagates to next screen.
+  
 */
 
 const Screen2 = ({ navigation }) => {

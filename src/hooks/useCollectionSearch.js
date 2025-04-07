@@ -17,6 +17,7 @@ import { FIREBASE_DB, FIREBASE_AUTH } from '../../FirebaseConfig';
   - Handle loading states and pagination
   - Prevent duplicate entries across pagination requests
   - Filter out unsorted collections from other users
+  
 */
 
 export const useCollectionSearch = (batchSize = 6) => {

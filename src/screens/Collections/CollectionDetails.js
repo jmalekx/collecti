@@ -31,6 +31,7 @@ import GroupActionModal from '../../components/modals/GroupActionModal';
   Displays details of a specific collection, including posts and options to edit or delete the collection.
   Allows users to search for posts, move or delete multiple posts, and view post details. Acts
   as coordinayor between data management hooks and presentational ui elements.
+  
 */
 
 const CollectionDetails = ({ route, navigation }) => {

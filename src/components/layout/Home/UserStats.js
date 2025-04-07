@@ -18,6 +18,7 @@ import homestyles from '../../../styles/homestyles';
   - Calculating time-based engagement metrics from user metadata (join date)
   - Computing content metrics from collections and posts data
   - Rendering responsive visualisation cards with icons and labels
+  
 */
 
 const UserStats = ({ user, collections }) => {

@@ -15,6 +15,7 @@ import Name from '../../images/nameSmall.png';
 
   Implements first onboarding screen for app. Introduces user to 
   application and core value proposition. Pure UI component, no business logic.
+  
 */
 
 const { width } = Dimensions.get('window');

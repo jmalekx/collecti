@@ -16,6 +16,7 @@ import { createDefaultCollection } from './collections';
     - Sign out
     - Password reset
     - User profile management
+    
 */
 
 //Sign in a user with email and password

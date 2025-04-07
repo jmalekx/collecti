@@ -28,6 +28,7 @@ import LoadingIndicator from '../../components/utilities/LoadingIndicator';
   Implements main landing screen after authentication or onboarding completion.
   Displays personalised greeting, user profile information and provides 
   access to main application features. Uses service layer for data access.
+  
 */
 
 const HomePage = () => {

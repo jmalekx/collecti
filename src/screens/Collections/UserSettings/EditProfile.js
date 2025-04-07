@@ -21,6 +21,7 @@ import addbuttonstyles from '../../../styles/addbuttonstyles';
   Component for editing user profile information.
   Separates UI concerns from data management using custom hook.
   Allows changing username and profile picture
+  
 */
 
 const EditProfile = ({ navigation }) => {

@@ -7,6 +7,7 @@ import { showToast, TOAST_TYPES } from '../components/utilities/Toasts';
   Implements centralised validation functions for form inputs. 
   Different validation algorithms can be applied based on context requirements.
   For stateless functions
+  
 */
 
 const formValidation = {

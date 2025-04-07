@@ -10,6 +10,7 @@ import { DEFAULT_THUMBNAIL } from '../constants';
 
   Implements Firestore CRUD operations for user posts
   Implements realtime listeners for posts
+  
 */
 
 //Retrieving single post of a user

@@ -25,6 +25,7 @@ import embedstyles from '../../styles/embedstyles';
   Renders content in one of three ways:
   - 1. A WebView with an embedded Pinterest pin
   - 2. A direct Image component (for direct image urls) 
+  
 */
 
 const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
