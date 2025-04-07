@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { useRecommendations } from '../../../hooks/useRecommendations';
+import { useBookmarks } from '../../../hooks/useBookmarks';
 import RenderThumbnail from '../../utilities/RenderThumbnail';
 import { DEFAULT_THUMBNAIL } from '../../../constants';
 import { FIREBASE_AUTH } from '../../../../FirebaseConfig';
@@ -24,14 +25,16 @@ import LoadingIndicator from '../../utilities/LoadingIndicator';
   Implements visual representation layer of recommendation system
   MVM principles applied:
   1. Visual display in horizontally scrollable format
-  2. Looading state management
+  2. Loading state management
   3. Empty state handling
   4. Interactive UI elements
+  5. Bookmark functionality
   
 */
 
 const SuggestedCollections = () => {
   const { recommendations, loading, refreshRecommendations } = useRecommendations(6);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const navigation = useNavigation();
   const currentUserId = FIREBASE_AUTH.currentUser?.uid;
 
@@ -41,6 +44,26 @@ const SuggestedCollections = () => {
       ownerId,
       isExternalCollection: ownerId !== currentUserId
     });
+  };
+
+  //Handle bookmark toggling
+  const handleBookmarkToggle = async (collection, event) => {
+    event.stopPropagation(); //Prevent card click navigation
+
+    try {
+      const bookmarkData = {
+        id: collection.id,
+        name: collection.name,
+        ownerId: collection.ownerId,
+        imageUrl: collection.thumbnail || DEFAULT_THUMBNAIL,
+        description: collection.description || '',
+      };
+
+      await toggleBookmark(bookmarkData);
+    }
+    catch (error) {
+      // Error handling done in hook
+    }
   };
 
   if (loading) {
@@ -82,6 +105,20 @@ const SuggestedCollections = () => {
                 containerStyle={homestyles.thumbnailWrapper}
                 thumbnailStyle={homestyles.thumbnail}
               />
+
+              {/* Only show bookmark option for collections not owned by current user */}
+              {item.ownerId !== currentUserId && (
+                <TouchableOpacity
+                  style={homestyles.bookmarkButton}
+                  onPress={(e) => handleBookmarkToggle(item, e)}
+                >
+                  <Ionicons
+                    name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
+                    size={18}
+                    color={colours.buttonsTextPink}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
             <View style={homestyles.cardContent}>
               <Text style={homestyles.collectionName} numberOfLines={1}>{item.name}</Text>
@@ -92,6 +129,5 @@ const SuggestedCollections = () => {
     </View>
   );
 };
-
 
 export default SuggestedCollections;

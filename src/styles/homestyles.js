@@ -98,6 +98,15 @@ const homestyles = StyleSheet.create({
     fontSize: 12,
     color: '#666',
   },
+  bookmarkButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    padding: 4,
+    zIndex: 10,
+  },
   //===== STATS CARDS =====
   statsCollage: {
     flexDirection: 'row',

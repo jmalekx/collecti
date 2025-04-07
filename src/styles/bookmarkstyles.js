@@ -61,13 +61,13 @@ const bookmarkstyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    marginBottom: 80,
   },
   emptyText: {
     fontSize: 16,
     color: colours.subTexts,
     textAlign: 'center',
     marginTop: 16,
-    marginBottom: 24,
   },
 });
 

@@ -132,12 +132,12 @@ const Bookmarks = () => {
     <View style={bookmarkstyles.emptyContainer}>
       {/* Visual Empty State Indicator */}
       <Ionicons name="bookmark-outline" size={64} color={colours.darkergrey} />
-      <Text style={bookmarkstyles.emptyText}>You haven't bookmarked any collections yet</Text>
+      <Text style={bookmarkstyles.emptyText}>You haven't bookmarked any collections yet.</Text>
       <AppButton
         style={commonStyles.pinkbutton}
         textStyle={commonStyles.pinkbuttonText}
         title="Explore Collections"
-        onPress={() => navigation.navigate('Search')}
+        onPress={() => navigation.navigate('SearchScreen')}
       />
     </View>
   );
