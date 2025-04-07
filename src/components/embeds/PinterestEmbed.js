@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Image } from 'react-native';
 
 //Third-party library external imports
 import { WebView } from 'react-native-webview';
@@ -12,6 +12,7 @@ import { extractPinId, resolveShortUrl, isDirectPinterestImage, createPinUrl } f
 //Custom component imports and styling
 import LoadingIndicator from '../utilities/LoadingIndicator';
 import commonStyles from '../../styles/commonStyles';
+import embedstyles from '../../styles/embedstyles';
 
 /*
   PinterestEmbed Component
@@ -196,8 +197,8 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
 
   if (loading) {
     return (
-      <View style={[styles.container, style]}>
-        <View style={styles.loadingContainer}>
+      <View style={[commonStyles.container]}>
+        <View style={commonStyles.loadingContainer}>
           <LoadingIndicator />
         </View>
       </View>
@@ -207,18 +208,18 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   //For users own pins display image directly
   if (isDirectImageUrl) {
     return (
-      <View style={[styles.container, style]}>
+      <View style={[embedstyles.container, style]}>
         <Image
           source={{ uri: url }}
-          style={styles.image}
+          style={embedstyles.image}
           resizeMode="cover"
         />
-        <View style={styles.pinterestBadge}>
+        <View style={embedstyles.pinterestBadge}>
           <Icon name="pinterest-p" size={16} color="white" />
         </View>
         {!isInteractive && (
           <TouchableOpacity
-            style={styles.overlay}
+            style={embedstyles.overlay}
             activeOpacity={1}
             onPress={() => {/* Prevent interaction */ }}
           />
@@ -231,14 +232,14 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   if (!pinId) {
     return (
       <TouchableOpacity
-        style={[styles.container, style]}
+        style={[embedstyles.container, style]}
         onPress={handleOpenPinterest}
         activeOpacity={0.8}
       >
-        <View style={styles.fallbackContainer}>
+        <View style={embedstyles.fallbackContainer}>
           <Icon name="pinterest-p" size={36} color="#E60023" />
-          <Text style={styles.fallbackTitle}>Pinterest Pin</Text>
-          <Text style={styles.fallbackSubtitle}>Tap to view on Pinterest</Text>
+          <Text style={embedstyles.fallbackTitle}>Pinterest Pin</Text>
+          <Text style={embedstyles.fallbackSubtitle}>Tap to view on Pinterest</Text>
         </View>
       </TouchableOpacity>
     );
@@ -246,12 +247,12 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
 
   //Web view with Pinterest embed
   return (
-    <View style={[styles.container, style]}>
+    <View style={[embedstyles.container, style]}>
       <WebView
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
         source={{ html: generateHtml() }}
-        style={styles.webview}
+        style={embedstyles.webview}
         onLoadEnd={() => setLoading(false)}
         onLoad={() => setLoading(false)}
         originWhitelist={['*']}
@@ -264,90 +265,5 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  container: {
-    width: '100%',
-    height: 350,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  overlayButton: {
-    position: 'absolute',
-    bottom: 10,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(230, 0, 35, 0.9)',
-    paddingVertical: 8,
-    margin: 10,
-    borderRadius: 4,
-    alignItems: 'center',
-  },
-  overlayButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  fallbackContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#f8f8f8',
-  },
-  fallbackTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 16,
-    color: '#333',
-  },
-  fallbackSubtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  retryButton: {
-    marginTop: 20,
-    backgroundColor: '#E60023',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 4,
-  },
-  retryText: {
-    color: 'white',
-    fontWeight: '500',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  pinterestBadge: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: '#E60023',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
-    zIndex: 1
-  }
-});
 
 export default PinterestEmbed;

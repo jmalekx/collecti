@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { WebView } from 'react-native-webview';
@@ -8,6 +8,7 @@ import { WebView } from 'react-native-webview';
 //Custom component imports and styling
 import LoadingIndicator from '../utilities/LoadingIndicator';
 import commonStyles from '../../styles/commonStyles';
+import embedstyles from '../../styles/embedstyles';
 
 /*
   InstagramEmbed Component
@@ -59,8 +60,8 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   //Error handling
   if (!postId) {
     return (
-      <View style={[styles.errorContainer, style]}>
-        <Text style={styles.errorText}>Invalid Instagram URL</Text>
+      <View style={[embedstyles.errorContainer, style]}>
+        <Text style={embedstyles.errorText}>Invalid Instagram URL</Text>
       </View>
     );
   }
@@ -169,10 +170,10 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
   `;
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[embedstyles.container, style]}>
       {loading && (
-        <View style={[styles.container, style]}>
-          <View style={styles.loadingContainer}>
+        <View style={[embedstyles.container, style]}>
+          <View style={commonStyles.loadingContainer}>
             <LoadingIndicator/>
           </View>
         </View>
@@ -184,7 +185,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         key={key}
         ref={webViewRef}
         source={{ html: customHtml }}
-        style={styles.webview}
+        style={embedstyles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         startInLoadingState={true}
@@ -256,13 +257,13 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
         renderError={() => {
           setLoading(false);
           return (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>Failed to load Instagram post.</Text>
+            <View style={embedstyles.errorContainer}>
+              <Text style={embedstyles.errorText}>Failed to load Instagram post.</Text>
               <TouchableOpacity
-                style={styles.retryButton}
+                style={embedstyles.retryButton}
                 onPress={reload}
               >
-                <Text style={styles.retryText}>Retry</Text>
+                <Text style={embedstyles.retryText}>Retry</Text>
               </TouchableOpacity>
             </View>
           );
@@ -314,42 +315,5 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  container: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-  },
-  webview: {
-    width: '100%',
-    height: '100%',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-  },
-  errorText: {
-    color: '#666',
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  retryButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-  },
-  retryText: {
-    color: 'white',
-    fontWeight: '500',
-  }
-});
 
 export default InstagramEmbed;

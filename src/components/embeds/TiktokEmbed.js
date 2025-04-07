@@ -1,12 +1,13 @@
 //React and React Native core imports
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 
 //Third-party library external imports
 import WebView from 'react-native-webview';
 
 //Custom component imports and styling
 import commonStyles from '../../styles/commonStyles';
+import embedstyles from '../../styles/embedstyles';
 import LoadingIndicator from '../utilities/LoadingIndicator';
 
 /*
@@ -114,11 +115,11 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   }
 
   return (
-    <View style={[styles.container, style]}>
+    <View style={[embedstyles.container, style]}>
       <WebView
         originWhitelist={['*']}
         source={{ html: embedCode }}
-        style={styles.webview}
+        style={embedstyles.webview}
         javaScriptEnabled={true}
         domStorageEnabled={true}
         showsVerticalScrollIndicator={false}
@@ -162,20 +163,5 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-  },
-  webview: {
-    width: '100%',
-    height: '100%',
-  },
-});
 
 export default TikTokEmbed;
