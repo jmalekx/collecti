@@ -14,7 +14,7 @@ import formValidation from '../../utils/formValidation';
 import { showToast, TOAST_TYPES } from '../../components//utilities/Toasts';
 import Logo from '../../images/logo.png';
 import Name from '../../images/name.png';
-import commonStyles, { colours } from '../../styles/commonStyles';
+import commonStyles, { colours, shadowStyles } from '../../styles/commonStyles';
 import registerstyles from '../../styles/registerstyles';
 import { AppText, AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
@@ -91,11 +91,16 @@ const SignIn = ({ navigation }) => {
         >
           {/* Logo section */}
           <View style={registerstyles.logoContainer}>
-            <Image
-              source={Name}
-              style={[{ height: 170 }, registerstyles.nameImage]}
-              resizeMode='contain'
-            />
+            <View style={registerstyles.glowContainer}>
+              <View style={registerstyles.glowOuter} />
+              <View style={registerstyles.glowInner} />
+              <Image
+                source={Name}
+                style={[{ height: 170 }, registerstyles.nameImage]}
+                resizeMode='contain'
+                tintColor='#8a6108'
+              />
+            </View>
             <Image
               source={Logo}
               style={registerstyles.logo}

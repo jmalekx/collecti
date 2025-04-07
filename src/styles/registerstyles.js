@@ -20,9 +20,9 @@ const registerstyles = StyleSheet.create({
   //===== SIGNUP SPECIFIC STYLES =====
   UpheaderContainer: {
     marginBottom: 8,
-    alignItems: 'flex-start', 
+    alignItems: 'flex-start',
     alignSelf: 'center',
-    width: '80%', 
+    width: '80%',
     marginTop: 30,
   },
   thumbnail: {
@@ -94,6 +94,36 @@ const registerstyles = StyleSheet.create({
   },
   nameImage: {
     marginLeft: 20,
+  },
+  glowContainer: {
+    width: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 100,
+    paddingTop: 10,
+    overflow: 'visible',
+  },
+  glowOuter: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    borderRadius: 100,
+    shadowColor: '#FFDD00',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.7,
+    shadowRadius: 60,
+    elevation: 30,
+  },
+  glowInner: {
+    position: 'absolute',
+    width: '60%',
+    height: '60%',
+    borderRadius: 100,
+    shadowColor: '#FFC933',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 3,
+    elevation: 15,
   },
   //===== BOTTOM SECTION STYLES =====
   bottomContainer: {

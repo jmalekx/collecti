@@ -197,12 +197,12 @@ const buttonStyles = StyleSheet.create({
     margin: 20,
   },
   pinterestButtonText: {
-    color: '#fff',
+    color: colours.lightestpink,
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
   },
   pinterestConnected: {
-    backgroundColor: colours.subTexts,
+    backgroundColor: colours.darkergrey,
   },
 
 });
