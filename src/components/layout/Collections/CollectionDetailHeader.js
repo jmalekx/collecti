@@ -27,7 +27,8 @@ const CollectionDetailHeader = ({
   handleGroupDelete,
   isExternalCollection,
   canEditCollection,
-  setShowDeleteCollectionModal
+  setShowDeleteCollectionModal,
+  collectionId
 }) => {
   return (
     <>
