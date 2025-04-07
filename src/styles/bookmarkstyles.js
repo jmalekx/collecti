@@ -69,12 +69,6 @@ const bookmarkstyles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 24,
   },
-  //===== LOADING STYLES =====
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
 });
 
 export default bookmarkstyles;

@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { View, TextInput, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
+import { View, FlatList, Text, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -12,7 +12,8 @@ import { useBookmarks } from '../../hooks/useBookmarks';
 import { useCollectionSearch } from '../../hooks/useCollectionSearch';
 
 //Custom component imports and styling
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
+import searchstyles from '../../styles/searchstyles'; // Import the new styles
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import SearchBar from '../../components/utilities/SearchBar';
@@ -46,15 +47,11 @@ const SearchPage = ({ navigation }) => {
     hasMore,
     resetPagination,
     fetchRecentCollections,
-    searchCollections
+    searchCollections,
   } = useCollectionSearch(BATCH_SIZE);
 
   //Bookmarks hook
-  const {
-    isBookmarked,
-    toggleBookmark,
-    loadBookmarks
-  } = useBookmarks();
+  const { isBookmarked, toggleBookmark, loadBookmarks } = useBookmarks();
 
   //Load bookmarks when component mounts or screen comes into focus
   useEffect(() => {
@@ -99,8 +96,7 @@ const SearchPage = ({ navigation }) => {
 
     if (searchQuery.trim() !== '') {
       searchCollections(searchQuery, true);
-    }
-    else {
+    } else {
       fetchRecentCollections(true);
     }
   }, [loading, loadingMore, hasMore, searchQuery, searchCollections, fetchRecentCollections]);
@@ -115,8 +111,7 @@ const SearchPage = ({ navigation }) => {
         searchCollections(searchQuery).then(() => {
           initialLoadComplete.current = true;
         });
-      }
-      else {
+      } else {
         fetchRecentCollections().then(() => {
           initialLoadComplete.current = true;
         });
@@ -130,7 +125,7 @@ const SearchPage = ({ navigation }) => {
   const handleBookmarkToggle = async (collectionId) => {
     try {
       //Get collection data from results
-      const collection = results.find(item => item.id === collectionId);
+      const collection = results.find((item) => item.id === collectionId);
 
       if (!collection) {
         return;
@@ -142,13 +137,12 @@ const SearchPage = ({ navigation }) => {
         ownerId: collection.ownerId,
         imageUrl: collection.thumbnail || DEFAULT_THUMBNAIL,
         title: collection.name,
-        description: collection.description || ''
+        description: collection.description || '',
       };
 
       //Use toggle function from hook - toast is now handled within the hook
       await toggleBookmark(bookmarkData);
-    }
-    catch (error) {
+    } catch (error) {
       //Error handling done within hook
     }
   };
@@ -158,46 +152,52 @@ const SearchPage = ({ navigation }) => {
     navigation.navigate('CollectionDetails', {
       collectionId,
       ownerId,
-      isExternalCollection: ownerId !== currentUserId
+      isExternalCollection: ownerId !== currentUserId,
     });
   };
 
   //Render collection item
   const renderCollectionItem = ({ item }) => (
     <TouchableOpacity
-      style={styles.collectionCard}
+      style={searchstyles.collectionCard}
       onPress={() => navigateToCollection(item.id, item.ownerId)}
     >
-      <View style={styles.thumbnailContainer}>
+      <View style={searchstyles.thumbnailContainer}>
         <RenderThumbnail
           thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
-          scale={0.5}
-          containerStyle={styles.thumbnailWrapper}
-          thumbnailStyle={styles.thumbnail}
+          scale={
+            item.thumbnail.includes('tiktok.com') ? 0.7 : 0.5
+          }
+          containerStyle={searchstyles.thumbnailWrapper}
+          thumbnailStyle={searchstyles.thumbnail}
         />
       </View>
-      <View style={styles.cardContent}>
-        <Text style={styles.collectionName} numberOfLines={1}>{item.name}</Text>
-        <Text style={styles.collectionSubtext} numberOfLines={1}>
-          {item.ownerId === currentUserId
-            ? 'Your Collection'
-            : 'Public Collection'}
+      <View style={searchstyles.cardContent}>
+        <Text style={searchstyles.collectionName} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <Text style={searchstyles.collectionSubtext} numberOfLines={1}>
+          {item.ownerId === currentUserId ? 'Your Collection' : 'Public Collection'}
         </Text>
 
-        {item.ownerId !== currentUserId && (
+        {item.ownerId !== currentUserId ? (
           <TouchableOpacity
             onPress={() => handleBookmarkToggle(item.id)}
-            style={styles.bookmarkButton}
+            style={searchstyles.bookmarkButton}
           >
             <Ionicons
-              name={isBookmarked(item.id) ? "bookmark" : "bookmark-outline"}
-              size={16}
-              color="#007AFF"
+              name={isBookmarked(item.id) ? 'bookmark' : 'bookmark-outline'}
+              size={12}
+              color={colours.buttonsTextPink}
             />
-            <Text style={styles.bookmarkText}>
-              {isBookmarked(item.id) ? "Bookmarked" : "Bookmark"}
+            <Text style={searchstyles.bookmarkText}>
+              {isBookmarked(item.id) ? 'Bookmarked' : 'Bookmark'}
             </Text>
           </TouchableOpacity>
+        ) : (
+          <Text style={searchstyles.unbookmarkableText}>
+            Cannot bookmark
+          </Text>
         )}
       </View>
     </TouchableOpacity>
@@ -215,7 +215,7 @@ const SearchPage = ({ navigation }) => {
         </View>
 
         {loading && !loadingMore && (
-          <View style={styles.loadingContainer}>
+          <View style={commonStyles.loadingContainer}>
             <LoadingIndicator />
           </View>
         )}
@@ -226,7 +226,7 @@ const SearchPage = ({ navigation }) => {
           data={results}
           keyExtractor={(item, index) => item.uniqueId || `${item.id}_${index}`} // Fallback key
           numColumns={2}
-          columnWrapperStyle={styles.resultGrid}
+          columnWrapperStyle={searchstyles.resultGrid}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           removeClippedSubviews={true}
@@ -236,20 +236,23 @@ const SearchPage = ({ navigation }) => {
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
           }}
-          ListFooterComponent={() => (
+          ListFooterComponent={() =>
             loadingMore ? (
-              <View style={styles.loadingContainer}>
+              <View style={searchstyles.loadingContainer}>
                 <LoadingIndicator />
               </View>
             ) : null
-          )}
+          }
           renderItem={renderCollectionItem}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <View style={searchstyles.emptyContainer}>
               <Ionicons name="search" size={64} color="#ccc" />
-              <Text style={styles.emptyText}>
-                {loading ? 'Loading collections...' :
-                  searchQuery.trim() === '' ? 'Recent collections will appear here' : 'No results found'}
+              <Text style={searchstyles.emptyText}>
+                {loading
+                  ? 'Loading collections...'
+                  : searchQuery.trim() === ''
+                    ? 'Recent collections will appear here'
+                    : 'No results found'}
               </Text>
             </View>
           }
@@ -258,98 +261,5 @@ const SearchPage = ({ navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 16,
-    height: 50,
-  },
-  searchIcon: {
-    marginRight: 8,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#333',
-  },
-  resultGrid: {
-    justifyContent: 'space-between',
-  },
-  collectionCard: {
-    width: '48%',
-    backgroundColor: '#f9f9f9',
-    borderRadius: 12,
-    marginBottom: 16,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  thumbnailContainer: {
-    height: 120,
-    backgroundColor: '#eee',
-  },
-  thumbnailWrapper: {
-    width: '100%',
-    height: '100%',
-  },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  cardContent: {
-    padding: 12,
-  },
-  collectionName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  collectionSubtext: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  bookmarkButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  bookmarkText: {
-    fontSize: 14,
-    color: '#007AFF',
-    marginLeft: 4,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 60,
-  },
-  emptyText: {
-    textAlign: 'center',
-    marginTop: 16,
-    fontSize: 16,
-    color: '#666',
-    maxWidth: '80%',
-  },
-  fullScreenLoader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-});
 
 export default SearchPage;

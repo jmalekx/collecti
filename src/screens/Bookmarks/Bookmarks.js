@@ -153,7 +153,7 @@ const Bookmarks = () => {
 
         {/* Content */}
         {loading ? (
-          <View style={bookmarkstyles.loadingContainer}>
+          <View style={commonStyles.loadingContainer}>
             <LoadingIndicator />
           </View>
         ) : (

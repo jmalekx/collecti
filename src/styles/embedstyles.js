@@ -1,5 +1,8 @@
 //React Native core imports
+import React from 'react';
 import { StyleSheet } from 'react-native';
+
+//Custom component imports and styling
 import { colours } from './commonStyles';
 
 const embedstyles = StyleSheet.create({
