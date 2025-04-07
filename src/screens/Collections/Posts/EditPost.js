@@ -10,10 +10,10 @@ import { useToast } from 'react-native-toast-notifications';
 import { loadPostForEditing, saveEditedPost } from '../../../services/postActionService';
 
 //Custom component imports and styling
-import commonStyles, { colours, shadowStyles } from '../../../styles/commonStyles';
-import addbuttonstyles from '../../../styles/addbuttonstyles';
+import commonStyles, { colours } from '../../../styles/commonStyles';
 import LoadingIndicator from '../../../components/utilities/LoadingIndicator';
 import { AppText, AppSubheading } from '../../../components/utilities/Typography';
+import poststyles from '../../../styles/poststyles';
 
 /*
   EditPost Screen
@@ -89,36 +89,36 @@ const EditPost = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
-        <View style={styles.header}>
+      <View style={commonStyles.container}>
+        <View style={poststyles.header}>
           <TouchableOpacity
-            style={styles.headerButton}
+            style={poststyles.headerButton}
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="arrow-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
-          <AppSubheading style={styles.headerTitle}>Edit Post</AppSubheading>
+          <AppSubheading style={poststyles.headerTitle}>Edit Post Details</AppSubheading>
           <TouchableOpacity
-            style={[styles.headerButton, styles.saveButton, isSaving && styles.disabledButton]}
+            style={[poststyles.headerButton, poststyles.saveButton, isSaving && poststyles.disabledButton]}
             onPress={handleSave}
             disabled={isSaving}
           >
             {isSaving ? (
-              <LoadingIndicator size="small" color="#fff" />
+              <LoadingIndicator size="small" />
             ) : (
-              <Ionicons name="checkmark" size={24} color="#fff" />
+              <Ionicons name="checkmark" size={20} color="#fff" />
             )}
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.scrollContainer}>
-          <View style={styles.formContainer}>
-            <View style={styles.section}>
+        <ScrollView style={poststyles.scrollContainer}>
+          <View style={poststyles.formContainer}>
+            <View style={poststyles.section}>
               <AppSubheading style={commonStyles.textSubheading}>Notes</AppSubheading>
-              <View style={styles.standardInputContainer}>
+              <View style={poststyles.standardInputContainer}>
                 <TouchableOpacity activeOpacity={1}>
                   <TextInput
-                    style={[styles.standardInput, styles.textArea]}
+                    style={[poststyles.standardInput, poststyles.textArea]}
                     value={notes}
                     onChangeText={setNotes}
                     multiline
@@ -129,12 +129,12 @@ const EditPost = ({ route, navigation }) => {
               </View>
             </View>
 
-            <View style={styles.section}>
-            <AppSubheading style={commonStyles.textSubheading}>Tags</AppSubheading>
-              <View style={styles.standardInputContainer}>
+            <View style={poststyles.section}>
+              <AppSubheading style={commonStyles.textSubheading}>Tags</AppSubheading>
+              <View style={poststyles.standardInputContainer}>
                 <TouchableOpacity activeOpacity={1}>
                   <TextInput
-                    style={styles.standardInput}
+                    style={poststyles.standardInput}
                     value={tags}
                     onChangeText={setTags}
                     placeholder="Add tags (comma separated)"
@@ -142,7 +142,7 @@ const EditPost = ({ route, navigation }) => {
                   />
                 </TouchableOpacity>
               </View>
-              <AppText style={styles.helperText}>
+              <AppText style={poststyles.helperText}>
                 Separate tags with commas (e.g., travel, inspiration, ideas)
               </AppText>
             </View>
@@ -152,70 +152,5 @@ const EditPost = ({ route, navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingVertical: 12,
-  },
-  headerButton: {
-    padding: 8,
-    borderRadius: 8,
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
-    color: colours.mainTexts,
-  },
-  saveButton: {
-    backgroundColor: colours.buttonsTextPink,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 40,
-    height: 40,
-    ...shadowStyles.light,
-  },
-  disabledButton: {
-    opacity: 0.7,
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  formContainer: {
-    padding: 4,
-  },
-  section: {
-    ...addbuttonstyles.section,
-    marginBottom: 40,
-  },
-  sectionTitle: {
-    ...addbuttonstyles.sectionTitle,
-  },
-  standardInputContainer: {
-    ...addbuttonstyles.standardInputContainer,
-  },
-  standardInput: {
-    ...addbuttonstyles.standardInput,
-  },
-  textArea: {
-    ...addbuttonstyles.textArea,
-    minHeight: 120,
-  },
-  helperText: {
-    fontSize: 12,
-    color: colours.subTexts,
-    marginTop: 4,
-    marginLeft: 4,
-    fontStyle: 'italic',
-  },
-});
 
 export default EditPost;

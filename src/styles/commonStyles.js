@@ -18,6 +18,7 @@ const typography = {
 };
 
 const colours = {
+  //===== COLOR PALETTE =====
   primary: '#F5D6E0',
   secondary: '#FCF5E8',
   tertiary: '#fffbf4',
@@ -26,9 +27,11 @@ const colours = {
   grey: '#c0c0c060',
   darkergrey: '#999',
 
+   //===== TEXT COLORS =====
   mainTexts: '#333',
   subTexts: '#666',
 
+  //===== BUTTON COLORS =====
   buttons: '#f7d89b',
   buttonsHighlight: '#8a6620',
   buttonsText: '#aa790f',
@@ -74,17 +77,6 @@ const layoutStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-    zIndex: 1,
   },
   embedContainer: {
     width: '100%',
@@ -259,6 +251,29 @@ const searchStyles = StyleSheet.create({
   }
 });
 
+const loadingStyles = StyleSheet.create({
+  loadCirclesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 4,
+    color: '#666',
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+    zIndex: 1,
+  },
+});
+
 const Bg = React.memo(({ children, style }) => {
   return (
     <LinearGradient
@@ -298,6 +313,7 @@ const commonStyles = {
   ...headerStyles,
   ...searchStyles,
   ...shadowStyles,
+  ...loadingStyles,
   Bg,
 };
 

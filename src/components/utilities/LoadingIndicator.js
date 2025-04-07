@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 
 //Custom component imports and styling
-import { colours } from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
 
 /*
   LoadingIndicator Component
@@ -14,7 +14,7 @@ import { colours } from '../../styles/commonStyles';
   where loading state needs to be indicated.
 */
 
-const LoadingIndicator = ({ text = '', }) => {
+const LoadingIndicator = ({ text = '', size = 'normal', style }) => {
   //Optional text prop with default empty string
 
   //Circle animation values to enable individual animations
@@ -64,6 +64,36 @@ const LoadingIndicator = ({ text = '', }) => {
     };
   }, []);
 
+  //Determine sizes based on the size prop
+  const getSizes = () => {
+    switch (size) {
+      case 'small':
+        return {
+          containerHeight: 12,
+          circleSize: 4,
+          circleMargin: 1,
+          textSize: 9
+        };
+      case 'large':
+        return {
+          containerHeight: 32,
+          circleSize: 10,
+          circleMargin: 3,
+          textSize: 14
+        };
+      case 'normal':
+      default:
+        return {
+          containerHeight: 24,
+          circleSize: 8,
+          circleMargin: 2,
+          textSize: 12
+        };
+    }
+  };
+
+  const sizes = getSizes();
+
   //Styles for each loading circle based on animation value
   const getLoadCircleStyle = (loadCircle) => ({
     transform: [
@@ -79,45 +109,24 @@ const LoadingIndicator = ({ text = '', }) => {
       inputRange: [0, 1],
       outputRange: [colours.primary, colours.buttonsTextPink],
     }),
+    width: sizes.circleSize,
+    height: sizes.circleSize,
+    borderRadius: sizes.circleSize / 2,
+    marginHorizontal: sizes.circleMargin,
   });
 
   return (
-    <View style={styles.loadingContainer}>
-      <View style={styles.loadCirclesContainer}>
-        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle1)]} />
-        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle2)]} />
-        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle3)]} />
-        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle4)]} />
-        <Animated.View style={[styles.loadCircle, getLoadCircleStyle(loadCircle5)]} />
+    <View style={[commonStyles.loadingContainer, style]}>
+      <View style={[commonStyles.loadCirclesContainer, { height: sizes.containerHeight }]}>
+        <Animated.View style={[getLoadCircleStyle(loadCircle1)]} />
+        <Animated.View style={[getLoadCircleStyle(loadCircle2)]} />
+        <Animated.View style={[getLoadCircleStyle(loadCircle3)]} />
+        <Animated.View style={[getLoadCircleStyle(loadCircle4)]} />
+        <Animated.View style={[getLoadCircleStyle(loadCircle5)]} />
       </View>
-      {text && <Text style={styles.loadingText}>{text}</Text>}
+      {text && <Text style={[commonStyles.loadingText, { fontSize: sizes.textSize }]}>{text}</Text>}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    paddingVertical: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadCirclesContainer: {
-    height: 24,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadCircle: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 2,
-  },
-  loadingText: {
-    marginTop: 4,
-    fontSize: 12,
-    color: '#666',
-  }
-});
 
 export default LoadingIndicator;
