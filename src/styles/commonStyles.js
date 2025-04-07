@@ -24,6 +24,7 @@ const colours = {
   tertiary: '#fffbf4',
 
   lighterpink: '#FFF0F5',
+  lightestpink: '#FFFCFC',
   grey: '#c0c0c060',
   darkergrey: '#999',
 
@@ -37,12 +38,14 @@ const colours = {
   buttonsText: '#aa790f',
   buttonsTextPink: '#D67A98',
   delete: '#FF3B30',
+  search: '#F9F9F9',
 
   //===== MEDIA COLORS =====
   pinterest: '#E60023',
   instagram: '#E1306C',
   tiktok: '#000',
   youtube: '#FF0000',
+  gallery: '#4CAF50',
 }
 
 const shadowStyles = {
@@ -236,7 +239,7 @@ const searchStyles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: colours.search,
     borderRadius: 25,
     height: 42,
     paddingHorizontal: 16,
@@ -250,7 +253,7 @@ const searchStyles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: colours.subTexts,
     padding: 0,
   },
   clearButton: {

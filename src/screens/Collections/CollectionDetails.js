@@ -143,19 +143,19 @@ const CollectionDetails = ({ route, navigation }) => {
   //UI Helper functions
   const getPlatformIcon = (post) => {
     if (post.thumbnail.includes('instagram.com')) {
-      return <Ionicons name="logo-instagram" size={20} color="#E1306C" />;
+      return <Ionicons name="logo-instagram" size={20} color={colours.instagram} />;
     }
     else if (post.thumbnail.includes('tiktok.com')) {
-      return <Ionicons name="logo-tiktok" size={20} color="#000000" />;
+      return <Ionicons name="logo-tiktok" size={20} color={colours.tiktok} />;
     }
     else if (post.thumbnail.includes('youtube.com') || post.thumbnail.includes('youtu.be')) {
-      return <Ionicons name="logo-youtube" size={20} color="#FF0000" />;
+      return <Ionicons name="logo-youtube" size={20} color={colours.youtube} />;
     }
     else if (post.platform === 'pinterest' || post.thumbnail.includes('pinterest.com') || post.thumbnail.includes('pin.it')) {
-      return <Ionicons name="logo-pinterest" size={20} color="#E60023" />;
+      return <Ionicons name="logo-pinterest" size={20} color={colours.pinterest} />;
     }
     else {
-      return <Ionicons name="images-outline" size={20} color="#4CAF50" />;
+      return <Ionicons name="images-outline" size={20} color={colours.gallery} />;
     }
   };
 
@@ -248,7 +248,7 @@ const CollectionDetails = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-     <View style={[commonStyles.container, { marginTop: -10 }]}>
+      <View style={[commonStyles.container, { marginTop: -10 }]}>
         <View style={commonStyles.customHeader}>
 
           {/* Back Navigation Button */}
@@ -276,14 +276,14 @@ const CollectionDetails = ({ route, navigation }) => {
                   style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
                   disabled={isExternalCollection}
                 >
-                  <Ionicons name="move" size={22} color={isExternalCollection ? colours.mainTexts : colours.buttonsTextPink} />
+                  <Ionicons name="move" size={22} color={isExternalCollection ? colours.mainTexts : colours.buttonsText} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleGroupDelete}
                   style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
                   disabled={isExternalCollection}
                 >
-                  <Ionicons name="trash" size={22} color={isExternalCollection ? colours.mainTexts : colours.delete } />
+                  <Ionicons name="trash" size={22} color={isExternalCollection ? colours.mainTexts : colours.delete} />
                 </TouchableOpacity>
               </>
             ) : (
@@ -396,7 +396,7 @@ const CollectionDetails = ({ route, navigation }) => {
                   <Ionicons
                     name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
                     size={24}
-                    color={selectedPosts.includes(item.id) ? "#007AFF" : "#999"}
+                    color={selectedPosts.includes(item.id) ? colours.buttonsText : colours.subTexts}
                   />
                 </View>
               )}

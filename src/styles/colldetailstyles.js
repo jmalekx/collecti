@@ -32,7 +32,7 @@ const colldetailstyles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     flex: 1,
-    marginHorizontal: 12,
+    marginHorizontal: 8,
     color: colours.mainTexts,
   },
   collectionDescription: {
@@ -48,9 +48,9 @@ const colldetailstyles = StyleSheet.create({
   },
   //===== POST CARD STYLES =====
   postCard: {
-    marginBottom: 16,
+    marginBottom: 6,
     padding: 16,
-    backgroundColor: colours.tertiary,
+    backgroundColor: colours.lightestpink,
     borderRadius: 12,
     ...shadowStyles.light,
     position: 'relative',
@@ -58,22 +58,22 @@ const colldetailstyles = StyleSheet.create({
     margin: '1%',
   },
   selectedPostCard: {
-    backgroundColor: '#e6f2ff',
+    backgroundColor: colours.buttons,
     borderWidth: 2,
-    borderColor: colours.buttonsTextPink,
+    borderColor: colours.buttonsText,
   },
   postTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: colours.mainTexts,
-    marginTop: 4,
     overflow: 'hidden',
+    marginTop:8,
+    marginBottom: -6,
   },
   postContentContainer: {
     width: '100%',
     height: 150,
     borderRadius: 8,
-    marginBottom: 8,
     overflow: 'hidden',
   },
   thumbnail: {
@@ -92,7 +92,7 @@ const colldetailstyles = StyleSheet.create({
   //===== SELECTION AND CHECKBOX STYLES =====
   selectionCount: {
     marginLeft: 2,
-    marginTop:10,
+    marginTop: 10,
     fontSize: 14,
     color: colours.subTexts,
     fontWeight: '500',
