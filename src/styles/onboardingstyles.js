@@ -121,8 +121,7 @@ const onboardingstyles = StyleSheet.create({
     width: '70%',
     color: colours.mainTexts,
     fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: typography.fontItalic,
+    fontFamily: typography.fontBoldItalic,
   },
   SubTexts: {
     width: '45%',

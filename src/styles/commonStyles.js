@@ -13,10 +13,10 @@ import LinearGradient from 'react-native-linear-gradient';
 */
 
 const typography = {
-  fontRegular: 'Inter_400Regular',
-  fontItalic: 'Inter_400Regular_Italic',
-  fontBold: 'Inter_700Bold',
-  fontBoldItalic: 'Inter_700Bold_Italic',
+  fontRegular: 'Inter-Regular',
+  fontItalic: 'Inter-Italic',
+  fontBold: 'Inter-Bold',
+  fontBoldItalic: 'Inter-BoldItalic',
 };
 
 const colours = {
