@@ -147,12 +147,13 @@ const addbuttonstyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     paddingVertical: 8,
-    marginTop: 4,
+    marginTop: -10,
+    marginRight:4,
   },
   platformText: {
-    marginRight: 8,
-    color: '#555',
-    fontSize: 14,
+    marginRight: 4,
+    color: colours.subTexts,
+    fontSize: 13,
     fontWeight: '500',
   },
   //===== COLLECTION SELECTOR STYLES =====

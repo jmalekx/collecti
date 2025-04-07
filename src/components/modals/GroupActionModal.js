@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 //Custom component imports and styling
 import { AppHeading } from '../utilities/Typography';
 import addbuttonstyles from '../../styles/addbuttonstyles';
-import colldetailstyles from '../../styles/colldetailstyles';
+import collectionstyles from '../../styles/collectionstyles';
 import Dropdown from '../utilities/Dropdown';
 import { colours } from '../../styles/commonStyles';
 
@@ -55,9 +55,9 @@ const GroupActionModal = ({
 
           {!isAddingNewCollection ? (
             <>
-              <Text style={colldetailstyles.modalLabel}>Select Target Collection:</Text>
+              <Text style={collectionstyles.modalLabel}>Select Target Collection:</Text>
               {collections.length > 0 ? (
-                <View style={colldetailstyles.dropdownContainer}>
+                <View style={collectionstyles.dropdownContainer}>
                   <Dropdown
                     options={collections
                       //Filter out the Unsorted collection 
@@ -82,8 +82,8 @@ const GroupActionModal = ({
                   />
                 </View>
               ) : (
-                <View style={colldetailstyles.noCollectionsContainer}>
-                  <Text style={colldetailstyles.noCollectionsText}>No other collections available</Text>
+                <View style={collectionstyles.noCollectionsContainer}>
+                  <Text style={collectionstyles.noCollectionsText}>No other collections available</Text>
                 </View>
               )}
 
@@ -107,7 +107,7 @@ const GroupActionModal = ({
             </>
           ) : (
             <>
-              <Text style={colldetailstyles.modalLabel}>New Collection Name:</Text>
+              <Text style={collectionstyles.modalLabel}>New Collection Name:</Text>
               <View style={addbuttonstyles.standardInputContainer}>
                 <TextInput
                   placeholder="Enter Collection Name"

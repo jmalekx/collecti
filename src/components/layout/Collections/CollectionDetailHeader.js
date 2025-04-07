@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
 import commonStyles, { colours } from '../../../styles/commonStyles';
-import colldetailstyles from '../../../styles/colldetailstyles';
+import collectionstyles from '../../../styles/collectionstyles';
 
 /*
   CollectionHeader Component
@@ -38,7 +38,7 @@ const CollectionDetailHeader = ({
         >
           <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
         </TouchableOpacity>
-        <Text style={colldetailstyles.collectionName}>{collectionName}</Text>
+        <Text style={collectionstyles.collectionName}>{collectionName}</Text>
 
         {/* Action Buttons */}
         <View style={commonStyles.customHeaderActions}>
@@ -50,17 +50,17 @@ const CollectionDetailHeader = ({
               >
                 <Ionicons name="close" size={24} color={colours.mainTexts} />
               </TouchableOpacity>
-              <Text style={colldetailstyles.selectionCount}>{selectedPosts.length} selected</Text>
+              <Text style={collectionstyles.selectionCount}>{selectedPosts.length} selected</Text>
               <TouchableOpacity
                 onPress={handleGroupMove}
-                style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                style={[commonStyles.customActionButton, isExternalCollection && collectionstyles.disabledIcon]}
                 disabled={isExternalCollection}
               >
                 <Ionicons name="move" size={22} color={isExternalCollection ? colours.mainTexts : colours.buttonsText} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleGroupDelete}
-                style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                style={[commonStyles.customActionButton, isExternalCollection && collectionstyles.disabledIcon]}
                 disabled={isExternalCollection}
               >
                 <Ionicons name="trash" size={22} color={isExternalCollection ? colours.mainTexts : colours.delete} />
@@ -70,7 +70,7 @@ const CollectionDetailHeader = ({
             <>
               <TouchableOpacity
                 onPress={toggleSelectionMode}
-                style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                style={[commonStyles.customActionButton, isExternalCollection && collectionstyles.disabledIcon]}
                 disabled={isExternalCollection}
               >
                 <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : colours.mainTexts} />
@@ -94,13 +94,13 @@ const CollectionDetailHeader = ({
                 <>
                   <TouchableOpacity
                     disabled={true}
-                    style={[commonStyles.customActionButton, colldetailstyles.disabledIcon]}
+                    style={[commonStyles.customActionButton, collectionstyles.disabledIcon]}
                   >
                     <Ionicons name="create-outline" size={24} color="#ccc" />
                   </TouchableOpacity>
                   <TouchableOpacity
                     disabled={true}
-                    style={[commonStyles.customActionButton, colldetailstyles.disabledIcon]}
+                    style={[commonStyles.customActionButton, collectionstyles.disabledIcon]}
                   >
                     <Ionicons name="trash" size={24} color="#ccc" />
                   </TouchableOpacity>
@@ -112,9 +112,9 @@ const CollectionDetailHeader = ({
       </View>
 
       {/* Description line */}
-      <View style={colldetailstyles.headerBottom}>
-        <Text style={colldetailstyles.collectionDescription}>{collectionDescription}</Text>
-        <Text style={colldetailstyles.postCount}>{postsCount} posts</Text>
+      <View style={collectionstyles.headerBottom}>
+        <Text style={collectionstyles.collectionDescription}>{collectionDescription}</Text>
+        <Text style={collectionstyles.postCount}>{postsCount} posts</Text>
       </View>
     </>
   );

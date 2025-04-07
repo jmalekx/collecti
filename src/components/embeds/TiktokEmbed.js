@@ -103,7 +103,7 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   //Loading state render
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={commonStyles.loadingContainer}>
         <LoadingIndicator />
       </View>
     );

@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import colldetailstyles from '../../../styles/colldetailstyles';
+import collectionstyles from '../../../styles/collectionstyles';
 import { colours } from '../../../styles/commonStyles';
 import RenderThumbnail from '../../utilities/RenderThumbnail';
 
@@ -16,15 +16,15 @@ import RenderThumbnail from '../../utilities/RenderThumbnail';
   and handles press/long-press interactions.
 */
 
-const PostGrid = ({ 
-  item, 
-  isSelectionMode, 
-  selectedPosts, 
-  toggleItemSelection, 
-  selectSingleItem, 
-  navigation, 
-  collectionId, 
-  effectiveUserId 
+const PostGrid = ({
+  item,
+  isSelectionMode,
+  selectedPosts,
+  toggleItemSelection,
+  selectSingleItem,
+  navigation,
+  collectionId,
+  effectiveUserId
 }) => {
   //UI Helper functions
   const getPlatformIcon = (post) => {
@@ -49,9 +49,13 @@ const PostGrid = ({
     return (
       <RenderThumbnail
         thumbnail={item.thumbnail}
-        containerStyle={colldetailstyles.postContentContainer}
-        thumbnailStyle={colldetailstyles.thumbnail}
-        scale={0.42}
+        containerStyle={collectionstyles.postContentContainer}
+        thumbnailStyle={collectionstyles.thumbnail}
+        scale={
+          item.thumbnail.includes('tiktok.com') ? 0.7 :
+            (item.thumbnail.includes('pinterest.com') || item.thumbnail.includes('pin.it')) ? 0.45 :
+              undefined // Default scale for other platforms
+        }
       />
     );
   };
@@ -59,8 +63,8 @@ const PostGrid = ({
   return (
     <TouchableOpacity
       style={[
-        colldetailstyles.postCard,
-        isSelectionMode && selectedPosts.includes(item.id) && colldetailstyles.selectedPostCard
+        collectionstyles.postCard,
+        isSelectionMode && selectedPosts.includes(item.id) && collectionstyles.selectedPostCard
       ]}
       onPress={() => {
         if (isSelectionMode) {
@@ -80,12 +84,12 @@ const PostGrid = ({
       }}
     >
       {/* Platform Icon */}
-      <View style={colldetailstyles.platformIconContainer}>
+      <View style={collectionstyles.platformIconContainer}>
         {getPlatformIcon(item)}
       </View>
 
       {isSelectionMode && (
-        <View style={colldetailstyles.checkboxContainer}>
+        <View style={collectionstyles.checkboxContainer}>
           <Ionicons
             name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
             size={24}
@@ -97,7 +101,7 @@ const PostGrid = ({
       {/* Post Content */}
       {renderThumbnail(item)}
       <Text
-        style={colldetailstyles.postTitle}
+        style={collectionstyles.postTitle}
         numberOfLines={1}
         ellipsizeMode="tail"
       >

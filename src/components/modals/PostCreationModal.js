@@ -476,10 +476,10 @@ const PostCreationModal = ({
                             currentPlatform === 'youtube' ? 'YouTube Content' :
                               'Web Content'}
                     </Text>
-                    {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color={colours.instagram} />}
-                    {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color={colours.tiktok} />}
-                    {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={20} color={colours.pinterest} />}
-                    {currentPlatform === 'youtube' && <Ionicons name="logo-youtube" size={20} color={colours.youtube} />}
+                    {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={14} color={colours.instagram} />}
+                    {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={14} color={colours.tiktok} />}
+                    {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={14} color={colours.pinterest} />}
+                    {currentPlatform === 'youtube' && <Ionicons name="logo-youtube" size={14} color={colours.youtube} />}
                   </View>
                 )}
               </View>

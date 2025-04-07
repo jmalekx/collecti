@@ -15,7 +15,7 @@ import { usePagination } from '../../hooks/usePagination';
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import commonStyles, { colours } from '../../styles/commonStyles';
-import colldetailstyles from '../../styles/colldetailstyles';
+import collectionstyles from '../../styles/collectionstyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import SearchBar from '../../components/utilities/SearchBar';
@@ -245,9 +245,9 @@ const CollectionDetails = ({ route, navigation }) => {
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={() => (
-            <View style={colldetailstyles.emptyContainer}>
+            <View style={collectionstyles.emptyContainer}>
               <MaterialIcons name="post-add" size={64} color="#ccc" />
-              <Text style={colldetailstyles.emptyText}>
+              <Text style={collectionstyles.emptyText}>
                 This collection is empty! Start adding posts to keep things organized.
               </Text>
             </View>
@@ -309,25 +309,25 @@ const CollectionDetails = ({ route, navigation }) => {
           animationType="slide"
           onRequestClose={closeMenu}
         >
-          <View style={colldetailstyles.menuModal}>
-            <View style={colldetailstyles.menuContent}>
+          <View style={collectionstyles.menuModal}>
+            <View style={collectionstyles.menuContent}>
               <TouchableOpacity
-                style={colldetailstyles.menuItem}
+                style={collectionstyles.menuItem}
                 onPress={() => {
                   navigation.navigate('EditPost', { collectionId, postId: selectedPost.id });
                   closeMenu();
                 }}
               >
-                <Text style={colldetailstyles.menuText}>Edit Post</Text>
+                <Text style={collectionstyles.menuText}>Edit Post</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={colldetailstyles.menuItem}
+                style={collectionstyles.menuItem}
                 onPress={() => deletePost(selectedPost.id)}
               >
-                <Text style={[colldetailstyles.menuText, { color: 'red' }]}>Delete Post</Text>
+                <Text style={[collectionstyles.menuText, { color: 'red' }]}>Delete Post</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={colldetailstyles.menuItem} onPress={closeMenu}>
-                <Text style={colldetailstyles.menuText}>Cancel</Text>
+              <TouchableOpacity style={collectionstyles.menuItem} onPress={closeMenu}>
+                <Text style={collectionstyles.menuText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -5,7 +5,8 @@ import { StyleSheet } from 'react-native';
 import commonStyles, { shadowStyles, colours } from './commonStyles';
 import addbuttonstyles from './addbuttonstyles';
 
-const colldetailstyles = StyleSheet.create({
+const collectionstyles = StyleSheet.create({
+  //===== STYLES BELOW ARE FOR COLLECTION DETAILS OR JOINT =====
   //===== HEADER STYLES =====
   header: {
     marginBottom: 16,
@@ -63,11 +64,11 @@ const colldetailstyles = StyleSheet.create({
     borderColor: colours.buttons,
   },
   postTitle: {
-    fontSize: 1,
+    fontSize: 14,
     fontWeight: 'bold',
     color: colours.mainTexts,
     overflow: 'hidden',
-    marginTop:8,
+    marginTop: 8,
     marginBottom: -6,
   },
   postContentContainer: {
@@ -173,6 +174,38 @@ const colldetailstyles = StyleSheet.create({
   disabledIcon: {
     opacity: 0.4,
   },
+  //===== SEPARATED STYLES FOR COLLECTION SCREEN =====
+  grid: {
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+    paddingTop: 20,
+  },
+  collectionCard: {
+    width: '30%',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  MainThumbnail: {
+    ...shadowStyles.light,
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    marginBottom: 8,
+    borderWidth: 1.5,
+    borderColor: colours.lightestpink,
+  },
+  MainCollectionName: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: -4,
+    marginTop: -4,
+  },
+  collectionStats: {
+    fontSize: 10,
+    color: colours.subTexts,
+    textAlign: 'center',
+  },
 });
 
-export default colldetailstyles;
+export default collectionstyles;

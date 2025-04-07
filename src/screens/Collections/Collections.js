@@ -4,7 +4,7 @@ import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } 
 
 //Third-party library external imports
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 
 //Project services and utilities
 import { useUserData } from '../../hooks/useUserData';
@@ -12,7 +12,8 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 
 //Custom component imports and styling
-import commonStyles, { shadowStyles } from '../../styles/commonStyles';
+import commonStyles, { shadowStyles, colours } from '../../styles/commonStyles';
+import collectionstyles from '../../styles/collectionstyles';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/utilities/SearchBar';
 
@@ -34,7 +35,7 @@ const Collections = ({ }) => {
       headerRight: () => (
         <TouchableOpacity
           onPress={() => navigation.navigate('UserSettings')}
-          style={styles.headerButton}
+          style={commonStyles.headerButton}
         >
           <Ionicons name="settings-outline" size={24} color="#333" />
         </TouchableOpacity>
@@ -77,22 +78,37 @@ const Collections = ({ }) => {
           showsHorizontalScrollIndicator={false}
           data={sortedCollections}
           keyExtractor={(item) => item.id}
-          numColumns={2}
-          contentContainerStyle={styles.grid}
+          numColumns={3} // Adjusted to display 3 items per row
+          contentContainerStyle={collectionstyles.grid}
           columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensures items don't stretch
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.collectionCard}
+              style={collectionstyles.collectionCard}
               onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
             >
               {/* Collection Thumbnail */}
               <RenderThumbnail
                 thumbnail={item.thumbnail}
-                containerStyle={styles.thumbnailContainer}
-                thumbnailStyle={styles.thumbnail}
+                thumbnailStyle={collectionstyles.MainThumbnail}
+                scale={
+                  item.thumbnail.includes('tiktok.com') ? 0.51 :
+                    (item.thumbnail.includes('pinterest.com') || item.thumbnail.includes('pin.it')) ? 0.3 :
+                      undefined
+                }
               />
-              <Text style={styles.collectionName}>{item.name}</Text>
-              <Text style={styles.collectionStats}>{item.items.length} posts</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {item.name === "Unsorted" && (
+                  <AntDesign name="pushpino" size={12} color={colours.mainTexts} style={{ marginRight: 4 }} />
+                )}
+                <Text
+                  style={collectionstyles.MainCollectionName}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {item.name}
+                </Text>
+              </View>
+              <Text style={collectionstyles.collectionStats}>{item.items.length} posts</Text>
             </TouchableOpacity>
           )}
         />
@@ -100,70 +116,4 @@ const Collections = ({ }) => {
     </commonStyles.Bg>
   );
 };
-
 export default Collections;
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  profilePicture: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 8,
-    borderWidth: 2,
-    borderColor: '#ccc',
-  },
-  header: {
-    marginBottom: 16,
-    alignItems: 'center',
-  },
-  username: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  grid: {
-    justifyContent: 'space-between',
-  },
-  collectionCard: {
-    width: '48%',
-    backgroundColor: '#f9f9f9',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: 'center',
-    ...shadowStyles.light,
-    overflow: 'hidden',
-  },
-  collectionName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 8,
-  },
-  collectionStats: {
-    fontSize: 12,
-    color: '#555',
-  },
-  addButtonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-  },
-  thumbnail: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  instagramContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  instagramEmbed: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-});
