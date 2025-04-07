@@ -90,16 +90,16 @@ const EditPost = ({ route, navigation }) => {
   return (
     <commonStyles.Bg>
       <View style={[commonStyles.container, { marginTop: -10 }]}>
-        <View style={poststyles.header}>
+        <View style={commonStyles.customHeader}>
           <TouchableOpacity
-            style={poststyles.headerButton}
+            style={commonStyles.customHeaderBackButton}
             onPress={() => navigation.goBack()}
           >
             <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
-          <AppSubheading style={poststyles.headerTitle}>Edit Post Details</AppSubheading>
+          <AppSubheading style={commonStyles.customHeaderTitle}>Edit Post Details</AppSubheading>
           <TouchableOpacity
-            style={[poststyles.headerButton, poststyles.saveButton, isSaving && poststyles.disabledButton]}
+            style={[commonStyles.customHeaderActions, poststyles.saveButton, isSaving && poststyles.disabledButton]}
             onPress={handleSave}
             disabled={isSaving}
           >

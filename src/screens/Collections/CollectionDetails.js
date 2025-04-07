@@ -16,7 +16,7 @@ import { usePagination } from '../../hooks/usePagination';
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
 import { AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
-import commonStyles, { shadowStyles } from '../../styles/commonStyles';
+import commonStyles, { shadowStyles, colours } from '../../styles/commonStyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
@@ -256,7 +256,7 @@ const CollectionDetails = ({ route, navigation }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <Ionicons name="arrow-back" size={24} color="#000" />
+              <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
             </TouchableOpacity>
             <Text style={styles.collectionName}>{collectionName}</Text>
             <View style={styles.headerIcons}>

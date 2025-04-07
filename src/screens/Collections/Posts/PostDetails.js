@@ -121,30 +121,30 @@ const PostDetails = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={poststyles.container}>
+      <View style={[commonStyles.container, { marginTop: -10 }]}>
         {/* Header Section */}
-        <View style={poststyles.header}>
+        <View style={commonStyles.customHeader}>
           {/* Back Navigation Button */}
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={poststyles.headerBackButton}
+            style={commonStyles.customHeaderBackButton}
           >
             <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
           {/* Action Buttons */}
-          <View style={poststyles.headerActions}>
+          <View style={commonStyles.customHeaderActions}>
             {isExternalCollection ? (
               //Disabled buttons for external collections
               <>
                 <TouchableOpacity
                   disabled={true}
-                  style={[poststyles.actionButton, poststyles.disabledIcon]}
+                  style={[commonStyles.customActionButton, commonStyles.customActionButton]}
                 >
                   <Ionicons name="create-outline" size={24} color={colours.grey} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   disabled={true}
-                  style={[poststyles.actionButton, poststyles.disabledIcon]}
+                  style={[commonStyles.customActionButton, commonStyles.customActionButton]}
                 >
                   <Ionicons name="trash" size={24} color={colours.grey} />
                 </TouchableOpacity>
@@ -154,13 +154,13 @@ const PostDetails = ({ route, navigation }) => {
               <>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
-                  style={[poststyles.actionButton, poststyles.editButton]}
+                  style={[commonStyles.customActionButton, commonStyles.customActionButton]}
                 >
                   <Ionicons name="create-outline" size={24} color={colours.buttonsTextPink} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleDelete}
-                  style={[poststyles.actionButton, poststyles.deleteButton]}
+                  style={[commonStyles.customActionButton, commonStyles.customActionButton]}
                 >
                   <Ionicons name="trash" size={24} color={colours.delete} />
                 </TouchableOpacity>

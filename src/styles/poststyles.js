@@ -17,49 +17,10 @@ const poststyles = StyleSheet.create({
   standardInputContainer: {
     ...addbuttonstyles.standardInputContainer,
   },
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  //===== HEADER STYLES =====
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingVertical: 12,
-  },
-  headerBackButton: {
-    padding: 8,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    flex: 1,
-    textAlign: 'center',
-    color: colours.mainTexts,
-    fontSize: 22,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  actionButton: {
-    padding: 8,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  disabledIcon: {
-    opacity: 0.4,
   },
   //===== BUTTON STYLES =====
   saveButton: {

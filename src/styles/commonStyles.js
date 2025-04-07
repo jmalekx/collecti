@@ -345,6 +345,39 @@ const headerStyles = {
     justifyContent: 'center',
     alignItems: 'center',
   },
+  customHeader:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  customHeaderBackButton: {
+    padding: 8,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customHeaderTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: colours.mainTexts,
+    fontSize: 22,
+  },
+  customHeaderActions: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  customActionButton: {
+    padding: 8,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  customDisabledIcon: {
+    opacity: 0.4,
+  },
 };
 
 //Merge all style objects for export
