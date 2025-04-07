@@ -32,15 +32,13 @@ export const getBookmarks = async (userId) => {
   }
 };
 
-// Add a bookmark
+//Add bookmark
 export const addBookmark = async (userId, collection) => {
   try {
     const bookmarksRef = getUserBookmarksRef(userId);
 
-    // Ensure the document exists before updating
+    //Ensure the document exists before updating
     await setDoc(bookmarksRef, { collections: [] }, { merge: true });
-
-    // Add the bookmark
     await updateDoc(bookmarksRef, {
       collections: arrayUnion(collection),
     });
@@ -84,7 +82,8 @@ export const toggleBookmark = async (userId, collection) => {
     if (isBookmarked) {
       await removeBookmark(userId, collection.id);
       return { bookmarks: await getBookmarks(userId), added: false };
-    } else {
+    } 
+    else {
       await addBookmark(userId, collection);
       return { bookmarks: await getBookmarks(userId), added: true };
     }
