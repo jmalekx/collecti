@@ -132,18 +132,19 @@ const SearchPage = ({ navigation }) => {
         return;
       }
 
-      //Format collection data for bookmark
+      //Format collection data for bookmark - SIMPLIFIED
       const bookmarkData = {
         id: collectionId,
+        name: collection.name,
         ownerId: collection.ownerId,
         imageUrl: collection.thumbnail || DEFAULT_THUMBNAIL,
-        title: collection.name,
         description: collection.description || '',
       };
 
-      //Use toggle function from hook - toast is now handled within the hook
+      //Use toggle function from hook
       await toggleBookmark(bookmarkData);
-    } catch (error) {
+    } 
+    catch (error) {
       //Error handling done within hook
     }
   };

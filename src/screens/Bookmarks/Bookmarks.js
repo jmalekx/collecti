@@ -111,7 +111,7 @@ const Bookmarks = () => {
 
       {/* Collection Metadata */}
       <View style={bookmarkstyles.collectionInfo}>
-        <Text style={bookmarkstyles.collectionTitle}>{item.title}</Text>
+        <Text style={bookmarkstyles.collectionTitle}>{item.name}</Text>
         <Text style={bookmarkstyles.collectionDescription} numberOfLines={2}>
           {item.description || 'No description available'}
         </Text>

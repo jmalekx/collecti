@@ -33,10 +33,15 @@ export const useBookmarks = () => {
     try {
       setLoading(true);
       const bookmarks = await getBookmarks(currentUserId);
-      setBookmarkedCollections(bookmarks);
 
-      //Create a Set of IDs for efficient lookup
-      const ids = new Set(bookmarks.map(bookmark => bookmark.id));
+      //Map to ensure consistent field names
+      const processedBookmarks = bookmarks.map(bookmark => ({
+        ...bookmark,
+        title: bookmark.name 
+      }));
+
+      setBookmarkedCollections(processedBookmarks);
+      const ids = new Set(processedBookmarks.map(bookmark => bookmark.id));
       setBookmarkedIds(ids);
     }
     finally {
