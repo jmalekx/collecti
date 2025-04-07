@@ -208,6 +208,7 @@ const CollectionDetails = ({ route, navigation }) => {
   return (
     <commonStyles.Bg>
       <View style={[commonStyles.container, { marginTop: -10 }]}>
+        
         {/* Collection Header Component */}
         <CollectionDetailHeader
           navigation={navigation}

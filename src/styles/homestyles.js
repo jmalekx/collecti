@@ -28,9 +28,9 @@ const homestyles = StyleSheet.create({
     marginTop: -2.5,
   },
   profileContainer: {
-    width: 45,
-    height: 45,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     overflow: 'hidden',
     backgroundColor: '#f0f0f0',
     borderWidth: 3,

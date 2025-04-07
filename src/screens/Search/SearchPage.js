@@ -205,7 +205,7 @@ const SearchPage = ({ navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={[commonStyles.container, { marginTop: -15 }]}>
         <View>
           <SearchBar
             value={searchQuery}

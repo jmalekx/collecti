@@ -13,7 +13,6 @@ import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 
 //Custom component imports and styling
 import commonStyles, { shadowStyles } from '../../styles/commonStyles';
-import ProfileHeader from '../../components/layout/ProfileHeader';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/utilities/SearchBar';
 
@@ -63,13 +62,7 @@ const Collections = ({ }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
-
-        {/* Profile Header */}
-        <ProfileHeader
-          username={username}
-          profilePicture={profilePicture}
-        />
+      <View style={[commonStyles.container, { marginTop: -15 }]}>
 
         {/* Search Bar */}
         <SearchBar

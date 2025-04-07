@@ -209,7 +209,7 @@ const addbuttonstyles = StyleSheet.create({
     ...settingstyles.cancelButton,
   },
   confirmButton: {
-    backgroundColor: colours.buttonsTextPink,
+    backgroundColor: colours.primary,
   },
   buttonText: {
     fontSize: 16,
@@ -218,6 +218,7 @@ const addbuttonstyles = StyleSheet.create({
   },
   buttonTextWhite: {
     ...settingstyles.actionButtonText,
+    color: colours.buttonsTextPink,
   },
   //===== FLOATING ADD BUTTON STYLES =====
   btnContainer: {

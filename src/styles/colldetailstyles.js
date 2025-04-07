@@ -58,12 +58,12 @@ const colldetailstyles = StyleSheet.create({
     margin: '1%',
   },
   selectedPostCard: {
-    backgroundColor: colours.buttons,
+    backgroundColor: '#ebdec5',
     borderWidth: 2,
-    borderColor: colours.buttonsText,
+    borderColor: colours.buttons,
   },
   postTitle: {
-    fontSize: 16,
+    fontSize: 1,
     fontWeight: 'bold',
     color: colours.mainTexts,
     overflow: 'hidden',

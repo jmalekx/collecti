@@ -43,15 +43,15 @@ const Screen2 = ({ navigation }) => {
   const getPlatformColor = (platform) => {
     switch (platform) {
       case 'Instagram':
-        return '#E1306C';
+        return colours.instagram;
       case 'Tiktok':
-        return '#000000';
+        return colours.tiktok;
       case 'Pinterest':
-        return '#E60023';
+        return colours.pinterest;
       case 'Youtube':
-        return '#FF0000';
+        return colours.youtube;
       default:
-        return '#4CAF50';
+        return colours.gallery;
     }
   };
 
