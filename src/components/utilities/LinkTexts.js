@@ -64,7 +64,7 @@ const LinkTexts = ({ text, style }) => {
     );
   }
 
-  return <Text>{elements}</Text>;
+  return <Text style={style}>{elements}</Text>;
 };
 
 export default LinkTexts;
