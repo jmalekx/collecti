@@ -63,7 +63,6 @@ const SignUp = ({ navigation }) => {
       });
 
       showToast(toast, "Sign up successful", { type: TOAST_TYPES.SUCCESS });
-      navigation.navigate('Onboarding');
     }
     catch (error) {
       showToast(toast, "Sign up failed", { type: TOAST_TYPES.DANGER });
@@ -84,7 +83,7 @@ const SignUp = ({ navigation }) => {
 
         <View style={registerstyles.UpheaderContainer}>
           <AppText style={registerstyles.subHeaderText}>Create. Collect. Organise.</AppText>
-          <AppText style={registerstyles.subHeaderText}>Your inspo deserves a home — join today.</AppText>
+          <AppText style={registerstyles.subHeaderText}>Your inspo deserves a home — {'\n'}Join today.</AppText>
         </View>
 
         <View style={commonStyles.divider} />

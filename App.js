@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { ShareIntentProvider } from 'expo-share-intent';
-import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/inter';
+import { useFonts, Inter_400Regular, Inter_700Bold, Inter_400Regular_Italic, Inter_700Bold_Italic  } from '@expo-google-fonts/inter';
 
 //Project services and utilities
 import { subscribeToAuthChanges } from './src/services/auth';
@@ -46,7 +46,9 @@ function App() {
   const [initialising, setInitialising] = useState(true);
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
+    Inter_400Regular_Italic,
     Inter_700Bold,
+    Inter_700Bold_Italic,
   });
 
   //Subscribe to auth state changes
@@ -85,7 +87,7 @@ function App() {
   if (!fontsLoaded || initialising) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <LoadingIndicator size="large"/>
+        <LoadingIndicator size="large" />
       </View>
     );
   }

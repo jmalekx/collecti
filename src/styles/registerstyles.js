@@ -20,9 +20,9 @@ const registerstyles = StyleSheet.create({
   //===== SIGNUP SPECIFIC STYLES =====
   UpheaderContainer: {
     marginBottom: 8,
-    alignItems: 'flex-start',
-    alignSelf: 'stretch',
-    marginLeft: 40,
+    alignItems: 'flex-start', 
+    alignSelf: 'center',
+    width: '80%', 
     marginTop: 30,
   },
   thumbnail: {
@@ -52,9 +52,9 @@ const registerstyles = StyleSheet.create({
   subHeaderText: {
     fontSize: 16,
     color: colours.mainTexts,
-    textAlign: 'center',
+    textAlign: 'left',
     opacity: 0.85,
-    marginTop: 0,
+    marginTop: -4,
   },
   //===== BUTTON STYLES =====
   authButton: {

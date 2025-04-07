@@ -137,7 +137,6 @@ const SignIn = ({ navigation }) => {
                   placeholder="Password"
                   autoCapitalize="none"
                   onChangeText={setPassword}
-                  style={registerstyles.input}
                   leftIcon={<Ionicons name="lock-closed-outline" size={18} color={colours.buttonsHighlight} />}
                 />
               </View>

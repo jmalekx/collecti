@@ -14,7 +14,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 const typography = {
   fontRegular: 'Inter_400Regular',
+  fontItalic: 'Inter_400Regular_Italic',
   fontBold: 'Inter_700Bold',
+  fontBoldItalic: 'Inter_700Bold_Italic',
 };
 
 const colours = {
@@ -207,7 +209,7 @@ const buttonStyles = StyleSheet.create({
 
 const inputStyles = StyleSheet.create({
   inputContainer: {
-    width: 320,
+    width: '100%',
     marginVertical: 8,
     borderRadius: 15,
     ...shadowStyles.light,

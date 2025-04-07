@@ -350,7 +350,7 @@ const addbuttonstyles = StyleSheet.create({
     fontFamily: typography.fontRegular,
   },
   dropdownUnsortedSelectedText: {
-    fontStyle: 'italic',
+    fontFamily: typography.fontItalic,
   },
   dropdownModalOverlay: {
     flex: 1,
@@ -418,7 +418,7 @@ const addbuttonstyles = StyleSheet.create({
     fontWeight: '500',
   },
   dropdownUnsortedOptionText: {
-    fontStyle: 'italic',
+    fontFamily: typography.fontItalic,
   },
   dropdownAddNewOption: {
     paddingVertical: 16,

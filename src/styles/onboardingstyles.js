@@ -3,13 +3,13 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 
 //Custom component imports and styling
-import commonStyles, { colours } from './commonStyles';
+import commonStyles, { colours, typography } from './commonStyles';
 
 const onboardingstyles = StyleSheet.create({
   //===== COMMON STYLES =====
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     justifyContent: 'space-between',
     marginBottom: 40,
   },
@@ -89,7 +89,7 @@ const onboardingstyles = StyleSheet.create({
   },
   onboardHeading: {
     marginRight: 20,
-    marginTop: 100,
+    marginTop: 75,
     marginBottom: 0,
   },
   welcomeText: {
@@ -114,24 +114,25 @@ const onboardingstyles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
-    marginTop: 40,
+    marginTop: 20,
   },
   headerTexts: {
     textAlign: 'right',
-    width: '60%',
+    width: '70%',
     color: colours.mainTexts,
     fontSize: 16,
     fontWeight: 'bold',
-    fontStyle: 'italic',
+    fontFamily: typography.fontItalic,
   },
   SubTexts: {
-    width: '55%',
+    width: '45%',
+    fontFamily: typography.fontItalic,
   },
   SubText: {
     color: colours.mainTexts,
-    fontStyle: 'italic',
     textAlign: 'right',
     marginBottom: 12,
+    fontSize: 14,
   },
   centerContent: {
     alignItems: 'flex-end',
