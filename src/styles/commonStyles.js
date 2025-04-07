@@ -337,8 +337,14 @@ const headerStyles = {
     headerTitleAlign: 'center',
     headerBackTitleVisible: false,
     headerTintColor: colours.mainTexts,
-    
-  }
+  },
+  headerBackButton: {
+    padding: 8,
+    marginLeft: 6,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 };
 
 //Merge all style objects for export
