@@ -104,7 +104,7 @@ const UserSettings = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={18} style={settingstyles.chevronIcon} />
           </TouchableOpacity>
 
-          {/* Logout moved to Account section */}
+          {/* Logout */}
           <TouchableOpacity
             style={[settingstyles.settingButton, settingstyles.lastSettingButton]}
             onPress={() => setModalVisible(true)}
@@ -114,7 +114,11 @@ const UserSettings = ({ navigation }) => {
             </View>
             <Text style={settingstyles.settingButtonText}>Logout</Text>
           </TouchableOpacity>
+        </View>
 
+        {/* Danger Zone  */}
+        <AppSubheading style={[commonStyles.headerContainer, settingstyles.dangerHeader]}> Danger Zone</AppSubheading>
+        <View style={settingstyles.sectionContainer}>
           <TouchableOpacity
             style={[settingstyles.settingButton, settingstyles.lastSettingButton, settingstyles.deleteButton]}
             onPress={() => setDeleteModalVisible(true)}
@@ -129,7 +133,7 @@ const UserSettings = ({ navigation }) => {
         {/* App version */}
         <Text style={settingstyles.versionText}>Jessica Malek{'\n'}Collecti v1.0.0</Text>
 
-        {/* Modals - keep as they are */}
+        {/* Modals */}
         <ConfirmationModal
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
