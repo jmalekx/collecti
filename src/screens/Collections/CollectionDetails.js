@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, FlatList, TextInput, TouchableOpacity, Modal } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
@@ -8,15 +8,16 @@ import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 
 //Project services and utilities
-
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
 import { usePagination } from '../../hooks/usePagination';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
-import { AppHeading, AppButton, AppTextInput } from '../../components/utilities/Typography';
-import commonStyles, { shadowStyles, colours } from '../../styles/commonStyles';
+import { AppHeading, AppButton, AppTextInput, AppSubheading } from '../../components/utilities/Typography';
+import commonStyles, { colours } from '../../styles/commonStyles';
+import addbuttonstyles from '../../styles/addbuttonstyles';
+import colldetailstyles from '../../styles/colldetailstyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
@@ -24,7 +25,6 @@ import SearchBar from '../../components/utilities/SearchBar';
 import Dropdown from '../../components/utilities/Dropdown';
 
 /*
-
   CollectionDetails Component
 
   Displays details of a specific collection, including posts and options to edit or delete the collection.
@@ -82,7 +82,7 @@ const CollectionDetails = ({ route, navigation }) => {
   } = usePagination(filteredPosts, INITIAL_POSTS_TO_DISPLAY, POSTS_INCREMENT);
 
 
-  //State trabnsitions
+  //State transitions
   const [numColumns, setNumColumns] = useState(2);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -239,8 +239,8 @@ const CollectionDetails = ({ route, navigation }) => {
     return (
       <RenderThumbnail
         thumbnail={item.thumbnail}
-        containerStyle={styles.postContentContainer}
-        thumbnailStyle={styles.thumbnail}
+        containerStyle={colldetailstyles.postContentContainer}
+        thumbnailStyle={colldetailstyles.thumbnail}
         scale={0.42}
       />
     );
@@ -248,75 +248,93 @@ const CollectionDetails = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
-        {/* Collection Header */}
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
-            </TouchableOpacity>
-            <Text style={styles.collectionName}>{collectionName}</Text>
-            <View style={styles.headerIcons}>
-              {isSelectionMode ? (
-                <>
-                  <TouchableOpacity onPress={toggleSelectionMode} style={styles.selectionButton}>
-                    <Ionicons name="close" size={24} color="#000" />
-                  </TouchableOpacity>
-                  <Text style={styles.selectionCount}>{selectedPosts.length} selected</Text>
-                  <TouchableOpacity
-                    onPress={handleGroupMove}
-                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                    disabled={isExternalCollection}
-                  >
-                    <Ionicons name="move" size={22} color={isExternalCollection ? "#ccc" : "#0066cc"} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleGroupDelete}
-                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                    disabled={isExternalCollection}
-                  >
-                    <Ionicons name="trash" size={22} color={isExternalCollection ? "#ccc" : "#FF3B30"} />
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <>
-                  <TouchableOpacity
-                    onPress={toggleSelectionMode}
-                    style={[styles.selectionButton, isExternalCollection && styles.disabledIcon]}
-                    disabled={isExternalCollection}
-                  >
-                    <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : "#000"} />
-                  </TouchableOpacity>
-                  {canEditCollection ? (
-                    <>
-                      <TouchableOpacity onPress={() => navigation.navigate('EditCollection', { collectionId })} style={styles.selectionButton}>
-                        <Ionicons name="create-outline" size={24} color="#000" />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => setShowDeleteCollectionModal(true)} style={styles.selectionButton}>
-                        <Ionicons name="trash" size={24} color="red" />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                        <Ionicons name="create-outline" size={24} color="#ccc" />
-                      </TouchableOpacity>
-                      <TouchableOpacity disabled={true} style={[styles.selectionButton, styles.disabledIcon]}>
-                        <Ionicons name="trash" size={24} color="#ccc" />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
-              )}
-            </View>
+     <View style={[commonStyles.container, { marginTop: -10 }]}>
+        <View style={commonStyles.customHeader}>
+
+          {/* Back Navigation Button */}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={commonStyles.customHeaderBackButton}
+          >
+            <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
+          </TouchableOpacity>
+          <Text style={colldetailstyles.collectionName}>{collectionName}</Text>
+
+          {/* Action Buttons */}
+          <View style={commonStyles.customHeaderActions}>
+            {isSelectionMode ? (
+              <>
+                <TouchableOpacity
+                  onPress={toggleSelectionMode}
+                  style={commonStyles.customActionButton}
+                >
+                  <Ionicons name="close" size={24} color={colours.mainTexts} />
+                </TouchableOpacity>
+                <Text style={colldetailstyles.selectionCount}>{selectedPosts.length} selected</Text>
+                <TouchableOpacity
+                  onPress={handleGroupMove}
+                  style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="move" size={22} color={isExternalCollection ? colours.mainTexts : colours.buttonsTextPink} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleGroupDelete}
+                  style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="trash" size={22} color={isExternalCollection ? colours.mainTexts : colours.delete } />
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <TouchableOpacity
+                  onPress={toggleSelectionMode}
+                  style={[commonStyles.customActionButton, isExternalCollection && colldetailstyles.disabledIcon]}
+                  disabled={isExternalCollection}
+                >
+                  <Ionicons name="checkmark-circle-outline" size={24} color={isExternalCollection ? "#ccc" : colours.mainTexts} />
+                </TouchableOpacity>
+                {canEditCollection ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('EditCollection', { collectionId })}
+                      style={commonStyles.customActionButton}
+                    >
+                      <Ionicons name="create-outline" size={24} color={colours.buttonsTextPink} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setShowDeleteCollectionModal(true)}
+                      style={commonStyles.customActionButton}
+                    >
+                      <Ionicons name="trash" size={24} color={colours.delete} />
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity
+                      disabled={true}
+                      style={[commonStyles.customActionButton, colldetailstyles.disabledIcon]}
+                    >
+                      <Ionicons name="create-outline" size={24} color="#ccc" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      disabled={true}
+                      style={[commonStyles.customActionButton, colldetailstyles.disabledIcon]}
+                    >
+                      <Ionicons name="trash" size={24} color="#ccc" />
+                    </TouchableOpacity>
+                  </>
+                )}
+              </>
+            )}
           </View>
-          <View style={styles.headerBottom}>
-            <Text style={styles.collectionDescription}>{collectionDescription}</Text>
-            <Text style={styles.postCount}>{posts.length} posts</Text>
-          </View>
+        </View>
+
+        {/* Description line */}
+        <View style={colldetailstyles.headerBottom}>
+          <Text style={colldetailstyles.collectionDescription}>{collectionDescription}</Text>
+          <Text style={colldetailstyles.postCount}>{posts.length} posts</Text>
         </View>
 
         {/* Add Search Bar */}
@@ -338,9 +356,9 @@ const CollectionDetails = ({ route, navigation }) => {
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={() => (
-            <View style={styles.emptyContainer}>
+            <View style={colldetailstyles.emptyContainer}>
               <MaterialIcons name="post-add" size={64} color="#ccc" />
-              <Text style={styles.emptyText}>
+              <Text style={colldetailstyles.emptyText}>
                 This collection is empty! Start adding posts to keep things organized.
               </Text>
             </View>
@@ -348,10 +366,9 @@ const CollectionDetails = ({ route, navigation }) => {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[
-                styles.postCard,
-                isSelectionMode && selectedPosts.includes(item.id) && styles.selectedPostCard
+                colldetailstyles.postCard,
+                isSelectionMode && selectedPosts.includes(item.id) && colldetailstyles.selectedPostCard
               ]}
-
               onPress={() => {
                 if (isSelectionMode) {
                   toggleItemSelection(item.id);
@@ -370,12 +387,12 @@ const CollectionDetails = ({ route, navigation }) => {
               }}
             >
               {/* Platform Icon */}
-              <View style={styles.platformIconContainer}>
+              <View style={colldetailstyles.platformIconContainer}>
                 {getPlatformIcon(item)}
               </View>
 
               {isSelectionMode && (
-                <View style={styles.checkboxContainer}>
+                <View style={colldetailstyles.checkboxContainer}>
                   <Ionicons
                     name={selectedPosts.includes(item.id) ? "checkmark-circle" : "ellipse-outline"}
                     size={24}
@@ -386,10 +403,14 @@ const CollectionDetails = ({ route, navigation }) => {
 
               {/* Post Content */}
               {renderThumbnail(item)}
-              <Text style={styles.postTitle}>{item.notes}</Text>
-
+              <Text
+                style={colldetailstyles.postTitle}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.notes}
+              </Text>
             </TouchableOpacity>
-
           )}
         />
 
@@ -400,28 +421,29 @@ const CollectionDetails = ({ route, navigation }) => {
           animationType="slide"
           onRequestClose={() => setIsGroupActionModalVisible(false)}
         >
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <AppHeading style={styles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
+          <View style={addbuttonstyles.modalBg}>
+            <View style={[addbuttonstyles.modalContainer, { padding: 20 }]}>
+              <View style={addbuttonstyles.modalHeader}>
+                <AppHeading style={addbuttonstyles.modalTitle}>Move {selectedPosts.length} Posts</AppHeading>
                 <TouchableOpacity onPress={() => setIsGroupActionModalVisible(false)}>
-                  <Ionicons name="close" size={24} color="#000" />
+                  <Ionicons name="close-outline" size={24} color={colours.mainTexts} />
                 </TouchableOpacity>
               </View>
 
               {!isAddingNewCollection ? (
                 <>
-                  <Text style={styles.modalLabel}>Select Target Collection:</Text>
+                  <Text style={colldetailstyles.modalLabel}>Select Target Collection:</Text>
                   {collections.length > 0 ? (
-                    <View style={styles.dropdownContainer}>
+                    <View style={colldetailstyles.dropdownContainer}>
                       <Dropdown
-                        options={collections.map(collection => ({
-                          label: collection.name,
-                          value: collection.id
-                        }))}
-                        pinnedOptions={[
-                          { label: "+ Create New Collection", value: "new" }
-                        ]}
+                        options={collections
+                          //Filter out the Unsorted collection 
+                          .filter(collection => collection.name !== 'Unsorted')
+                          .map(collection => ({
+                            label: collection.name,
+                            value: collection.id
+                          }))
+                        }
                         selectedValue={selectedTargetCollection}
                         onValueChange={(value) => {
                           if (value === 'new') {
@@ -431,59 +453,64 @@ const CollectionDetails = ({ route, navigation }) => {
                           }
                         }}
                         placeholder="Select a collection"
+                        addNewOption={true}
+                        addNewLabel="Add New Collection"
+                        onAddNew={() => setIsAddingNewCollection(true)}
                       />
                     </View>
                   ) : (
-                    <View style={styles.noCollectionsContainer}>
-                      <Text style={styles.noCollectionsText}>No other collections available</Text>
+                    <View style={colldetailstyles.noCollectionsContainer}>
+                      <Text style={colldetailstyles.noCollectionsText}>No other collections available</Text>
                     </View>
                   )}
 
-                  <View style={styles.buttonRow}>
-                    <AppButton
-                      style={[styles.actionButton, styles.cancelButton]}
-                      title="Cancel"
+                  <View style={addbuttonstyles.buttonRow}>
+                    <TouchableOpacity
+                      style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
                       onPress={() => setIsGroupActionModalVisible(false)}
-                      textStyle={styles.buttonText}
-                    />
+                    >
+                      <Text style={addbuttonstyles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
 
                     {collections.length > 0 && (
-                      <AppButton
-                        style={[styles.actionButton, styles.confirmButton]}
-                        title="Move"
+                      <TouchableOpacity
+                        style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
                         onPress={handleMoveToExistingCollection}
-                        textStyle={styles.buttonTextWhite}
-                      />
+                      >
+                        <Text style={addbuttonstyles.buttonTextWhite}>Move</Text>
+                      </TouchableOpacity>
                     )}
                   </View>
                 </>
               ) : (
                 <>
-                  <Text style={styles.modalLabel}>New Collection Name:</Text>
-                  <AppTextInput
-                    style={styles.input}
-                    placeholder="Enter Collection Name"
-                    value={newCollectionName}
-                    onChangeText={setNewCollectionName}
-                  />
+                  <Text style={colldetailstyles.modalLabel}>New Collection Name:</Text>
+                  <View style={addbuttonstyles.standardInputContainer}>
+                    <TextInput
+                      placeholder="Enter Collection Name"
+                      value={newCollectionName}
+                      onChangeText={setNewCollectionName}
+                      style={addbuttonstyles.standardInput}
+                    />
+                  </View>
 
-                  <View style={styles.buttonRow}>
-                    <AppButton
-                      style={[styles.actionButton, styles.cancelButton]}
-                      title="Back"
+                  <View style={addbuttonstyles.buttonRow}>
+                    <TouchableOpacity
+                      style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
                       onPress={() => {
                         setIsAddingNewCollection(false);
                         setNewCollectionName('');
                       }}
-                      textStyle={styles.buttonText}
-                    />
+                    >
+                      <Text style={addbuttonstyles.buttonText}>Back</Text>
+                    </TouchableOpacity>
 
-                    <AppButton
-                      style={[styles.actionButton, styles.confirmButton]}
-                      title="Create & Move"
+                    <TouchableOpacity
+                      style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
                       onPress={handleCreateCollectionAndMove}
-                      textStyle={styles.buttonTextWhite}
-                    />
+                    >
+                      <Text style={addbuttonstyles.buttonTextWhite}>Create & Move</Text>
+                    </TouchableOpacity>
                   </View>
                 </>
               )}
@@ -523,25 +550,25 @@ const CollectionDetails = ({ route, navigation }) => {
           animationType="slide"
           onRequestClose={closeMenu}
         >
-          <View style={styles.menuModal}>
-            <View style={styles.menuContent}>
+          <View style={colldetailstyles.menuModal}>
+            <View style={colldetailstyles.menuContent}>
               <TouchableOpacity
-                style={styles.menuItem}
+                style={colldetailstyles.menuItem}
                 onPress={() => {
                   navigation.navigate('EditPost', { collectionId, postId: selectedPost.id });
                   closeMenu();
                 }}
               >
-                <Text style={styles.menuText}>Edit Post</Text>
+                <Text style={colldetailstyles.menuText}>Edit Post</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.menuItem}
+                style={colldetailstyles.menuItem}
                 onPress={() => deletePost(selectedPost.id)}
               >
-                <Text style={[styles.menuText, { color: 'red' }]}>Delete Post</Text>
+                <Text style={[colldetailstyles.menuText, { color: 'red' }]}>Delete Post</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem} onPress={closeMenu}>
-                <Text style={styles.menuText}>Cancel</Text>
+              <TouchableOpacity style={colldetailstyles.menuItem} onPress={closeMenu}>
+                <Text style={colldetailstyles.menuText}>Cancel</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -550,253 +577,5 @@ const CollectionDetails = ({ route, navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  header: {
-    marginBottom: 16,
-  },
-  headerTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  icon: {
-    marginLeft: 16,
-  },
-  headerBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  collectionName: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    flex: 1,
-    marginHorizontal: 8,
-  },
-  collectionDescription: {
-    fontSize: 16,
-    color: '#555',
-    flex: 1,
-    marginRight: 16,
-  },
-  postCount: {
-    fontSize: 16,
-    color: '#888',
-    fontWeight: '500',
-  },
-  postCard: {
-    marginBottom: 16,
-    padding: 16,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 12,
-    ...shadowStyles.light,
-    position: 'relative',
-    width: '48%',
-    margin: '1%',
-  },
-
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  selectedPostCard: {
-    backgroundColor: '#e6f2ff',
-    borderWidth: 2,
-    borderColor: '#007AFF',
-  },
-  menuButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  thumbnail: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  webview: {
-    width: '100%',
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  postTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  menuModal: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  menuContent: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    width: '80%',
-  },
-  menuItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  menuText: {
-    fontSize: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: '#666',
-  },
-  selectionButton: {
-    padding: 8,
-  },
-  selectionCount: {
-    marginLeft: 8,
-    fontSize: 16,
-    color: '#007AFF',
-    fontWeight: 'bold',
-  },
-  checkboxContainer: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    zIndex: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContainer: {
-    width: '85%',
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    ...shadowStyles.medium,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    paddingBottom: 12,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  modalLabel: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: '#f9f9f9',
-    overflow: 'hidden',
-  },
-  dropdownContainer: {
-    marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 16,
-  },
-  actionButton: {
-    flex: 1,
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  cancelButton: {
-    backgroundColor: '#f0f0f0',
-  },
-  confirmButton: {
-    backgroundColor: '#007AFF',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  buttonTextWhite: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  noCollectionsContainer: {
-    padding: 16,
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  noCollectionsText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  disabledIcon: {
-    opacity: 0.4,
-  },
-  headerIcons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 1,
-  },
-  icon: {
-    marginLeft: 16,
-  },
-  iconCompact: {
-    marginLeft: 8,
-  },
-  selectionButton: {
-    padding: 6,
-  },
-  platformIconContainer: {
-    position: 'absolute',
-    top: 8,
-    left: 8,
-    zIndex: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 12,
-    padding: 4,
-  },
-});
 
 export default CollectionDetails;

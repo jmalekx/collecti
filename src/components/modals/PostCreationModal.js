@@ -556,7 +556,7 @@ const PostCreationModal = ({
                   onValueChange={(value) => setSelectedCollection(value)}
                   placeholder="Select a collection"
                   addNewOption={true}
-                  addNewLabel="+ Add New Collection"
+                  addNewLabel="Add New Collection"
                   onAddNew={() => setIsNewCollection(true)}
                   //Highlight pending new collection if it exists
                   highlightedValues={pendingNewCollection ? [pendingNewCollection.id] : []}
