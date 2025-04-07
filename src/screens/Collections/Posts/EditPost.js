@@ -115,7 +115,7 @@ const EditPost = ({ route, navigation }) => {
           <View style={poststyles.formContainer}>
             <View style={poststyles.section}>
               <AppSubheading style={commonStyles.textSubheading}>Notes</AppSubheading>
-              <View style={poststyles.standardInputContainer}>
+              <View style={[poststyles.standardInputContainer, { minHeight: 120 }]}>
                 <TouchableOpacity activeOpacity={1}>
                   <TextInput
                     style={[poststyles.standardInput, poststyles.textArea]}

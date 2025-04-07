@@ -50,7 +50,7 @@ disabledButton: {
 //===== FORM SECTION STYLES =====
 section: {
   ...addbuttonstyles.section,
-  marginBottom: 40,
+  marginBottom: 5,
 },
 sectionTitle: {
   ...addbuttonstyles.sectionTitle,

@@ -1,19 +1,21 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 //Third-party library external imports
 import { useToast } from 'react-native-toast-notifications';
+import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { getCurrentUserId } from '../../services/firebase';
-
 import { getCollection, updateCollection } from '../../services/collections';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
-import commonStyles from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
+import { AppText, AppSubheading } from '../../components/utilities/Typography';
+import poststyles from '../../styles/poststyles';
 
 /*
   EditCollection Screen
@@ -32,6 +34,7 @@ const EditCollection = ({ route, navigation }) => {
   const [collectionName, setCollectionName] = useState('');
   const [collectionDescription, setCollectionDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   //Context states
   const toast = useToast();
@@ -80,7 +83,7 @@ const EditCollection = ({ route, navigation }) => {
     }
 
     try {
-      setLoading(true);
+      setIsSaving(true);
       const userId = getCurrentUserId();
 
       if (!userId) {
@@ -101,93 +104,85 @@ const EditCollection = ({ route, navigation }) => {
       showToast(toast, "Failed to update collection", { type: TOAST_TYPES.DANGER });
     }
     finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   };
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <LoadingIndicator/>
-      </View>
+      <commonStyles.Bg>
+        <View style={commonStyles.loadingContainer}>
+          <LoadingIndicator />
+        </View>
+      </commonStyles.Bg>
     );
   }
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={commonStyles.container}>
+        <View style={poststyles.header}>
+          <TouchableOpacity
+            style={poststyles.headerButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="arrow-back" size={24} color={colours.mainTexts} />
+          </TouchableOpacity>
+          <AppSubheading style={poststyles.headerTitle}>Edit Collection</AppSubheading>
+          <TouchableOpacity
+            style={[poststyles.headerButton, poststyles.saveButton, isSaving && poststyles.disabledButton]}
+            onPress={saveChanges}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <LoadingIndicator size="small" />
+            ) : (
+              <Ionicons name="checkmark" size={20} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
 
-        {/* Collection Name */}
-        <Text style={styles.label}>Collection Name</Text>
-        <TextInput
-          style={styles.input}
-          value={collectionName}
-          onChangeText={setCollectionName}
-          placeholder="Enter collection name"
-          editable={!loading}
-        />
+        <ScrollView style={poststyles.scrollContainer}>
+          <View style={poststyles.formContainer}>
+            <View style={poststyles.section}>
+              <AppSubheading style={commonStyles.textSubheading}>Collection Name</AppSubheading>
+              <View style={poststyles.standardInputContainer}>
+                <TouchableOpacity activeOpacity={1}>
+                  <TextInput
+                    style={poststyles.standardInput}
+                    value={collectionName}
+                    onChangeText={setCollectionName}
+                    placeholder="Enter collection name..."
+                    placeholderTextColor={colours.subTexts}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-        {/* Collection Description */}
-        <Text style={styles.label}>Collection Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={collectionDescription}
-          onChangeText={setCollectionDescription}
-          placeholder="Enter collection description"
-          multiline
-          numberOfLines={4}
-          editable={!loading}
-        />
-
-        {/* Save Button */}
-        <TouchableOpacity
-          style={[styles.saveButton, loading && styles.disabledButton]}
-          onPress={saveChanges}
-          disabled={loading}
-        >
-          <Text style={styles.saveButtonText}>
-            {loading ? "Saving..." : "Save Changes"}
-          </Text>
-        </TouchableOpacity>
+            <View style={poststyles.section}>
+              <AppSubheading style={commonStyles.textSubheading}>Collection Description</AppSubheading>
+              <View style={[poststyles.standardInputContainer, { minHeight: 120 }]}>
+                <TouchableOpacity activeOpacity={1}>
+                  <TextInput
+                    style={[poststyles.standardInput, poststyles.textArea]}
+                    value={collectionDescription}
+                    onChangeText={setCollectionDescription}
+                    placeholder="Enter collection description..."
+                    placeholderTextColor={colours.subTexts}
+                    multiline
+                    numberOfLines={4}
+                  />
+                </TouchableOpacity>
+              </View>
+              <AppText style={poststyles.helperText}>
+                Add details about what this collection contains
+              </AppText>
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    fontSize: 16,
-  },
-  textArea: {
-    height: 120,
-    textAlignVertical: 'top',
-  },
-  saveButton: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  disabledButton: {
-    backgroundColor: '#cccccc',
-  },
-  saveButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-});
 
 export default EditCollection;
