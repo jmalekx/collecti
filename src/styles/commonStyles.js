@@ -27,7 +27,7 @@ const colours = {
   grey: '#c0c0c060',
   darkergrey: '#999',
 
-   //===== TEXT COLORS =====
+  //===== TEXT COLORS =====
   mainTexts: '#333',
   subTexts: '#666',
 
@@ -36,6 +36,13 @@ const colours = {
   buttonsHighlight: '#8a6620',
   buttonsText: '#aa790f',
   buttonsTextPink: '#D67A98',
+  delete: '#FF3B30',
+
+  //===== MEDIA COLORS =====
+  pinterest: '#E60023',
+  instagram: '#E1306C',
+  tiktok: '#000',
+  youtube: '#FF0000',
 }
 
 const shadowStyles = {
@@ -274,6 +281,33 @@ const loadingStyles = StyleSheet.create({
   },
 });
 
+const componentStyles = StyleSheet.create({
+  progressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  progressBar: {
+    height: 4,
+    borderRadius: 2,
+    flex: 1,
+    marginHorizontal: 2,
+  },
+  progressActiveBar: {
+    backgroundColor: colours.buttonsTextPink,
+  },
+  progressInactiveBar: {
+    backgroundColor: colours.tertiary,
+  },
+  renderThmbContain: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden'
+  },
+});
+
 const Bg = React.memo(({ children, style }) => {
   return (
     <LinearGradient
@@ -301,6 +335,9 @@ const headerStyles = {
     },
     headerShadowVisible: false,
     headerTitleAlign: 'center',
+    headerBackTitleVisible: false,
+    headerTintColor: colours.mainTexts,
+    
   }
 };
 
@@ -314,6 +351,7 @@ const commonStyles = {
   ...searchStyles,
   ...shadowStyles,
   ...loadingStyles,
+  ...componentStyles,
   Bg,
 };
 

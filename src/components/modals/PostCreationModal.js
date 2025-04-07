@@ -374,7 +374,7 @@ const PostCreationModal = ({
               resetModalStates();
               onClose();
             }}>
-              <Ionicons name="close-outline" size={24} color="#000" />
+              <Ionicons name="close-outline" size={24} color={colours.mainTexts} />
             </TouchableOpacity>
           </View>
 
@@ -421,7 +421,7 @@ const PostCreationModal = ({
                       style={addbuttonstyles.removeImageButton}
                       onPress={() => setImage(null)}
                     >
-                      <Ionicons name="close-circle" size={24} color="#FF3B30" />
+                      <Ionicons name="close-circle" size={24} color={colours.delete} />
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -476,10 +476,10 @@ const PostCreationModal = ({
                             currentPlatform === 'youtube' ? 'YouTube Content' :
                               'Web Content'}
                     </Text>
-                    {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color="#E1306C" />}
-                    {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color="#000000" />}
-                    {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={20} color="#E60023" />}
-                    {currentPlatform === 'youtube' && <Ionicons name="logo-youtube" size={20} color="#FF0000" />}
+                    {currentPlatform === 'instagram' && <Ionicons name="logo-instagram" size={20} color={colours.instagram} />}
+                    {currentPlatform === 'tiktok' && <Ionicons name="logo-tiktok" size={20} color={colours.tiktok} />}
+                    {currentPlatform === 'pinterest' && <Ionicons name="logo-pinterest" size={20} color={colours.pinterest} />}
+                    {currentPlatform === 'youtube' && <Ionicons name="logo-youtube" size={20} color={colours.youtube} />}
                   </View>
                 )}
               </View>
@@ -525,7 +525,7 @@ const PostCreationModal = ({
                     style={addbuttonstyles.checkmarkButton}
                     onPress={handleQuickAddCollection}
                   >
-                    <Ionicons name="checkmark-outline" size={24} color="#fff" />
+                    <Ionicons name="checkmark-outline" size={24} color={colours.mainTexts} />
                   </TouchableOpacity>
                 </View>
               ) : (

@@ -12,6 +12,7 @@ import PostCreationModal from '../modals/PostCreationModal';
 import CollectionCreationModal from '../modals/CollectionCreationModal';
 import useMenuAnimation from '../../hooks/useMenuAnimation';
 import addbuttonstyles from '../../styles/addbuttonstyles';
+import { colours } from '../../styles/commonStyles';
 
 /*
   AddButton Component
@@ -107,7 +108,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           }}
         >
           <View style={addbuttonstyles.menuItemButton}>
-            <MaterialIcons name="post-add" size={20} color="#fff" />
+            <MaterialIcons name="post-add" size={20} color={colours.tertiary} />
           </View>
           <Text style={addbuttonstyles.menuItemLabel}>Post</Text>
         </TouchableOpacity>
@@ -135,7 +136,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           }}
         >
           <View style={addbuttonstyles.menuItemButton}>
-            <Ionicons name="folder-open" size={20} color="#fff" />
+            <Ionicons name="folder-open" size={20} color={colours.tertiary} />
           </View>
           <Text style={addbuttonstyles.menuItemLabel}>Collection</Text>
         </TouchableOpacity>
@@ -148,7 +149,7 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
           onPress={() => setIsOptionsOpen(!isOptionsOpen)}
         >
           <Animated.View style={{ transform: [{ rotate: rotateInterpolation }] }}>
-            <Ionicons name="add-outline" size={30} color="#D67A98" />
+            <Ionicons name="add-outline" size={30} color={colours.buttonsTextPink} />
           </Animated.View>
         </TouchableOpacity>
       </View>

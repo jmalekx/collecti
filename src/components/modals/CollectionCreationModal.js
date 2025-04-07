@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { AppHeading } from '../utilities/Typography';
 import { showToast, TOAST_TYPES } from '../utilities/Toasts';
 import addbuttonstyles from '../../styles/addbuttonstyles';
+import { colours } from '../../styles/commonStyles';
 
 /*
   CollectionCreationModal Component
@@ -71,7 +72,7 @@ const CollectionCreationModal = ({ visible, onClose, onCreateCollection, toast }
               resetState();
               onClose();
             }}>
-              <Ionicons name="close-outline" size={24} color="#000" />
+              <Ionicons name="close-outline" size={24} color={colours.mainTexts} />
             </TouchableOpacity>
           </View>
 

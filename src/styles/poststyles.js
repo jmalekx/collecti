@@ -7,71 +7,175 @@ import { colours, shadowStyles } from './commonStyles';
 import addbuttonstyles from './addbuttonstyles';
 
 const poststyles = StyleSheet.create({
- //===== CONTAINER STYLES =====
- scrollContainer: {
-  flex: 1,
-},
-formContainer: {
-  padding: 4,
-},
-standardInputContainer: {
-  ...addbuttonstyles.standardInputContainer,
-},
-//===== HEADER STYLES =====
-header: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 16,
-  paddingVertical: 12,
-},
-headerButton: {
-  padding: 8,
-  borderRadius: 8,
-},
-headerTitle: {
-  flex: 1,
-  textAlign: 'center',
-  color: colours.mainTexts,
-},
-//===== BUTTON STYLES =====
-saveButton: {
-  backgroundColor: colours.buttonsTextPink,
-  borderRadius: 12,
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 35,
-  height: 35,
-  ...shadowStyles.light,
-},
-disabledButton: {
-  opacity: 0.7,
-},
-//===== FORM SECTION STYLES =====
-section: {
-  ...addbuttonstyles.section,
-  marginBottom: 5,
-},
-sectionTitle: {
-  ...addbuttonstyles.sectionTitle,
-},
-//===== INPUT STYLES =====
-standardInput: {
-  ...addbuttonstyles.standardInput,
-},
-textArea: {
-  ...addbuttonstyles.textArea,
-  minHeight: 120,
-},
-//===== HELPER TEXT STYLES =====
-helperText: {
-  fontSize: 12,
-  color: colours.subTexts,
-  marginTop: 4,
-  marginLeft: 4,
-  fontStyle: 'italic',
-},
-
+  //===== CONTAINER STYLES =====
+  scrollContainer: {
+    flex: 1,
+  },
+  formContainer: {
+    padding: 4,
+  },
+  standardInputContainer: {
+    ...addbuttonstyles.standardInputContainer,
+  },
+  container: {
+    flex: 1,
+    padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  //===== HEADER STYLES =====
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingVertical: 12,
+  },
+  headerBackButton: {
+    padding: 8,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+    textAlign: 'center',
+    color: colours.mainTexts,
+    fontSize: 22,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  actionButton: {
+    padding: 8,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  disabledIcon: {
+    opacity: 0.4,
+  },
+  //===== BUTTON STYLES =====
+  saveButton: {
+    backgroundColor: colours.buttonsTextPink,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: 40,
+    ...shadowStyles.light,
+  },
+  disabledButton: {
+    opacity: 0.7,
+  },
+  platformButton: {
+    backgroundColor: colours.buttonsTextPink,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 16,
+    ...shadowStyles.light,
+  },
+  platformButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  //===== FORM SECTION STYLES =====
+  section: {
+    ...addbuttonstyles.section,
+    marginBottom: 5,
+  },
+  sectionTitle: {
+    ...addbuttonstyles.sectionTitle,
+  },
+  //===== INPUT STYLES =====
+  standardInput: {
+    ...addbuttonstyles.standardInput,
+  },
+  textArea: {
+    ...addbuttonstyles.textArea,
+    minHeight: 120,
+  },
+  //===== HELPER TEXT STYLES =====
+  helperText: {
+    fontSize: 12,
+    color: colours.subTexts,
+    marginTop: 4,
+    marginLeft: 4,
+    fontStyle: 'italic',
+  },
+  //===== POST DETAIL STYLES =====
+  notes: {
+    fontSize: 18,
+    lineHeight: 24,
+    marginBottom: 16,
+    color: colours.mainTexts,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 20,
+  },
+  tag: {
+    backgroundColor: colours.backgroundLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    color: colours.subTexts,
+  },
+  metaContainer: {
+    marginBottom: 16,
+    borderLeftWidth: 3,
+    borderLeftColor: colours.buttonsTextPink,
+    paddingLeft: 12,
+  },
+  dateText: {
+    fontSize: 14,
+    color: colours.subTexts,
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
+  platformText: {
+    fontSize: 14,
+    color: colours.subTexts,
+    fontStyle: 'italic',
+  },
+  //===== POST RENDER STYLES =====
+  renderThumbnail: {
+    width: '100%',
+    height: 400,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  embedContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  errorContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  errorText: {
+    color: '#666',
+    fontSize: 16,
+  },
+  linkText: {
+    color: '#007AFF',
+    textAlign: 'center',
+    marginBottom: 16,
+    textDecorationLine: 'underline',
+  }
 });
 
 export default poststyles;

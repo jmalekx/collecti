@@ -55,7 +55,7 @@ const ConfirmationModal = ({
                   settingstyles.primaryIcon
             ]}>
               <Ionicons name={icon} size={36} color={
-                primaryStyle === 'danger' ? '#FF3B30' :
+                primaryStyle === 'danger' ? colours.delete :
                   primaryStyle === 'warning' ? '#FF9500' :
                     colours.buttonsText
               } />

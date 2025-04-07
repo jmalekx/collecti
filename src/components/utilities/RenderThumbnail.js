@@ -1,12 +1,13 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Image } from 'react-native';
 
 //Custom component imports and styling
 import InstagramEmbed from '../embeds/InstagramEmbed';
 import TikTokEmbed from '../embeds/TiktokEmbed';
 import YouTubeEmbed from '../embeds/YoutubeEmbed';
 import PinterestEmbed from '../embeds/PinterestEmbed';
+import commonStyles from '../../styles/commonStyles';
 
 /*
   RenderThumbnail Component
@@ -29,7 +30,7 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
   //Instagram handling
   if (thumbnail && thumbnail.includes('instagram.com')) {
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <InstagramEmbed
           url={thumbnail}
           style={thumbnailStyle}
@@ -42,7 +43,7 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
   //TikTok handling
   else if (thumbnail && thumbnail.includes('tiktok.com')) {
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <TikTokEmbed
           url={thumbnail}
           style={thumbnailStyle}
@@ -55,7 +56,7 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
   //Pinterest handling
   else if (thumbnail && thumbnail.includes('pinterest.com') || thumbnail && thumbnail.includes('pin.it')) {
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <PinterestEmbed
           url={thumbnail}
           style={thumbnailStyle}
@@ -68,7 +69,7 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
   //YouTube handling
   else if (thumbnail && (thumbnail.includes('youtube.com') || thumbnail.includes('youtu.be'))) {
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <YouTubeEmbed
           url={thumbnail}
           style={thumbnailStyle}
@@ -81,7 +82,7 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
   //Default image handling
   else {
     return (
-      <View style={[styles.container, containerStyle]}>
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <Image
           source={{ uri: thumbnail }}
           style={thumbnailStyle}
@@ -90,14 +91,5 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
     );
   }
 };
-
-const styles = StyleSheet.create({
-  container: {
-    //Base container style - minimal to allow parent control
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden'
-  }
-});
 
 export default RenderThumbnail;

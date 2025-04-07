@@ -120,13 +120,13 @@ const EditCollection = ({ route, navigation }) => {
 
   return (
     <commonStyles.Bg>
-      <View style={commonStyles.container}>
+      <View style={[commonStyles.container, {marginTop:-10}] }>
         <View style={poststyles.header}>
           <TouchableOpacity
             style={poststyles.headerButton}
             onPress={() => navigation.goBack()}
           >
-            <Ionicons name="arrow-back" size={24} color={colours.mainTexts} />
+            <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
           <AppSubheading style={poststyles.headerTitle}>Edit Collection</AppSubheading>
           <TouchableOpacity
@@ -137,7 +137,7 @@ const EditCollection = ({ route, navigation }) => {
             {isSaving ? (
               <LoadingIndicator size="small" />
             ) : (
-              <Ionicons name="checkmark" size={20} color="#fff" />
+              <Ionicons name="checkmark" size={20} color={colours.tertiary}/>
             )}
           </TouchableOpacity>
         </View>

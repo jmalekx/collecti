@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image } from 'react-native';
 
 //Project services and utilities
 import { extractPostUrl } from '../../services/platformService';
@@ -11,6 +11,7 @@ import InstagramEmbed from '../embeds/InstagramEmbed';
 import TikTokEmbed from '../embeds/TiktokEmbed';
 import YouTubeEmbed from '../embeds/YoutubeEmbed';
 import PinterestEmbed from '../embeds/PinterestEmbed';
+import poststyles from '../../styles/poststyles';
 
 /*
   Post Content Renderer Component
@@ -27,8 +28,8 @@ const RenderPosts = ({ post, toast }) => {
 
   if (!postUrl) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Unable to load content</Text>
+      <View style={poststyles.errorContainer}>
+        <Text style={poststyles.errorText}>Unable to load content</Text>
       </View>
     );
   }
@@ -39,7 +40,7 @@ const RenderPosts = ({ post, toast }) => {
       <View>
         <InstagramEmbed
           url={postUrl}
-          style={styles.thumbnail}
+          style={poststyles.renderThumbnail}
           scale={0.1} />
       </View>
     );
@@ -48,10 +49,10 @@ const RenderPosts = ({ post, toast }) => {
   //TikTok posts
   if (post.platform === 'tiktok' && postUrl.includes('tiktok.com')) {
     return (
-      <View style={styles.embedContainer}>
+      <View style={poststyles.embedContainer}>
         <TikTokEmbed
           url={postUrl}
-          style={styles.thumbnail}
+          style={poststyles.renderThumbnail}
           scale={0.64}
           isInteractive={true} />
       </View>
@@ -63,19 +64,19 @@ const RenderPosts = ({ post, toast }) => {
     const isDirectImage = isDirectPinterestImage(postUrl);
 
     return (
-      <View style={styles.embedContainer}>
+      <View style={poststyles.embedContainer}>
         {isDirectImage ? (
           //For user own pins show  direct image
           <Image
             source={{ uri: postUrl }}
-            style={styles.thumbnail}
+            style={poststyles.renderThumbnail}
             resizeMode="contain"
           />
         ) : (
           //For other pins use the embed
           <PinterestEmbed
             url={postUrl}
-            style={styles.thumbnail}
+            style={poststyles.renderThumbnail}
             scale={1.15}
           />
         )}
@@ -86,10 +87,10 @@ const RenderPosts = ({ post, toast }) => {
   //YouTube posts
   if (post.platform === 'youtube' && (postUrl.includes('youtube.com') || postUrl.includes('youtu.be'))) {
     return (
-      <View style={styles.embedContainer}>
+      <View style={poststyles.embedContainer}>
         <YouTubeEmbed
           url={postUrl}
-          style={styles.thumbnail}
+          style={poststyles.renderThumbnail}
           scale={1.0}
           isInteractive={true} />
       </View>
@@ -100,41 +101,10 @@ const RenderPosts = ({ post, toast }) => {
   return (
     <Image
       source={{ uri: postUrl }}
-      style={styles.thumbnail}
+      style={poststyles.renderThumbnail}
       resizeMode="contain"
     />
   );
 };
-
-const styles = StyleSheet.create({
-  thumbnail: {
-    width: '100%',
-    height: 400,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  embedContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  errorContainer: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    marginVertical: 10,
-  },
-  errorText: {
-    color: '#666',
-    fontSize: 16,
-  },
-  linkText: {
-    color: '#007AFF',
-    textAlign: 'center',
-    marginBottom: 16,
-    textDecorationLine: 'underline',
-  }
-});
 
 export default RenderPosts;

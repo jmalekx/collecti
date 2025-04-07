@@ -82,7 +82,7 @@ const UserSettings = ({ navigation }) => {
         <View style={settingstyles.sectionContainer}>
           <View style={[settingstyles.settingButton, { padding: 10 }]}>
             <View style={settingstyles.iconContainer}>
-              <Ionicons name="logo-pinterest" size={22} color="#E60023" />
+              <Ionicons name="logo-pinterest" size={22} color={colours.pinterest} />
             </View>
             <Text style={settingstyles.settingButtonText}>Pinterest</Text>
             <PinterestButton style={{ margin: 0 }} />
@@ -119,7 +119,7 @@ const UserSettings = ({ navigation }) => {
             onPress={() => setDeleteModalVisible(true)}
           >
             <View style={settingstyles.iconContainer}>
-              <Ionicons name="trash-outline" size={22} color="#e53935" />
+              <Ionicons name="trash-outline" size={22} color={colours.delete} />
             </View>
             <Text style={[settingstyles.settingButtonText, settingstyles.deleteText]}>Delete Account</Text>
           </TouchableOpacity>

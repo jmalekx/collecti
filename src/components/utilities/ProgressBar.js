@@ -1,9 +1,9 @@
 //React and React Native core imports
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 //Custom component imports and styling
-import { colours } from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
 
 /*
   ProgressBar Component
@@ -16,40 +16,18 @@ import { colours } from '../../styles/commonStyles';
 
 const ProgressBar = ({ currentStep, totalSteps }) => {
   return (
-    <View style={styles.container}>
+    <View style={commonStyles.progressContainer}>
       {Array.from({ length: totalSteps }).map((_, index) => (
         <View
           key={index}
           style={[
-            styles.bar,
-            index < currentStep ? styles.activeBar : styles.inactiveBar,
+            commonStyles.progressBar,
+            index < currentStep ? commonStyles.progressActiveBar : commonStyles.progressInactiveBar,
           ]}
         />
       ))}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  bar: {
-    height: 4,
-    borderRadius: 2,
-    flex: 1,
-    marginHorizontal: 2,
-  },
-  activeBar: {
-    backgroundColor: colours.buttonsTextPink, 
-  },
-  inactiveBar: {
-    backgroundColor: colours.tertiary,
-  },
-});
 
 export default ProgressBar;

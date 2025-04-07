@@ -16,7 +16,8 @@ import { formatDate, formatPlatform } from '../../../utils/formatting';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../../components/utilities/Toasts';
-import commonStyles from '../../../styles/commonStyles';
+import commonStyles, { colours } from '../../../styles/commonStyles';
+import poststyles from '../../../styles/poststyles';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import LinkTexts from '../../../components/utilities/LinkTexts';
 import RenderPosts from '../../../components/utilities/RenderPosts';
@@ -101,7 +102,6 @@ const PostDetails = ({ route, navigation }) => {
         });
       }
       else {
-        // Use the correctly imported function
         await handleOpenInPlatform(post, toast);
       }
     }
@@ -113,37 +113,40 @@ const PostDetails = ({ route, navigation }) => {
   //Loading state render
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <LoadingIndicator/>
+      <View style={poststyles.loadingContainer}>
+        <LoadingIndicator />
       </View>
     );
   }
 
   return (
     <commonStyles.Bg>
-      <View style={styles.container}>
+      <View style={poststyles.container}>
         {/* Header Section */}
-        <View style={styles.header}>
+        <View style={poststyles.header}>
           {/* Back Navigation Button */}
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="chevron-back" size={24} color="#007AFF" />
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={poststyles.headerBackButton}
+          >
+            <Ionicons name="chevron-back" size={24} color={colours.mainTexts} />
           </TouchableOpacity>
           {/* Action Buttons */}
-          <View style={styles.headerActions}>
+          <View style={poststyles.headerActions}>
             {isExternalCollection ? (
               //Disabled buttons for external collections
               <>
                 <TouchableOpacity
                   disabled={true}
-                  style={[styles.headerButton, styles.disabledIcon]}
+                  style={[poststyles.actionButton, poststyles.disabledIcon]}
                 >
-                  <Ionicons name="create-outline" size={24} color="#ccc" />
+                  <Ionicons name="create-outline" size={24} color={colours.grey} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   disabled={true}
-                  style={[styles.headerButton, styles.disabledIcon]}
+                  style={[poststyles.actionButton, poststyles.disabledIcon]}
                 >
-                  <Ionicons name="trash" size={24} color="#ccc" />
+                  <Ionicons name="trash" size={24} color={colours.grey} />
                 </TouchableOpacity>
               </>
             ) : (
@@ -151,15 +154,15 @@ const PostDetails = ({ route, navigation }) => {
               <>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('EditPost', { collectionId, postId })}
-                  style={styles.headerButton}
+                  style={[poststyles.actionButton, poststyles.editButton]}
                 >
-                  <Ionicons name="create-outline" size={24} color="#007AFF" />
+                  <Ionicons name="create-outline" size={24} color={colours.buttonsTextPink} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleDelete}
-                  style={styles.headerButton}
+                  style={[poststyles.actionButton, poststyles.deleteButton]}
                 >
-                  <Ionicons name="trash" size={24} color="#FF3B30" />
+                  <Ionicons name="trash" size={24} color={colours.delete} />
                 </TouchableOpacity>
               </>
             )}
@@ -170,24 +173,24 @@ const PostDetails = ({ route, navigation }) => {
         <RenderPosts post={post} toast={toast} />
 
         {/* Post Notes Section */}
-        <LinkTexts text={post?.notes} style={styles.notes} />
+        <LinkTexts text={post?.notes} style={poststyles.notes} />
 
         {/* Post Metadata Section */}
-        <View style={styles.metaContainer}>
+        <View style={poststyles.metaContainer}>
           {post?.createdAt && (
-            <Text style={styles.dateText}>
+            <Text style={poststyles.dateText}>
               Saved on {formatDate(post.createdAt)}
             </Text>
           )}
-          <Text style={styles.platformText}>
+          <Text style={poststyles.platformText}>
             From {formatPlatform(post?.platform)}
           </Text>
         </View>
 
         {/* Post Tags Section */}
-        <View style={styles.tagsContainer}>
+        <View style={poststyles.tagsContainer}>
           {post?.tags?.map((tag, index) => (
-            <Text key={index} style={styles.tag}>
+            <Text key={index} style={poststyles.tag}>
               #{tag}
             </Text>
           ))}
@@ -195,8 +198,8 @@ const PostDetails = ({ route, navigation }) => {
 
         {/* Platform Link Button - Using platform service to determine visibility */}
         {shouldShowPlatformLink(post) && (
-          <TouchableOpacity style={styles.platformButton} onPress={handlePlatformLink}>
-            <Text style={styles.platformButtonText}>
+          <TouchableOpacity style={poststyles.platformButton} onPress={handlePlatformLink}>
+            <Text style={poststyles.platformButtonText}>
               View on {getPlatformDisplayName(post)}
             </Text>
           </TouchableOpacity>
@@ -217,70 +220,5 @@ const PostDetails = ({ route, navigation }) => {
     </commonStyles.Bg>
   );
 };
-
-const styles = StyleSheet.create({
-  ...commonStyles,
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  notes: {
-    fontSize: 18,
-    lineHeight: 24,
-    marginBottom: 16,
-    color: '#333',
-  },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 20,
-  },
-  tag: {
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    color: '#666',
-  },
-  metaContainer: {
-    marginBottom: 16,
-    borderLeftWidth: 3,
-    borderLeftColor: '#007AFF',
-    paddingLeft: 12,
-  },
-  dateText: {
-    fontSize: 14,
-    color: '#666',
-    fontStyle: 'italic',
-    marginBottom: 4,
-  },
-  platformText: {
-    fontSize: 14,
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  headerButton: {
-    padding: 4,
-  },
-  platformButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  platformButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  disabledIcon: {
-    opacity: 0.4,
-  }
-});
 
 export default PostDetails;

@@ -5,7 +5,7 @@ import { View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 //Custom component imports and styling
-import { typography, shadowStyles } from '../../styles/commonStyles';
+import { typography, shadowStyles, colours } from '../../styles/commonStyles';
 import { trackToast, setToastId, removeToast } from '../../utils/toastManager';
 
 /*
@@ -74,13 +74,13 @@ export const toastConfig = {
     fontSize: 14,
     fontWeight: 'bold',
     fontFamily: typography.fontBold,
-    color: '#000000',
+    color: colours.mainTexts,
     marginRight: 6,
   },
   messageStyle: {
     fontSize: 14,
     fontFamily: typography.fontRegular,
-    color: '#585f6e',
+    color: colours.subTexts,
     flexShrink: 1,
     flexWrap: 'wrap',
   },
@@ -97,7 +97,7 @@ export const toastConfig = {
   countTextStyle: {
     fontSize: 10,
     fontWeight: 'bold',
-    color: '#333',
+    color: colours.mainTexts,
   },
 
   //Colours
