@@ -247,9 +247,9 @@ const CollectionDetails = ({ route, navigation }) => {
           ListFooterComponent={renderFooter}
           ListEmptyComponent={() => (
             <View style={collectionstyles.emptyContainer}>
-              <MaterialIcons name="post-add" size={64} color="#ccc" />
+              <MaterialIcons name="post-add" size={64} color={colours.grey} />
               <Text style={collectionstyles.emptyText}>
-                This collection is empty! Start adding posts to keep things organized.
+                This collection is empty! Start adding posts to keep things organised.
               </Text>
             </View>
           )}

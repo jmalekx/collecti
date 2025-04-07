@@ -115,7 +115,7 @@ const CollectionCreationModal = ({ visible, onClose, onCreateCollection, toast }
               style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
               onPress={handleAddCollection}
             >
-              <Text style={addbuttonstyles.buttonTextWhite}>Create Collection</Text>
+              <Text style={addbuttonstyles.buttonTextWhite}>Create</Text>
             </TouchableOpacity>
           </View>
         </View>

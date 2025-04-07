@@ -151,7 +151,7 @@ const UserSettings = ({ navigation }) => {
           title="Delete Account"
           message="This will permanently delete your account and all your data. This action cannot be undone."
           primaryAction={handleDeleteAccount}
-          primaryText={isDeleting ? "Deleting..." : "Delete Account"}
+          primaryText={isDeleting ? "Deleting..." : "Delete"}
           primaryStyle="danger"
           secondaryText="Cancel"
           icon="trash-outline"

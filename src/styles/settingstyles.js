@@ -198,16 +198,15 @@ const settingstyles = StyleSheet.create({
     borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 12,
-    marginBottom: 12,
+    marginTop: 20,
 
     ...shadowStyles.medium,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     shadowColor: colours.buttonsTextPink,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 1,  
-    shadowRadius: 30,     
-    elevation: 30,  
+    shadowOpacity: 1,
+    shadowRadius: 30,
+    elevation: 30,
   },
   pickImageText: {
     color: colours.subTexts,
@@ -245,11 +244,8 @@ const settingstyles = StyleSheet.create({
   },
   //Save button and loading state
   saveButton: {
-    backgroundColor: colours.buttonsTextPink,
+    backgroundColor: colours.primary,
     borderRadius: 12,
-  },
-  disabledButton: {
-    backgroundColor: 'rgba(214, 122, 152, 0.6)',
   },
   savingContainer: {
     flexDirection: 'row',
@@ -257,7 +253,7 @@ const settingstyles = StyleSheet.create({
     justifyContent: 'center',
   },
   savingText: {
-    color: '#fff',
+    color: colours.search,
     marginLeft: 8,
     fontWeight: '500',
     fontFamily: typography.fontRegular,

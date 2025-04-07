@@ -50,9 +50,10 @@ export const toastConfig = {
     paddingVertical: 8,
     flexDirection: 'row',
     alignItems: 'flex-start',
-    width: '100%',
+    width: '90%', 
     maxWidth: 350,
     marginVertical: 5,
+    marginHorizontal: '5%',
     overflow: 'hidden',
   },
   iconStyle: {

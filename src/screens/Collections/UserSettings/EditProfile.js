@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -55,10 +55,10 @@ const EditProfile = ({ navigation }) => {
 
         {/* Profile picture section */}
         <View style={settingstyles.profilePictureSection}>
-        <AppSubheading style={commonStyles.textSubheading}>Profile Picture</AppSubheading>
+          <AppSubheading style={commonStyles.textSubheading}>Profile Picture</AppSubheading>
 
           {localImage ? (
-            <View style={settingstyles.profileImageContainer}>
+            <View style={settingstyles.pickImageButton}>
               <Image source={{ uri: localImage }} style={settingstyles.profileImage} />
               <TouchableOpacity
                 style={settingstyles.removeImageButton}
@@ -68,7 +68,7 @@ const EditProfile = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ) : profilePicture ? (
-            <View style={settingstyles.profileImageContainer}>
+            <View style={settingstyles.pickImageButton}>
               <Image source={{ uri: profilePicture }} style={settingstyles.profileImage} />
               <TouchableOpacity
                 style={settingstyles.changeImageButton}
@@ -111,7 +111,7 @@ const EditProfile = ({ navigation }) => {
         {/* Save button with loading state */}
         <View style={[settingstyles.buttonRow]}>
           <TouchableOpacity
-            style={[addbuttonstyles.cancelButton, {backgroundColor: 'white', borderColor: '#eee', borderWidth: 1.5}]}
+            style={[addbuttonstyles.cancelButton, { backgroundColor: 'white', borderColor: '#eee', borderWidth: 1.5 }]}
             onPress={() => navigation.goBack()}
           >
             <Text style={addbuttonstyles.buttonText}>Cancel</Text>
@@ -121,16 +121,15 @@ const EditProfile = ({ navigation }) => {
             style={[
               addbuttonstyles.actionButton,
               settingstyles.saveButton,
-              (saving || uploadingImage) && settingstyles.disabledButton
+              (saving || uploadingImage)
             ]}
             onPress={handleSaveProfile}
             disabled={saving || uploadingImage}
           >
             {saving || uploadingImage ? (
               <View style={settingstyles.savingContainer}>
-                <ActivityIndicator size="small" color="#fff" />
+                <LoadingIndicator size="normal"/>
                 <Text style={addbuttonstyles.buttonTextWhite}>
-                  {uploadingImage ? "Uploading..." : "Saving..."}
                 </Text>
               </View>
             ) : (

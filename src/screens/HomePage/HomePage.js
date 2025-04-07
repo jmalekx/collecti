@@ -45,6 +45,15 @@ const HomePage = () => {
   //Context states
   const toast = useToast();
 
+  //Update username and profile image whenever userProfile changes
+  useEffect(() => {
+    if (userProfile) {
+      setUserName(userProfile.username || 'User');
+      setProfileImage(userProfile.profilePicture || null);
+      setIsLoading(false);
+    }
+  }, [userProfile]);
+
   //Load user profile data from services
   useEffect(() => {
     const loadUserProfile = async () => {
@@ -96,7 +105,7 @@ const HomePage = () => {
     return (
       <commonStyles.Bg>
         <View style={[commonStyles.container, commonStyles.loadingContainer]}>
-          <LoadingIndicator/>
+          <LoadingIndicator />
         </View>
       </commonStyles.Bg>
     );
