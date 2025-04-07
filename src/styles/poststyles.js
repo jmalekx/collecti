@@ -40,7 +40,6 @@ const poststyles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
     ...shadowStyles.light,
   },
   platformButtonText: {
@@ -76,13 +75,14 @@ const poststyles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
     marginBottom: 16,
+    marginTop: -6,
     color: colours.mainTexts,
   },
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 20,
+    marginBottom: 8,
   },
   tag: {
     backgroundColor: colours.backgroundLight,
@@ -101,10 +101,9 @@ const poststyles = StyleSheet.create({
     fontSize: 14,
     color: colours.subTexts,
     fontStyle: 'italic',
-    marginBottom: 4,
   },
   platformText: {
-    fontSize: 14,
+    fontSize: 12,
     color: colours.subTexts,
     fontStyle: 'italic',
   },
@@ -117,7 +116,7 @@ const poststyles = StyleSheet.create({
   },
   embedContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 6,
   },
   errorContainer: {
     padding: 20,
