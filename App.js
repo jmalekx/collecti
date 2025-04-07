@@ -33,6 +33,7 @@ import LoadingIndicator from './src/components/utilities/LoadingIndicator';
   - Authenticated: 
     - Onboarding: First-time user experience flow
     - Main application: Full feature access with navigation
+    
 */
 
 const Stack = createNativeStackNavigator();
