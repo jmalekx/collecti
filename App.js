@@ -51,37 +51,38 @@ function App() {
     'Inter-BoldItalic': Inter_700Bold_Italic,
   });
 
-  //Subscribe to auth state changes
-  useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(async (user) => {
+useEffect(() => {
+  const unsubscribe = subscribeToAuthChanges(async (user) => {
+    setInitialising(true); //Start loading indicator
 
-      //User signed in or not
-      if (user) {
-        try {
-          //Checking if user needs onboarding before updating
-          const userProfile = await getUserProfile(user.uid);
-          const needsOnboarding = userProfile?.isNewUser ?? true;
+    if (user) {
+      try {
+        const userProfile = await getUserProfile(user.uid);
+        const needsOnboarding = userProfile?.isNewUser ?? true;
 
-          setUser(user);
-          setIsOnboarding(needsOnboarding);
-          setInitialising(false);
-        }
-        catch (error) {
-          setUser(user);
-          setIsOnboarding(true); //Default to showing onboarding on error
-          setInitialising(false);
-        }
+        setUser(user);
+        setIsOnboarding(needsOnboarding);
+      } 
+      catch (error) {
+        setUser(user); 
+        setIsOnboarding(true);
+      } 
+      finally {
+        setInitialising(false); //Stop loading
       }
-      else {
-        //No user
-        setUser(null);
-        setIsOnboarding(false);
-        setInitialising(false);
-      }
-    });
+    } 
+    else {
+      setUser(null);
+      setIsOnboarding(false);
+      setInitialising(false); //Stop loading
+    }
+  });
 
-    return () => unsubscribe();
-  }, []);
+  //Cleanup
+  return () => {
+    unsubscribe();
+  }
+}, []);
 
   //Show loading indicator
   if (!fontsLoaded || initialising) {
