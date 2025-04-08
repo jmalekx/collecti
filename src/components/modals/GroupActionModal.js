@@ -9,6 +9,7 @@ import addbuttonstyles from '../../styles/addbuttonstyles';
 import collectionstyles from '../../styles/collectionstyles';
 import Dropdown from '../utilities/Dropdown';
 import { colours } from '../../styles/commonStyles';
+import LoadingIndicator from '../utilities/LoadingIndicator';
 
 /*
   GroupActionModal Component
@@ -18,24 +19,30 @@ import { colours } from '../../styles/commonStyles';
   
 */
 
-const GroupActionModal = ({ 
-  visible, 
-  onClose, 
-  collections, 
-  selectedPosts, 
-  onMoveToExisting, 
-  onCreateAndMove 
-}) => {
-  const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
+const GroupActionModal = ({ visible, onClose, collections, selectedPosts, onMoveToExisting, onCreateAndMove }) => {
   const [selectedTargetCollection, setSelectedTargetCollection] = useState('');
+  const [isAddingNewCollection, setIsAddingNewCollection] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [isMoving, setIsMoving] = useState(false);
 
-  const handleMoveToExistingCollection = () => {
-    onMoveToExisting(selectedTargetCollection);
+  const handleMoveToExistingCollection = async () => {
+    setIsMoving(true);
+    try {
+      await onMoveToExisting(selectedTargetCollection);
+    }
+    finally {
+      setIsMoving(false);
+    }
   };
 
-  const handleCreateCollectionAndMove = () => {
-    onCreateAndMove(newCollectionName);
+  const handleCreateCollectionAndMove = async () => {
+    setIsMoving(true);
+    try {
+      await onCreateAndMove(newCollectionName);
+    }
+    finally {
+      setIsMoving(false);
+    }
   };
 
   return (
@@ -92,6 +99,7 @@ const GroupActionModal = ({
                 <TouchableOpacity
                   style={[addbuttonstyles.actionButton, addbuttonstyles.cancelButton]}
                   onPress={onClose}
+                  disabled={isMoving}
                 >
                   <Text style={addbuttonstyles.buttonText}>Cancel</Text>
                 </TouchableOpacity>
@@ -100,8 +108,13 @@ const GroupActionModal = ({
                   <TouchableOpacity
                     style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
                     onPress={handleMoveToExistingCollection}
+                    disabled={isMoving}
                   >
-                    <Text style={addbuttonstyles.buttonTextWhite}>Move</Text>
+                    {isMoving ? (
+                      <LoadingIndicator size="small" />
+                    ) : (
+                      <Text style={addbuttonstyles.buttonTextWhite}>Move</Text>
+                    )}
                   </TouchableOpacity>
                 )}
               </View>
@@ -125,6 +138,7 @@ const GroupActionModal = ({
                     setIsAddingNewCollection(false);
                     setNewCollectionName('');
                   }}
+                  disabled={isMoving}
                 >
                   <Text style={addbuttonstyles.buttonText}>Back</Text>
                 </TouchableOpacity>
@@ -132,8 +146,13 @@ const GroupActionModal = ({
                 <TouchableOpacity
                   style={[addbuttonstyles.actionButton, addbuttonstyles.confirmButton]}
                   onPress={handleCreateCollectionAndMove}
+                  disabled={isMoving}
                 >
-                  <Text style={addbuttonstyles.buttonTextWhite}>Create & Move</Text>
+                  {isMoving ? (
+                    <LoadingIndicator size="small" />
+                  ) : (
+                    <Text style={addbuttonstyles.buttonTextWhite}>Create & Move</Text>
+                  )}
                 </TouchableOpacity>
               </View>
             </>
