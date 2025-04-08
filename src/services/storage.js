@@ -1,10 +1,7 @@
-//React and React Native core imports
-
-//Third-party library external imports
-import * as FileSystem from 'expo-file-system';
-
 //Project services and utilities
 import { getCurrentUserId } from './firebase';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
+
 
 /*
   Image Storage Service Module
@@ -15,8 +12,8 @@ import { getCurrentUserId } from './firebase';
 */
 
 //Cloudinary config
-const CLOUD_NAME = 'dbabzybcu';
-const UPLOAD_PRESET = 'collecti_user_uploads';
+const CLOUD_NAME = CLOUDINARY_CLOUD_NAME;
+const UPLOAD_PRESET = CLOUDINARY_UPLOAD_PRESET;
 
 //Uploading image to Cloudinary
 export const uploadImageToCloudinary = async (localUri) => {
