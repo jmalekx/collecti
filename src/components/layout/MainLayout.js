@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
 //Third-party library external imports
@@ -37,6 +37,7 @@ const MainLayout = () => {
   const [platform, setPlatform] = useState('gallery');
   const [unsupportedModalVisible, setUnsupportedModalVisible] = useState(false);
   const [unsupportedPlatformName, setUnsupportedPlatformName] = useState('this app');
+  const addButtonRef = useRef(null);
 
 
   //Context states
@@ -50,7 +51,18 @@ const MainLayout = () => {
     if (shareIntent?.webUrl || shareIntent?.text) {
       const extractedUrl = shareIntent?.webUrl || shareIntent?.text;
       setUrl(extractedUrl);
-      detectPlatform(extractedUrl);
+      const detectedPlatform = detectPlatform(extractedUrl);
+
+      // Automatically open the post creation modal for supported platforms
+      if (['instagram', 'tiktok', 'pinterest', 'youtube'].includes(detectedPlatform)) {
+        // Allow time for collections to load
+        setTimeout(() => {
+          // Trigger the post creation modal
+          if (addButtonRef.current) {
+            addButtonRef.current.openPostModal();
+          }
+        }, 500);
+      }
     }
   }, [userId, shareIntent]);
 
@@ -222,6 +234,7 @@ const MainLayout = () => {
     <View style={{ flex: 1 }}>
       <TabNavigator />
       <AddButton
+        ref={addButtonRef}
         collections={collections}
         sharedUrl={url}
         platform={platform}

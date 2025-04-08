@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
@@ -38,7 +38,7 @@ const CollectionDetails = ({ route, navigation }) => {
   const { collectionId, ownerId, isExternalCollection } = route.params;
 
   const INITIAL_POSTS_TO_DISPLAY = 6;
-  const POSTS_INCREMENT = 4;
+  const POSTS_INCREMENT = 8;
 
   //Context states
   const toast = useToast();
@@ -126,11 +126,12 @@ const CollectionDetails = ({ route, navigation }) => {
   }, [searchQuery, resetPagination]);
 
   //Handle load more on scroll end
-  const handleLoadMore = () => {
+  // Update the handleLoadMore function to be more robust
+  const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoadingMore) {
       loadMore();
     }
-  };
+  }, [hasMore, isLoadingMore, loadMore]);
 
   //Render footer with loading indicator
   const renderFooter = () => {
@@ -209,7 +210,7 @@ const CollectionDetails = ({ route, navigation }) => {
   return (
     <commonStyles.Bg>
       <View style={[commonStyles.container, { marginTop: -10 }]}>
-        
+
         {/* Collection Header Component */}
         <CollectionDetailHeader
           navigation={navigation}
@@ -242,9 +243,34 @@ const CollectionDetails = ({ route, navigation }) => {
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
-          onEndReached={handleLoadMore}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={renderFooter}
+          onEndReached={() => {
+            handleLoadMore();
+          }}
+          onEndReachedThreshold={0.2}
+          scrollEventThrottle={16}
+          removeClippedSubviews={false}
+          ListFooterComponent={() => (
+            <View style={{ padding: 10, alignItems: 'center' }}>
+              {isLoadingMore && <LoadingIndicator />}
+              {hasMore && !isLoadingMore && (
+                <TouchableOpacity
+                  style={{
+                    padding: 10,
+                    backgroundColor: colours.primary,
+                    borderRadius: 5,
+                    alignItems: 'center',
+                    marginTop: 10,
+                    width: '50%'
+                  }}
+                  onPress={() => {
+                    loadMore();
+                  }}
+                >
+                  <Text style={{ color: colours.buttonsTextPink }}>Load More</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
           ListEmptyComponent={() => (
             <View style={collectionstyles.emptyContainer}>
               <MaterialIcons name="post-add" size={64} color={colours.grey} />

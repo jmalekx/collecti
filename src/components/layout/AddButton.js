@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { View, TouchableOpacity, Text, TouchableWithoutFeedback, Animated } from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
@@ -33,11 +33,17 @@ import { colours } from '../../styles/commonStyles';
     
 */
 
-const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl, platform }) => {
+const AddButton = forwardRef(({ onAddPost, onCreateCollection, collections = [], sharedUrl, platform }, ref) => {
   //UI options and modal visibility
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isCollectionModalOpen, setIsCollectionModalOpen] = useState(false);
+
+  useImperativeHandle(ref, () => ({
+    openPostModal: () => {
+      setIsPostModalOpen(true);
+    }
+  }));
 
   //Context states
   const toast = useToast(); //Notification service singleton
@@ -156,6 +162,6 @@ const AddButton = ({ onAddPost, onCreateCollection, collections = [], sharedUrl,
       </View>
     </View>
   );
-};
+});
 
 export default AddButton;

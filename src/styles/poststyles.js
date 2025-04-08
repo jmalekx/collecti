@@ -82,10 +82,10 @@ const poststyles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
-    marginBottom: 8,
+    marginBottom: 14,
   },
   tag: {
-    backgroundColor: colours.backgroundLight,
+    backgroundColor: colours.grey,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,

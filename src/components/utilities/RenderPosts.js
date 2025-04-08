@@ -54,7 +54,7 @@ const RenderPosts = ({ post, toast }) => {
         <TikTokEmbed
           url={postUrl}
           style={poststyles.renderThumbnail}
-          scale={0.64}
+          scale={0.9}
           isInteractive={true} />
       </View>
     );

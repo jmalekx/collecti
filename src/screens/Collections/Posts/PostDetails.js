@@ -1,6 +1,6 @@
 //React and React Native core imports
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, ScrollView } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
@@ -170,41 +170,47 @@ const PostDetails = ({ route, navigation }) => {
           </View>
         </View>
 
-        {/* Post Content - Using the specialized content renderer component */}
-        <RenderPosts post={post} toast={toast} />
+        {/* Post Content  */}
+        <ScrollView
+          style={[commonStyles.container, { marginTop: -10 }]}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 110 }}
+        >
+          <RenderPosts post={post} toast={toast} />
 
-        {/* Post Notes Section */}
-        <LinkTexts text={post?.notes} style={poststyles.notes} />
+          {/* Post Notes Section */}
+          <LinkTexts text={post?.notes} style={poststyles.notes} />
 
-        {/* Post Metadata Section */}
-        <View style={poststyles.metaContainer}>
-          {post?.createdAt && (
-            <Text style={poststyles.dateText}>
-              Saved on {formatDate(post.createdAt)}
+          {/* Post Metadata Section */}
+          <View style={poststyles.metaContainer}>
+            {post?.createdAt && (
+              <Text style={poststyles.dateText}>
+                Saved on {formatDate(post.createdAt)}
+              </Text>
+            )}
+            <Text style={poststyles.platformText}>
+              From {formatPlatform(post?.platform)}
             </Text>
+          </View>
+
+          {/* Post Tags Section */}
+          <View style={poststyles.tagsContainer}>
+            {post?.tags?.map((tag, index) => (
+              <Text key={index} style={poststyles.tag}>
+                #{tag}
+              </Text>
+            ))}
+          </View>
+
+          {/* Platform Link Button - Using platform service to determine visibility */}
+          {shouldShowPlatformLink(post) && (
+            <TouchableOpacity style={poststyles.platformButton} onPress={handlePlatformLink}>
+              <Text style={poststyles.platformButtonText}>
+                View on {getPlatformDisplayName(post)}
+              </Text>
+            </TouchableOpacity>
           )}
-          <Text style={poststyles.platformText}>
-            From {formatPlatform(post?.platform)}
-          </Text>
-        </View>
-
-        {/* Post Tags Section */}
-        <View style={poststyles.tagsContainer}>
-          {post?.tags?.map((tag, index) => (
-            <Text key={index} style={poststyles.tag}>
-              #{tag}
-            </Text>
-          ))}
-        </View>
-
-        {/* Platform Link Button - Using platform service to determine visibility */}
-        {shouldShowPlatformLink(post) && (
-          <TouchableOpacity style={poststyles.platformButton} onPress={handlePlatformLink}>
-            <Text style={poststyles.platformButtonText}>
-              View on {getPlatformDisplayName(post)}
-            </Text>
-          </TouchableOpacity>
-        )}
+        </ScrollView>
 
         {/* Delete Post Modal */}
         <ConfirmationModal

@@ -81,10 +81,10 @@ const Collections = ({ }) => {
           keyExtractor={(item) => item.id}
           numColumns={3} // Adjusted to display 3 items per row
           contentContainerStyle={collectionstyles.grid}
-          columnWrapperStyle={{ justifyContent: 'space-between' }} // Ensures items don't stretch
+          columnWrapperStyle={{ justifyContent: 'flex-start' }} // Ensures items don't stretch
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={collectionstyles.collectionCard}
+              style={[collectionstyles.collectionCard, { marginRight: '5%' }]}
               onPress={() => navigation.navigate('CollectionDetails', { collectionId: item.id })}
             >
               {/* Collection Thumbnail */}
