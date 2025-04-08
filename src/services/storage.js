@@ -12,8 +12,8 @@ import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
 */
 
 //Cloudinary config
-const CLOUD_NAME = CLOUDINARY_CLOUD_NAME;
-const UPLOAD_PRESET = CLOUDINARY_UPLOAD_PRESET;
+const CLOUD_NAME = 'dbabzybcu';
+const UPLOAD_PRESET = 'collecti_user_uploads';
 
 //Uploading image to Cloudinary
 export const uploadImageToCloudinary = async (localUri) => {
