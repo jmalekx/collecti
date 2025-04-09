@@ -42,8 +42,9 @@ const homestyles = StyleSheet.create({
   },
   fillerImage: {
     width: '100%',
+    alignSelf: 'center', 
     height: 95,
-    resizeMode: 'cover',
+    resizeMode: 'contain',
     marginBottom: 12,
   },
   //===== SUGGESTED COLLECTIONS =====
