@@ -1,9 +1,10 @@
 //React and React Native core imports
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 
 //Third-party library external imports
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 //Custom component imports and stylingy
 import { colours } from '../../../styles/commonStyles';
@@ -27,6 +28,8 @@ const UserStats = ({ user, collections }) => {
   const [collectionsCount, setCollectionsCount] = useState(0);
   const [postsCount, setPostsCount] = useState(0);
 
+  const navigation = useNavigation();
+
   //Calculate all metrics when props change
   useEffect(() => {
     //Calculate days since account creation
@@ -47,6 +50,10 @@ const UserStats = ({ user, collections }) => {
     setPostsCount(total);
   }, [user, collections]);
 
+  const goToCollections = () => {
+    navigation.navigate('CollectionScreen');
+  };
+
   return (
     <View style={homestyles.statsCollage}>
 
@@ -63,7 +70,11 @@ const UserStats = ({ user, collections }) => {
 
       <View style={homestyles.statsColumn}>
         {/* Collections Card */}
-        <View style={[homestyles.statsCard, homestyles.statsCardSmall, { backgroundColor: colours.buttons }]}>
+        <TouchableOpacity
+          style={[homestyles.statsCard, homestyles.statsCardSmall, { backgroundColor: colours.buttons }]}
+          onPress={goToCollections}
+          activeOpacity={0.7}
+        >
           <Text style={homestyles.statsLabel}>Collections</Text>
           <View style={homestyles.statsDetails}>
             <View style={homestyles.iconContainerSmall}>
@@ -71,7 +82,7 @@ const UserStats = ({ user, collections }) => {
             </View>
             <Text style={homestyles.statsNumber}>{collectionsCount}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Posts Card */}
         <View style={[homestyles.statsCard, homestyles.statsCardSmall, { backgroundColor: '#F8F9FA' }]}>
