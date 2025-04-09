@@ -84,6 +84,7 @@ const layoutStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+    fontFamily: typography.fontBold,
   },
   signContainer: {
     flexDirection: 'row',

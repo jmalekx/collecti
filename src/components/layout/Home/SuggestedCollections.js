@@ -81,7 +81,7 @@ const SuggestedCollections = () => {
   return (
     <View style={homestyles.container}>
       <View style={homestyles.headerContainer}>
-        <AppSubheading>Suggested Collections</AppSubheading>
+        <AppSubheading style={commonStyles.headerContainer}>Suggested Collections</AppSubheading>
         <TouchableOpacity onPress={refreshRecommendations}>
           <Ionicons name="refresh-outline" size={20} color={colours.buttonsText} />
         </TouchableOpacity>
@@ -126,7 +126,7 @@ const SuggestedCollections = () => {
           </TouchableOpacity>
         )}
       />
-    </View>
+    </View >
   );
 };
 
