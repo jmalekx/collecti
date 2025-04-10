@@ -1,6 +1,6 @@
 //React and React Native core imports
-import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, Image, FlatList, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useState, useLayoutEffect, useMemo } from 'react';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +12,7 @@ import { FIREBASE_AUTH } from '../../../FirebaseConfig';
 import { DEFAULT_PROFILE_PICTURE } from '../../constants';
 
 //Custom component imports and styling
-import commonStyles, { shadowStyles, colours } from '../../styles/commonStyles';
+import commonStyles, { colours } from '../../styles/commonStyles';
 import collectionstyles from '../../styles/collectionstyles';
 import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 import SearchBar from '../../components/utilities/SearchBar';
@@ -44,14 +44,34 @@ const Collections = ({ }) => {
     });
   }, [navigation]);
 
-  //Username and pfp
-  const username = userProfile?.username || FIREBASE_AUTH.currentUser?.email?.split('@')[0] || 'User';
-  const profilePicture = userProfile?.profilePicture || DEFAULT_PROFILE_PICTURE;
-
-  //Filter collections based on search query
-  const filteredCollections = collections.filter((collection) =>
-    collection.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  //Title AND tag matchig search functionality
+  const filteredCollections = useMemo(() => {
+    if (!searchQuery.trim()) return collections;
+    
+    const query = searchQuery.toLowerCase().trim();
+    
+    //PHASE 1: find collections with matching names (higher priority)
+    const nameMatches = collections.filter(collection => 
+      collection.name.toLowerCase().includes(query)
+    );
+    
+    //Get IDs of collections that already matched by name
+    const nameMatchIds = new Set(nameMatches.map(c => c.id));
+    
+    //PHASE 2: find collections with matching tags in their posts
+    const tagMatches = collections.filter(collection => {
+      //Skip if already matched by name
+      if (nameMatchIds.has(collection.id)) return false;
+      
+      //Check if any post in this collection has a tag matching the query
+      return collection.items.some(post => 
+        post.tags?.some(tag => tag.toLowerCase().includes(query))
+      );
+    });
+    
+    //Combine results: name matches first, then tag matches
+    return [...nameMatches, ...tagMatches];
+  }, [collections, searchQuery]);
 
   //Sort collections by creation date (newest first), with "Unsorted" always at the top
   const sortedCollections = [...filteredCollections].sort((a, b) => {
@@ -117,4 +137,5 @@ const Collections = ({ }) => {
     </commonStyles.Bg>
   );
 };
+
 export default Collections;

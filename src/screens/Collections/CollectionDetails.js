@@ -19,8 +19,6 @@ import collectionstyles from '../../styles/collectionstyles';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
 import SearchBar from '../../components/utilities/SearchBar';
-
-// Extracted components
 import CollectionDetailHeader from '../../components/layout/Collections/CollectionDetailHeader';
 import PostGrid from '../../components/layout/Collections/PostGrid';
 import GroupActionModal from '../../components/modals/GroupActionModal';
