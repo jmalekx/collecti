@@ -113,6 +113,28 @@ const poststyles = StyleSheet.create({
     height: 400,
     borderRadius: 12,
     marginBottom: 20,
+    overflow: 'hidden',
+  },
+  imageContainer: {
+    width: '100%',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginVertical: 10,
+    backgroundColor: colours.lightestpink,
+  },
+  imageWrapper: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  adaptiveImage: {
+    width: '100%',
+    borderRadius: 12,
+    aspectRatio: 1, 
+    maxHeight: 600,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   embedContainer: {
     alignItems: 'center',

@@ -70,7 +70,7 @@ const RenderPosts = ({ post, toast }) => {
           //For user own pins show  direct image
           <Image
             source={{ uri: postUrl }}
-            style={poststyles.renderThumbnail}
+            style={poststyles.adaptiveImage}
             resizeMode="contain"
           />
         ) : (
@@ -100,11 +100,13 @@ const RenderPosts = ({ post, toast }) => {
 
   //Default image rendering
   return (
-    <Image
-      source={{ uri: postUrl }}
-      style={poststyles.renderThumbnail}
-      resizeMode="contain"
-    />
+    <View style={poststyles.imageWrapper}>
+      <Image
+        source={{ uri: postUrl }}
+        style={poststyles.adaptiveImage}
+        resizeMode="cover"
+      />
+    </View>
   );
 };
 
