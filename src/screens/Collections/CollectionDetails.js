@@ -232,7 +232,7 @@ const CollectionDetails = ({ route, navigation }) => {
         <SearchBar
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholder="Search collections..."
+          placeholder="Search posts..."
         />
 
         {/* Posts List */}
