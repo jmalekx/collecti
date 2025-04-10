@@ -131,7 +131,7 @@ const poststyles = StyleSheet.create({
   adaptiveImage: {
     width: '100%',
     borderRadius: 12,
-    aspectRatio: 1, 
+    aspectRatio: 0.9, 
     maxHeight: 600,
     alignSelf: 'center',
     marginBottom: 10,
