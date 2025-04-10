@@ -222,14 +222,14 @@ const PinterestEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
           <TouchableOpacity
             style={embedstyles.overlay}
             activeOpacity={1}
-            onPress={() => {/* Prevent interaction */ }}
+            onPress={() => {}}
           />
         )}
       </View>
     );
   }
 
-  //Fallback view if cant get the pin ID
+  //Fallback view if cant get pin ID
   if (!pinId) {
     return (
       <TouchableOpacity

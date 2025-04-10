@@ -29,7 +29,7 @@ const ConfirmationModal = ({
   secondaryAction,
   secondaryText = 'Cancel',
   icon,
-  //Input field e.g for the password confirmation
+  //Input field eg for the password confirmation
   showInput = false,
   inputValue = '',
   onInputChange = () => { },

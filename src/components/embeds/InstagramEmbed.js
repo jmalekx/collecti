@@ -193,7 +193,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
 
         //System to prevent navigation from app due to embedded content
         onShouldStartLoadWithRequest={(request) => {
-          // Only allow the initial load of custom HTML and the embedded iframe
+          //Only allow initial load of custom HTML and embedded iframe
           if (!initialUrl) {
             return true;
           }
@@ -206,7 +206,7 @@ const InstagramEmbed = ({ url, style, scale = 1 }) => {
             return true;
           }
 
-          //Any other URL, prevent loading and return to custom HTML
+          //Any other URl prevent loading and return to custom HTML
           setTimeout(() => {
             if (webViewRef.current) {
               webViewRef.current.stopLoading();

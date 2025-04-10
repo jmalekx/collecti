@@ -242,7 +242,7 @@ const PostCreationModal = ({
 
   //Handle quick add collection - optimised for inline collection creation
   const handleQuickAddCollection = async () => {
-    // Validation
+    //Validation
     if (!newCollectionName.trim()) {
       showToast(toast, "Collection name cannot be empty", { type: TOAST_TYPES.WARNING });
       return;

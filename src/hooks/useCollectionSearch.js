@@ -212,7 +212,7 @@ export const useCollectionSearch = (batchSize = 6) => {
         setHasMore(false);
       }
 
-      // Update results - either replace or append
+      //Update results - either replace or append
       setResults(prev => loadMore ? [...prev, ...paginatedResults] : paginatedResults);
     }
     catch (error) {

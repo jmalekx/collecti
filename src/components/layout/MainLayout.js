@@ -53,11 +53,11 @@ const MainLayout = () => {
       setUrl(extractedUrl);
       const detectedPlatform = detectPlatform(extractedUrl);
 
-      // Automatically open the post creation modal for supported platforms
+      //Automatically open post creation modal for supported platforms
       if (['instagram', 'tiktok', 'pinterest', 'youtube'].includes(detectedPlatform)) {
-        // Allow time for collections to load
+        //Allow time for collections load
         setTimeout(() => {
-          // Trigger the post creation modal
+          //Trigger the post creation modal
           if (addButtonRef.current) {
             addButtonRef.current.openPostModal();
           }

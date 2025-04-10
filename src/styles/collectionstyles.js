@@ -63,6 +63,12 @@ const collectionstyles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colours.buttons,
   },
+  selectedCollectionCard: {
+    backgroundColor: '#ebdec5',
+    borderWidth: 2,
+    borderColor: colours.buttons,
+    borderRadius: 16,
+  },
   postTitle: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -102,6 +108,15 @@ const collectionstyles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
+    zIndex: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 12,
+    padding: 4,
+  },
+  checkboxContainer2:{
+    position: 'absolute',
+    top: 1,
+    right: 10,
     zIndex: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 12,
