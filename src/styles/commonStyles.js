@@ -86,6 +86,12 @@ const layoutStyles = StyleSheet.create({
     marginBottom: 12,
     fontFamily: typography.fontBold,
   },
+  headerContainer2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    fontFamily: typography.fontBold,
+  },
   signContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -369,6 +375,7 @@ const headerStyles = {
     textAlign: 'center',
     color: colours.mainTexts,
     fontSize: 22,
+    fontFamily: typography.fontBold,
   },
   customHeaderActions: {
     flexDirection: 'row',

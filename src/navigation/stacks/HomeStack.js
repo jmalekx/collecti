@@ -10,6 +10,7 @@ import HomePage from '../../screens/HomePage/HomePage';
 import PostDetails from '../../screens/Collections/Posts/PostDetails';
 import EditPost from '../../screens/Collections/Posts/EditPost';
 import CollectionDetails from '../../screens/Collections/CollectionDetails';
+import CollectiStats from '../../screens/HomePage/CollectiStats';
 import commonStyles from '../../styles/commonStyles';
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +28,7 @@ const HomeStack = () => (
     <Stack.Screen name="PostDetails" component={PostDetails} options={{ headerShown: false }} />
     <Stack.Screen name="EditPost" component={EditPost} options={{ headerShown: false }} />
     <Stack.Screen name="CollectionDetails" component={CollectionDetails} options={{ headerShown: false }} />
+    <Stack.Screen name="CollectiStats" component={CollectiStats} options={{ headerShown: false }} />
   </Stack.Navigator>
 );
 

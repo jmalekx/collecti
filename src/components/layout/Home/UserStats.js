@@ -54,11 +54,18 @@ const UserStats = ({ user, collections }) => {
     navigation.navigate('CollectionScreen');
   };
 
+  const goToCollectingStats = () => {
+    navigation.navigate('CollectiStats', { collections });
+  };
+
   return (
     <View style={homestyles.statsCollage}>
-
       {/* Days Collecting Card - Largest */}
-      <View style={[homestyles.statsCard, homestyles.statsCardLarge, { backgroundColor: colours.primary }]}>
+      <TouchableOpacity
+        style={[homestyles.statsCard, homestyles.statsCardLarge, { backgroundColor: colours.primary }]}
+        onPress={goToCollectingStats}
+        activeOpacity={0.7}
+      >
         <Text style={[homestyles.statsLabel, homestyles.statsLabelLarge]}>Collecting days</Text>
         <View style={homestyles.statsDetails}>
           <View style={homestyles.iconContainerLarge}>
@@ -66,7 +73,7 @@ const UserStats = ({ user, collections }) => {
           </View>
           <Text style={[homestyles.statsNumber, homestyles.statsNumberLarge]}>{daysSinceCreation}</Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <View style={homestyles.statsColumn}>
         {/* Collections Card */}
@@ -85,15 +92,19 @@ const UserStats = ({ user, collections }) => {
         </TouchableOpacity>
 
         {/* Posts Card */}
-        <View style={[homestyles.statsCard, homestyles.statsCardSmall, { backgroundColor: '#F8F9FA' }]}>
+        <TouchableOpacity
+          style={[homestyles.statsCard, homestyles.statsCardSmall, { backgroundColor: colours.lightestpink }]}
+          onPress={goToCollections}
+          activeOpacity={0.7}
+        >
           <Text style={homestyles.statsLabel}>Posts</Text>
           <View style={homestyles.statsDetails}>
-            <View style={[homestyles.iconContainerSmall, { backgroundColor: '#E2E2E2' }]}>
-              <Ionicons name="images-outline" size={18} color="#9E9E9E" />
+            <View style={[homestyles.iconContainerSmall, { backgroundColor: colours.grey }]}>
+              <Ionicons name="images-outline" size={18} color={colours.darkergrey} />
             </View>
             <Text style={homestyles.statsNumber}>{postsCount}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
