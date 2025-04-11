@@ -221,6 +221,82 @@ const collectionstyles = StyleSheet.create({
     color: colours.subTexts,
     textAlign: 'center',
   },
+  searchSortContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 4,
+    gap: 10, 
+  },
+  searchContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  sortButton: {
+    backgroundColor: colours.primary,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shadowStyles.medium,
+    marginTop:-10,
+  },
+  sortModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sortMenuContainer: {
+    position: 'absolute',
+    top: '30%',
+    right: 20,
+    left: 20,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    overflow: 'hidden',
+    maxHeight: '50%',
+    ...shadowStyles.medium,
+  },
+  sortMenuHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: colours.secondary,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  sortMenuTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colours.mainTexts,
+  },
+  sortMenuItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colours.secondary,
+  },
+  sortMenuItemSelected: {
+    backgroundColor: 'rgba(214, 122, 152, 0.1)',
+  },
+  sortMenuItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sortMenuItemText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: colours.mainTexts,
+  },
+  sortMenuItemTextSelected: {
+    fontWeight: 'bold',
+    color: colours.buttonsTextPink,
+  },
 });
 
 export default collectionstyles;
