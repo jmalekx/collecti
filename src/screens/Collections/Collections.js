@@ -105,7 +105,7 @@ const Collections = ({ }) => {
       });
 
       if (collectionsToDelete.length !== selectedCollections.length) {
-        showToast(toast, "The Unsorted collection cannot be deleted", { type: TOAST_TYPES.WARNING });
+        showToast(toast, "Cannot delete Unsorted", { type: TOAST_TYPES.WARNING });
       }
 
       if (collectionsToDelete.length === 0) {
