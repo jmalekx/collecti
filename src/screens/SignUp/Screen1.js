@@ -6,7 +6,7 @@ import { View, StyleSheet, Image, Animated, Dimensions } from 'react-native';
 import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppText, AppHeading, AppButton } from '../../components/utilities/Typography';
+import { AppText, AppHeading, AppButton, AppBoldText } from '../../components/utilities/Typography';
 import ShareScreen from '../../images/share.png';
 import Name from '../../images/nameSmall.png';
 
@@ -105,7 +105,7 @@ const Screen1 = ({ navigation }) => {
           <AppText style={onboardingstyles.headerTexts}>How does Collecti work?</AppText>
 
           <AppText style={onboardingstyles.SubText}>
-            Use the share feature from your favourite apps to save
+            Use the <AppBoldText>share feature</AppBoldText> from your favourite apps to save
             content directly into Collecti. You can easily organise,
             categorise, revisit and stay inspired.
           </AppText>

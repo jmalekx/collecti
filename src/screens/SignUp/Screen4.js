@@ -95,7 +95,7 @@ const Screen4 = ({ navigation }) => {
           <View style={onboardingstyles.headerContainer}>
             <AppHeading style={onboardingstyles.heading}>What would you like to collect?</AppHeading>
             <AppText style={onboardingstyles.subheading}>
-              Choose from some common collections to get started
+              Select the collections you'd like to <AppBoldText>create now</AppBoldText> to get started
               — you can customise or add your own anytime.
             </AppText>
           </View>

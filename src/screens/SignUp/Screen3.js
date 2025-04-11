@@ -10,7 +10,7 @@ import ProgressBar from '../../components/utilities/ProgressBar';
 import PinterestButton from '../../components/utilities/PinterestButton';
 import commonStyles from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppText, AppHeading, AppButton } from '../../components/utilities/Typography';
+import { AppText, AppHeading, AppButton, AppBoldText } from '../../components/utilities/Typography';
 
 /*
   Onboarding Screen3 Component
@@ -47,7 +47,7 @@ const Screen3 = ({ route, navigation }) => {
 
             <AppText style={onboardingstyles.subheading}>
               This integration helps extract images and titles automatically
-              from your own pins, making your collecting experience smoother.
+              from <AppBoldText>your own created pins</AppBoldText>, making your collecting experience smoother.
             </AppText>
 
             <AppText style={onboardingstyles.subheading}>
