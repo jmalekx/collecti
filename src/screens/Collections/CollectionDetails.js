@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, Modal, TouchableOpacity } from 'react-native';
 
 //Third-party library external imports
@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCollectionDetails } from '../../hooks/useCollectionDetails';
 import { useSelectionMode } from '../../hooks/useSelectionMode';
 import { usePagination } from '../../hooks/usePagination';
+import { useSorting } from '../../hooks/useSorting';
 
 //Custom component imports and styling
 import { showToast, TOAST_TYPES } from '../../components/utilities/Toasts';
@@ -23,6 +24,7 @@ import SearchBar from '../../components/utilities/SearchBar';
 import CollectionDetailHeader from '../../components/layout/Collections/CollectionDetailHeader';
 import PostGrid from '../../components/layout/Collections/PostGrid';
 import GroupActionModal from '../../components/modals/GroupActionModal';
+import SortMenu from '../../components/layout/Collections/SortMenu';
 
 /*
   CollectionDetails Component
@@ -74,6 +76,16 @@ const CollectionDetails = ({ route, navigation }) => {
     setIsSelectionMode
   } = useSelectionMode();
 
+  // Use the sorting hook
+  const {
+    sortedItems: sortedPosts,
+    sortOption,
+    sortOptions,
+    showSortMenu,
+    setShowSortMenu,
+    handleSortChange
+  } = useSorting(filteredPosts);
+
   //State transitions
   const [numColumns, setNumColumns] = useState(2);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -82,16 +94,6 @@ const CollectionDetails = ({ route, navigation }) => {
   const [showDeletePostModal, setShowDeletePostModal] = useState(false);
   const [showDeleteGroupModal, setShowDeleteGroupModal] = useState(false);
   const [isGroupActionModalVisible, setIsGroupActionModalVisible] = useState(false);
-  const [sortOption, setSortOption] = useState('dateDesc'); //Default: newest to oldest
-  const [showSortMenu, setShowSortMenu] = useState(false);
-
-  //Sort options
-  const sortOptions = [
-    { id: 'dateDesc', label: 'Date: Newest First', icon: 'time' },
-    { id: 'dateAsc', label: 'Date: Oldest First', icon: 'time-outline' },
-    { id: 'nameAsc', label: 'Name: A to Z', icon: 'text' },
-    { id: 'nameDesc', label: 'Name: Z to A', icon: 'text-outline' },
-  ];
 
   const isFocused = useIsFocused();
 
@@ -120,35 +122,6 @@ const CollectionDetails = ({ route, navigation }) => {
     return () => unsubscribe();
   }, [setupPostsListener]);
 
-  //Apply sorting to posts
-  const sortedPosts = useMemo(() => {
-    if (!filteredPosts.length) return filteredPosts;
-
-    let sorted = [...filteredPosts];
-
-    switch (sortOption) {
-      case 'dateDesc':
-        return sorted.sort((a, b) => {
-          //Use timestamp numbers for proper sorting
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateB - dateA;
-        });
-      case 'dateAsc':
-        return sorted.sort((a, b) => {
-          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-          return dateA - dateB;
-        });
-      case 'nameAsc':
-        return sorted.sort((a, b) => (a.notes || '').localeCompare(b.notes || ''));
-      case 'nameDesc':
-        return sorted.sort((a, b) => (b.notes || '').localeCompare(a.notes || ''));
-      default:
-        return sorted;
-    }
-  }, [filteredPosts, sortOption]);
-
   //Use sorted posts with pagination
   const {
     paginatedItems: paginatedPosts,
@@ -163,24 +136,12 @@ const CollectionDetails = ({ route, navigation }) => {
     resetPagination();
   }, [searchQuery, sortOption, resetPagination]);
 
-  //Handle sort option selection
-  const handleSortChange = (option) => {
-    setSortOption(option);
-    setShowSortMenu(false);
-  };
-
   //Handle load more on scroll end
   const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoadingMore) {
       loadMore();
     }
   }, [hasMore, isLoadingMore, loadMore]);
-
-  //Render footer with loading indicator
-  const renderFooter = () => {
-    if (!hasMore) return null;
-    return isLoadingMore ? <LoadingIndicator /> : null;
-  };
 
   //Action handlers focus on UI interaction not business logic
   const handleGroupMove = () => {
@@ -289,58 +250,14 @@ const CollectionDetails = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Sort Menu Modal */}
-        <Modal
+        {/* Sort Menu Component */}
+        <SortMenu
           visible={showSortMenu}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setShowSortMenu(false)}
-        >
-          <TouchableOpacity
-            style={collectionstyles.sortModalOverlay}
-            activeOpacity={1}
-            onPress={() => setShowSortMenu(false)}
-          >
-            <View style={collectionstyles.sortMenuContainer}>
-              <View style={collectionstyles.sortMenuHeader}>
-                <Text style={collectionstyles.sortMenuTitle}>Sort by</Text>
-                <TouchableOpacity onPress={() => setShowSortMenu(false)}>
-                  <Ionicons name="close" size={22} color={colours.mainTexts} />
-                </TouchableOpacity>
-              </View>
-
-              {sortOptions.map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  style={[
-                    collectionstyles.sortMenuItem,
-                    sortOption === option.id && collectionstyles.sortMenuItemSelected
-                  ]}
-                  onPress={() => handleSortChange(option.id)}
-                >
-                  <View style={collectionstyles.sortMenuItemContent}>
-                    <Ionicons
-                      name={option.icon}
-                      size={18}
-                      color={sortOption === option.id ? colours.buttonsTextPink : colours.mainTexts}
-                    />
-                    <Text
-                      style={[
-                        collectionstyles.sortMenuItemText,
-                        sortOption === option.id && collectionstyles.sortMenuItemTextSelected
-                      ]}
-                    >
-                      {option.label}
-                    </Text>
-                  </View>
-                  {sortOption === option.id && (
-                    <Ionicons name="checkmark" size={18} color={colours.buttonsTextPink} />
-                  )}
-                </TouchableOpacity>
-              ))}
-            </View>
-          </TouchableOpacity>
-        </Modal>
+          onClose={() => setShowSortMenu(false)}
+          sortOption={sortOption}
+          onSortChange={handleSortChange}
+          sortOptions={sortOptions}
+        />
 
         {/* Posts List */}
         <FlatList
