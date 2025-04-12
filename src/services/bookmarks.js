@@ -27,17 +27,44 @@ export const getBookmarks = async (userId) => {
     const bookmarksCollection = getUserBookmarksCollection(userId);
     const querySnapshot = await getDocs(bookmarksCollection);
 
-    //Map documents to bookmark objects
-    return querySnapshot.docs.map(doc => ({
-      id: doc.data().collectionId,
-      name: doc.data().name,
+    //Get bookmark references
+    const bookmarkRefs = querySnapshot.docs.map(doc => ({
+      bookmarkDocId: doc.id,
+      collectionId: doc.data().collectionId,
       ownerId: doc.data().ownerId,
-      imageUrl: doc.data().imageUrl || '',
-      description: doc.data().description || '',
-      addedAt: doc.data().addedAt,
-      //Store bookmark document ID for easy deletion
-      bookmarkDocId: doc.id
+      addedAt: doc.data().addedAt
     }));
+
+    //Fetch actual collection data for each bookmark (to ensure updates)
+    const bookmarks = await Promise.all(
+      bookmarkRefs.map(async (ref) => {
+        try {
+          const collectionRef = doc(FIREBASE_DB, 'users', ref.ownerId, 'collections', ref.collectionId);
+          const collectionSnap = await getDoc(collectionRef);
+
+          if (collectionSnap.exists()) {
+            const data = collectionSnap.data();
+            return {
+              id: ref.collectionId,
+              name: data.name,
+              ownerId: ref.ownerId,
+              imageUrl: data.thumbnail || '',
+              description: data.description || '',
+              addedAt: ref.addedAt,
+              bookmarkDocId: ref.bookmarkDocId
+            };
+          }
+        } 
+        catch (error) {
+          console.log('Error fetching collection for bookmark:', error);
+        }
+        //Return null for collections that no longer exist
+        return null;
+      })
+    );
+
+    //Filter out null values (collections that couldt be found)
+    return bookmarks.filter(bookmark => bookmark !== null);
   }
   catch (error) {
     console.log('Error loading bookmarked collections:', error);
@@ -49,8 +76,8 @@ export const getBookmarks = async (userId) => {
 export const addBookmark = async (userId, collection) => {
   try {
     //Validate collection object
-    if (!collection || !collection.id || (!collection.name && !collection.title)) {
-      throw new Error('Invalid collection object. Ensure it has an id and either name or title.');
+    if (!collection || !collection.id) {
+      throw new Error('Invalid collection object. Ensure it has an id.');
     }
     const bookmarksCollection = getUserBookmarksCollection(userId);
 
@@ -62,17 +89,14 @@ export const addBookmark = async (userId, collection) => {
 
     const querySnapshot = await getDocs(q);
     if (!querySnapshot.empty) {
-      //Already exists, return current bookmarks
+      //Already exists return current bookmarks
       return await getBookmarks(userId);
     }
 
-    //Create bookmark document
+    //Store only minimal reference data
     await addDoc(bookmarksCollection, {
       collectionId: collection.id,
-      name: collection.name || collection.title,
       ownerId: collection.ownerId,
-      imageUrl: collection.imageUrl || collection.thumbnail || '',
-      description: collection.description || '',
       addedAt: new Date().toISOString()
     });
 
