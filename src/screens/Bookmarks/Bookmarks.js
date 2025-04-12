@@ -17,6 +17,7 @@ import commonStyles, { colours } from '../../styles/commonStyles';
 import bookmarkstyles from '../../styles/bookmarkstyles';
 import { AppButton } from '../../components/utilities/Typography';
 import LoadingIndicator from '../../components/utilities/LoadingIndicator';
+import RenderThumbnail from '../../components/utilities/RenderThumbnail';
 
 /*
   Bookmarks Screen
@@ -94,19 +95,18 @@ const Bookmarks = () => {
     >
       {/* Collection Thumbnail */}
       <View style={bookmarkstyles.thumbnailContainer}>
-        {item.imageUrl ? (
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={bookmarkstyles.thumbnail}
-            resizeMode="cover"
-          />
-        ) : (
-          <Image
-            source={{ uri: DEFAULT_THUMBNAIL }}
-            style={bookmarkstyles.thumbnail}
-            resizeMode="cover"
-          />
-        )}
+        <RenderThumbnail
+          thumbnail={item.imageUrl || DEFAULT_THUMBNAIL}
+          containerStyle={bookmarkstyles.thumbnailWrapper}
+          thumbnailStyle={bookmarkstyles.thumbnail}
+          scale={
+            item.imageUrl?.includes('tiktok.com') ? 0.5 :
+              item.imageUrl?.includes('pinterest.com') || item.imageUrl?.includes('pin.it') ? 0.25 :
+                item.imageUrl?.includes('youtube.com') || item.imageUrl?.includes('youtu.be') ? 0.2 :
+                  item.imageUrl?.includes('instagram.com') ? 0.1 :
+                    undefined
+          }
+        />
       </View>
 
       {/* Collection Metadata */}
