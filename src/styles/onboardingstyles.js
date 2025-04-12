@@ -89,7 +89,7 @@ const onboardingstyles = StyleSheet.create({
   },
   onboardHeading: {
     marginRight: 20,
-    marginTop: 75,
+    marginTop: 40,
     marginBottom: 0,
   },
   welcomeText: {
@@ -123,8 +123,13 @@ const onboardingstyles = StyleSheet.create({
     fontSize: 16,
     fontFamily: typography.fontBoldItalic,
   },
+  Disclaimer:{
+    fontFamily: typography.fontItalic,
+    fontSize: 10,
+    marginTop:-10,
+  },
   SubTexts: {
-    width: '45%',
+    width: '54%',
     fontFamily: typography.fontItalic,
   },
   SubText: {

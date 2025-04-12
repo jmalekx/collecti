@@ -124,7 +124,7 @@ export const useCollectionDetails = (collectionId, ownerId, isExternalCollection
       );
       await Promise.all(batchPromises);
       await fetchPosts();
-      showToast(toast, `${postIds.length} posts deleted`, { type: TOAST_TYPES.SUCCESS });
+      showToast(toast, `${postIds.length} posts deleted`, { type: TOAST_TYPES.INFO });
       return true;
     }
     catch (error) {

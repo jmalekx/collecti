@@ -6,7 +6,7 @@ import { View, StyleSheet, Image, Animated, Dimensions } from 'react-native';
 import ProgressBar from '../../components/utilities/ProgressBar';
 import commonStyles, { colours } from "../../styles/commonStyles";
 import onboardingstyles from '../../styles/onboardingstyles';
-import { AppText, AppHeading, AppButton, AppBoldText } from '../../components/utilities/Typography';
+import { AppText, AppHeading, AppButton, AppBoldText, AppSmallText } from '../../components/utilities/Typography';
 import ShareScreen from '../../images/share.png';
 import Name from '../../images/nameSmall.png';
 
@@ -92,7 +92,7 @@ const Screen1 = ({ navigation }) => {
             </AppText>
 
             <AppText style={[onboardingstyles.SubTexts, onboardingstyles.SubText]}>
-              With Collecti, inspiration sticks – no more endless searching.
+              Inspiration sticks – no more endless searching.
               Organise your fav content into one central hub.
             </AppText>
 
@@ -101,18 +101,21 @@ const Screen1 = ({ navigation }) => {
 
         {/* How it works */}
         <View style={onboardingstyles.centerContent}>
-          
+
           <AppText style={onboardingstyles.headerTexts}>How does Collecti work?</AppText>
 
           <AppText style={onboardingstyles.SubText}>
-            Use the <AppBoldText>share feature</AppBoldText> from your favourite apps to save
-            content directly into Collecti. You can easily organise,
-            categorise, revisit and stay inspired.
+            In your favourite app,<AppBoldText> tap share</AppBoldText>, then find {'\n'} 
+            and <AppBoldText>select</AppBoldText> Collecti to save content. Easily {'\n'} 
+            organise, categorise, revisit and stay inspired.
           </AppText>
 
           <AppText style={onboardingstyles.SubText}>
             It's your content, organised your way.
           </AppText>
+          <AppSmallText style={onboardingstyles.Disclaimer}>
+            (<AppBoldText>Tip:</AppBoldText> you may need to tap 'More' or scroll to find it at first)
+          </AppSmallText>
         </View>
 
         {/* Continue Button */}

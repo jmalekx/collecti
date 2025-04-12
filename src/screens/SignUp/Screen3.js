@@ -46,8 +46,9 @@ const Screen3 = ({ route, navigation }) => {
             <AppHeading style={onboardingstyles.heading}>Connect to Pinterest</AppHeading>
 
             <AppText style={onboardingstyles.subheading}>
-              This integration helps extract images and titles automatically
-              from <AppBoldText>your own created pins</AppBoldText>, making your collecting experience smoother.
+              This integration automatically extracts {'\n'} images and titles, but
+              <AppBoldText> only from your own created pins. </AppBoldText> 
+              Other user pins will still {'\n'} be saved, but details won't be auto-filled.
             </AppText>
 
             <AppText style={onboardingstyles.subheading}>
