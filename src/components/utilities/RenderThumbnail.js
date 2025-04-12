@@ -1,5 +1,5 @@
 //React and React Native core imports
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Image } from 'react-native';
 
 //Custom component imports and styling
@@ -8,6 +8,7 @@ import TikTokEmbed from '../embeds/TiktokEmbed';
 import YouTubeEmbed from '../embeds/YoutubeEmbed';
 import PinterestEmbed from '../embeds/PinterestEmbed';
 import commonStyles from '../../styles/commonStyles';
+import { DEFAULT_THUMBNAIL } from '../../constants';
 
 /*
   RenderThumbnail Component
@@ -24,8 +25,17 @@ import commonStyles from '../../styles/commonStyles';
 */
 
 const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) => {
+  const [isImageError, setIsImageError] = useState(false);
+  
   if (!thumbnail) {
-    return null;
+    return (
+      <View style={[commonStyles.renderThmbContain, containerStyle]}>
+        <Image 
+          source={{ uri: DEFAULT_THUMBNAIL }} 
+          style={thumbnailStyle}
+        />
+      </View>
+    );
   }
 
   //Instagram handling
@@ -80,13 +90,14 @@ const RenderThumbnail = ({ thumbnail, scale, containerStyle, thumbnailStyle }) =
     );
   }
 
-  //Default image handling
+  //Default image handling with fallback
   else {
     return (
       <View style={[commonStyles.renderThmbContain, containerStyle]}>
         <Image
-          source={{ uri: thumbnail }}
+          source={{ uri: isImageError ? DEFAULT_THUMBNAIL : thumbnail }}
           style={thumbnailStyle}
+          onError={() => setIsImageError(true)}
         />
       </View>
     );

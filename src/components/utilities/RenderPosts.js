@@ -1,6 +1,6 @@
-//React and React Native core imports
-import React from 'react';
-import { View, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, TouchableOpacity, Linking } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 //Project services and utilities
 import { extractPostUrl } from '../../services/platformService';
@@ -12,6 +12,8 @@ import TikTokEmbed from '../embeds/TiktokEmbed';
 import YouTubeEmbed from '../embeds/YoutubeEmbed';
 import PinterestEmbed from '../embeds/PinterestEmbed';
 import poststyles from '../../styles/poststyles';
+import { showToast, TOAST_TYPES } from '../utilities/Toasts';
+import { colours } from '../../styles/commonStyles';
 
 /*
   Post Content Renderer Component
@@ -22,6 +24,8 @@ import poststyles from '../../styles/poststyles';
 */
 
 const RenderPosts = ({ post, toast }) => {
+  const [isImageError, setIsImageError] = useState(false);
+  
   if (!post) return null;
 
   //Use platform service for URL extraction
@@ -34,6 +38,32 @@ const RenderPosts = ({ post, toast }) => {
       </View>
     );
   }
+
+  //Generic fallback for URL content that fails to load properly
+  const renderFallbackContent = () => {
+    return (
+      <View style={poststyles.fallbackContainer}>
+        <Ionicons name="link" size={48} color={colours.buttonsText} />
+        <Text style={poststyles.fallbackTitle}>
+          Content Preview Unavailable
+        </Text>
+        <Text style={poststyles.fallbackText}>
+          This content couldn't be embedded directly in the app.
+        </Text>
+        
+        <TouchableOpacity 
+          style={poststyles.fallbackButton}
+          onPress={() => {
+            Linking.openURL(postUrl).catch(error => {
+              showToast(toast, "Could not open URL", { type: TOAST_TYPES.DANGER });
+            });
+          }}
+        >
+          <Text style={poststyles.fallbackButtonText}>Open in Browser</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   //Instagram posts
   if (post.platform === 'instagram' && postUrl.includes('instagram.com')) {
@@ -67,7 +97,7 @@ const RenderPosts = ({ post, toast }) => {
     return (
       <View style={poststyles.embedContainer}>
         {isDirectImage ? (
-          //For user own pins show  direct image
+          //For user own pins show direct image
           <Image
             source={{ uri: postUrl }}
             style={poststyles.adaptiveImage}
@@ -98,13 +128,16 @@ const RenderPosts = ({ post, toast }) => {
     );
   }
 
-  //Default image rendering
-  return (
+  //Default image rendering with fallback
+  return isImageError ? (
+    renderFallbackContent()
+  ) : (
     <View style={poststyles.imageWrapper}>
       <Image
         source={{ uri: postUrl }}
         style={poststyles.adaptiveImage}
         resizeMode="cover"
+        onError={() => setIsImageError(true)}
       />
     </View>
   );

@@ -131,7 +131,7 @@ const poststyles = StyleSheet.create({
   adaptiveImage: {
     width: '100%',
     borderRadius: 12,
-    aspectRatio: 0.9, 
+    aspectRatio: 0.9,
     maxHeight: 600,
     alignSelf: 'center',
     marginBottom: 10,
@@ -157,7 +157,52 @@ const poststyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
     textDecorationLine: 'underline',
-  }
+  },
+  //===== FALLBACK STYLES =====
+  fallbackContainer: {
+    padding: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colours.lightestpink,
+    borderRadius: 16,
+    marginVertical: 20,
+    marginTop: 0,
+    borderWidth: 1,
+    borderColor: colours.buttonsTextPink,
+    borderStyle: 'dashed',
+    height: 360,
+  },
+  fallbackTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colours.mainTexts,
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  fallbackText: {
+    fontSize: 14,
+    color: colours.subTexts,
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  fallbackButton: {
+    backgroundColor: colours.buttonsTextPink,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 8,
+  },
+  fallbackButtonText: {
+    color: colours.lightestpink,
+    fontWeight: '500',
+  },
+  fallbackImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
 });
 
 export default poststyles;
