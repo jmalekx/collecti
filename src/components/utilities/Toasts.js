@@ -84,6 +84,7 @@ export const toastConfig = {
     color: colours.subTexts,
     flexShrink: 1,
     flexWrap: 'wrap',
+    flex: 1,
   },
   countBadgeStyle: {
     backgroundColor: 'rgba(0,0,0,0.1)',
