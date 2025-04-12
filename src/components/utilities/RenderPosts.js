@@ -43,7 +43,7 @@ const RenderPosts = ({ post, toast }) => {
   const renderFallbackContent = () => {
     return (
       <View style={poststyles.fallbackContainer}>
-        <Ionicons name="link" size={48} color={colours.buttonsText} />
+        <Ionicons name="link" size={48} color={colours.darkergrey} />
         <Text style={poststyles.fallbackTitle}>
           Content Preview Unavailable
         </Text>
