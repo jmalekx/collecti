@@ -1,8 +1,5 @@
 //Project services and utilities
 import { getCurrentUserId } from './firebase';
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
-
-
 /*
   Image Storage Service Module
     
@@ -33,14 +30,14 @@ export const uploadImageToCloudinary = async (localUri) => {
     });
 
     //Using upload preset configured in Cloudinary
-    formData.append('upload_preset', 'collecti_user_uploads');
+    formData.append('upload_preset', UPLOAD_PRESET);
 
     //Setting folder structure: collecti/user_uploads/[userId] to organise images by user
     formData.append('folder', `collecti/user_uploads/${userId}`);
 
     //Upload POST request
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dbabzybcu/image/upload`,
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
       {
         method: 'POST',
         body: formData
