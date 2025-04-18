@@ -168,7 +168,9 @@ const SearchPage = ({ navigation }) => {
         <RenderThumbnail
           thumbnail={item.thumbnail || DEFAULT_THUMBNAIL}
           scale={
-            item.thumbnail.includes('tiktok.com') ? 0.7 : 0.5
+            item.thumbnail.includes('tiktok.com') ? 0.5 :
+                item.thumbnail.includes('instagram.com') ? 0.01 :
+                  undefined
           }
           containerStyle={searchstyles.thumbnailWrapper}
           thumbnailStyle={searchstyles.thumbnail}

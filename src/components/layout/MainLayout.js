@@ -89,7 +89,7 @@ const MainLayout = () => {
     //List of supported platforms
     const supportedPlatforms = [
       { name: 'instagram', patterns: ['instagram.com'] },
-      { name: 'tiktok', patterns: ['tiktok.com'] },
+      { name: 'tiktok', patterns: ['tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'] },
       { name: 'pinterest', patterns: ['pinterest.com', 'pin.it'] },
       { name: 'youtube', patterns: ['youtube.com', 'youtu.be'] },
     ];

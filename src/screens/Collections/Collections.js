@@ -224,9 +224,10 @@ const Collections = ({ }) => {
                 thumbnail={item.thumbnail}
                 thumbnailStyle={collectionstyles.MainThumbnail}
                 scale={
-                  item.thumbnail.includes('tiktok.com') ? 0.51 :
+                  item.thumbnail.includes('tiktok.com') ? 0.33 :
                     (item.thumbnail.includes('pinterest.com') || item.thumbnail.includes('pin.it')) ? 0.3 :
-                      undefined
+                      item.thumbnail.includes('instagram.com') ? 0.02 :
+                        undefined
                 }
               />
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>

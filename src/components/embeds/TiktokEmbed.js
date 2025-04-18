@@ -29,10 +29,31 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
   const [loading, setLoading] = useState(true);
   const [isPhotoContent, setIsPhotoContent] = useState(false);
   const [authorName, setAuthorName] = useState('');
+  const [resolvedUrl, setResolvedUrl] = useState('');
 
   //Check if URL is a photo/carousel content
   const isPhotoUrl = (url) => {
     return url && url.includes('/photo/');
+  };
+
+  //Check if URL is a mobile short link
+  const isMobileShortUrl = (url) => {
+    return url && (url.includes('vm.tiktok.com') || url.includes('vt.tiktok.com'));
+  };
+
+  //Resolve short URL to full URL
+  const resolveShortUrl = async (shortUrl) => {
+    try {
+      const response = await fetch(shortUrl, {
+        method: 'HEAD',
+        redirect: 'follow'
+      });
+      return response.url; //Returns the final redirected URL
+    } 
+    catch (error) {
+      console.log('Error resolving TikTok short URL:', error);
+      return shortUrl; //Return original on error
+    }
   };
 
   //Extract username from URL
@@ -49,18 +70,28 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         //Reset states
         setIsPhotoContent(false);
         setAuthorName('');
+        setResolvedUrl('');
+
+        //First check if this is a mobile short URL that needs resolution
+        let urlToProcess = url;
+        if (isMobileShortUrl(url)) {
+          setLoading(true);
+          const fullUrl = await resolveShortUrl(url);
+          setResolvedUrl(fullUrl);
+          urlToProcess = fullUrl;
+        }
 
         //Check if this is a photo URL
-        const photoContent = isPhotoUrl(url);
+        const photoContent = isPhotoUrl(urlToProcess);
         if (photoContent) {
           setIsPhotoContent(true);
-          setAuthorName(extractUsername(url));
+          setAuthorName(extractUsername(urlToProcess));
           setLoading(false);
           return;
         }
 
         //For video content proceed with API call
-        const response = await fetch(`https://www.tiktok.com/oembed?url=${url}`);
+        const response = await fetch(`https://www.tiktok.com/oembed?url=${urlToProcess}`);
         const data = await response.json();
 
         //Extract author name if available
@@ -126,10 +157,29 @@ const TikTokEmbed = ({ url, style, scale = 1, isInteractive = false }) => {
         setLoading(false);
       }
       catch (error) {
-        //If failed with API call, check if photo URL that we missed
-        if (!isPhotoContent && isPhotoUrl(url)) {
+        //If failed with API call, check if photo URL that we might have missed
+        const urlToCheck = resolvedUrl || url;
+        if (!isPhotoContent && isPhotoUrl(urlToCheck)) {
           setIsPhotoContent(true);
-          setAuthorName(extractUsername(url));
+          setAuthorName(extractUsername(urlToCheck));
+        } else {
+          // If we still can't determine content type, try one more time with direct API check
+          try {
+            // Try accessing TikTok API with the URL to see if it's a photo post
+            const apiResponse = await fetch(`https://www.tiktok.com/oembed?url=${urlToCheck}`);
+            const apiData = await apiResponse.json();
+
+            // If API response indicates error, assume it might be a photo carousel
+            if (apiData.error || !apiData.html) {
+              setIsPhotoContent(true);
+              if (apiData.author_name) {
+                setAuthorName(apiData.author_name.replace('@', ''));
+              }
+            }
+          } catch (apiError) {
+            // If API fails, show as photo carousel as fallback
+            setIsPhotoContent(true);
+          }
         }
         setLoading(false);
       }

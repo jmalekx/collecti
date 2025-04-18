@@ -86,14 +86,13 @@ class TiktokLink extends PlatformLink {
   }
 
   isValidUrl(url) {
-    return !!url && url.includes('tiktok.com');
+    return !!url && (url.includes('tiktok.com') || url.includes('vm.tiktok.com') || url.includes('vt.tiktok.com'));
   }
 
   getDisplayName() {
     return 'TikTok';
   }
 }
-
 //Pinterest Platform Strategy
 class PinterestLink extends PlatformLink {
   async openUrl(url) {

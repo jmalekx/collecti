@@ -100,10 +100,10 @@ const Bookmarks = () => {
           containerStyle={bookmarkstyles.thumbnailWrapper}
           thumbnailStyle={bookmarkstyles.thumbnail}
           scale={
-            item.imageUrl?.includes('tiktok.com') ? 0.5 :
+            item.imageUrl?.includes('tiktok.com') ? 0.35 :
               item.imageUrl?.includes('pinterest.com') || item.imageUrl?.includes('pin.it') ? 0.25 :
                 item.imageUrl?.includes('youtube.com') || item.imageUrl?.includes('youtu.be') ? 0.2 :
-                  item.imageUrl?.includes('instagram.com') ? 0.1 :
+                  item.imageUrl?.includes('instagram.com') ? 0.01 :
                     undefined
           }
         />
