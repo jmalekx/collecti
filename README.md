@@ -22,7 +22,7 @@ You can use an Android device or emulator like Android Studio to install and run
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v14+) 
 - [Expo CLI](https://docs.expo.dev/get-started/installation/) (`npm install -g expo-cli`)
-- Android Device or Emulator (e.g. [Android Studio](https://developer.android.com/studio)
+- Android Device or Emulator (e.g. [Android Studio](https://developer.android.com/studio))
 - Git
 
 ### Installation
